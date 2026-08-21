@@ -85,26 +85,37 @@
         <!-- Names & Bio -->
         <div class="hero-bio-section">
           <h3 class="hero-name">{{ currentDisplayName }}</h3>
-          <span v-if="activePet" class="hero-subtitle">{{ activePet.species }} • {{ activePet.breed }} • {{ activePet.age }}</span>
-          <span v-else class="hero-subtitle">Pet Parent • Portland, OR</span>
+          <span v-if="activePet" class="hero-subtitle">{{ activePet.species }} • {{ activePet.breed }} • Age: {{ activePet.age }}</span>
+          <span v-else class="hero-subtitle">Pet Parent • Dhaka, Bangladesh</span>
 
           <p class="hero-bio-text">
             {{ currentBio }}
           </p>
+
+          <!-- Pet Verified Passport Badge (when in Pet View) -->
+          <div v-if="activePet" class="pet-passport-summary-badge" @click="setTab('health')">
+            <div class="pass-badge-left">
+              <span class="pass-tag-chip">🪪 VERIFIED PASSPORT</span>
+              <span class="pass-chip-no">{{ activePet.microchipId || 'CHIP: 985-1410-0921-334' }}</span>
+            </div>
+            <div class="pass-badge-right">
+              <span class="pass-view-btn">View Official Passport →</span>
+            </div>
+          </div>
         </div>
 
         <!-- Action Buttons -->
         <div class="profile-buttons-row">
-          <button v-if="activePet" class="btn-solid profile-btn" @click="setTab('health')">
+          <button v-if="activePet" class="btn-primary profile-btn" @click="setTab('health')">
             <Activity :size="15" />
-            <span>Health Passport</span>
+            <span>Digital Health Passport</span>
           </button>
-          <button v-else class="btn-solid profile-btn" @click="isCreateSheetOpen = true">
+          <button v-else class="btn-primary profile-btn" @click="isCreateSheetOpen = true">
             <Plus :size="15" />
             <span>New Post</span>
           </button>
 
-          <button class="btn-outline profile-btn" @click="setTab('settings')">
+          <button class="btn-secondary profile-btn" @click="setTab('settings')">
             <Edit :size="14" />
             <span>Edit Profile</span>
           </button>
@@ -540,5 +551,49 @@ const userGridImages = [
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Pet Verified Passport Summary Badge */
+.pet-passport-summary-badge {
+  margin-top: 10px;
+  background: linear-gradient(135deg, rgba(148, 125, 238, 0.12), rgba(124, 58, 237, 0.08));
+  border: 1px solid var(--brand-primary);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pet-passport-summary-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+}
+
+.pass-badge-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.pass-tag-chip {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: var(--brand-dark);
+  letter-spacing: 0.05em;
+}
+
+.pass-chip-no {
+  font-size: 11px;
+  font-weight: 800;
+  font-family: monospace;
+  color: var(--ink-primary);
+}
+
+.pass-view-btn {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--brand-dark);
 }
 </style>

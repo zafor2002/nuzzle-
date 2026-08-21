@@ -4,39 +4,37 @@
       <button v-if="showBackButton" class="btn-icon" @click="goBack" title="Back">
         <ArrowLeft :size="20" />
       </button>
-      
+
       <div v-else class="brand-badge" @click="setTab('feed')">
         <div class="brand-icon-wrapper">
-          <PawPrint :size="18" class="brand-paw" />
+          <PawPrint :size="16" class="brand-paw" />
         </div>
-        <span class="brand-text">PetSocial</span>
+        <span class="brand-text">Nuzzle</span>
       </div>
 
-      <div v-if="owner.isAnonymous" class="anon-pill" title="Owner anonymity is active">
-        <EyeOff :size="12" />
+      <div v-if="owner.isAnonymous" class="anon-pill" title="Anonymous mode active">
+        <EyeOff :size="11" />
         <span>Ghost</span>
       </div>
     </div>
 
-    <!-- Center PawAI Quick Assistant Pill -->
+    <!-- Center PawAI Quick Pill -->
     <div v-if="!showBackButton" class="header-center-ai" @click="setTab('ai')">
       <div class="pawai-quick-pill">
-        <Sparkles :size="13" class="ai-sparkle-spin" />
+        <Sparkles :size="12" class="ai-sparkle-spin" />
         <span>PawAI</span>
       </div>
     </div>
 
-    <div class="header-title" v-else-if="title">
-      {{ title }}
-    </div>
+    <div class="header-title" v-else-if="title">{{ title }}</div>
 
     <div class="header-actions">
-      <button class="action-btn" @click="setTab('lostfound')" title="Lost & Found Alerts">
+      <button class="action-btn" @click="setTab('lostfound')" title="Emergency Radar">
         <AlertTriangle :size="19" class="alert-icon" />
         <span class="badge-dot pulse"></span>
       </button>
 
-      <button class="action-btn" @click="setTab('messages')" title="Direct Messages">
+      <button class="action-btn" @click="setTab('messages')" title="Messages">
         <MessageCircle :size="20" />
         <span v-if="unreadMessagesCount > 0" class="badge-count">{{ unreadMessagesCount }}</span>
       </button>
@@ -87,11 +85,11 @@ function goBack() {
   width: 30px;
   height: 30px;
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--brand-primary), #EA580C);
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-dark));
   display: grid;
   place-items: center;
   color: #fff;
-  box-shadow: 0 3px 8px rgba(244, 145, 92, 0.35);
+  box-shadow: 0 3px 10px rgba(124, 58, 237, 0.3);
 }
 
 .brand-paw {
@@ -103,7 +101,7 @@ function goBack() {
   font-weight: 800;
   font-size: 19px;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, var(--brand-primary), #E15B1E);
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-dark));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -129,22 +127,29 @@ function goBack() {
   display: flex;
   align-items: center;
   gap: 5px;
-  background: linear-gradient(135deg, #4F46E5, #9333EA);
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-dark));
   color: #fff;
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: var(--radius-full);
   font-size: 11.5px;
   font-weight: 800;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
-  transition: transform 0.15s ease;
+  box-shadow: 0 2px 10px rgba(124, 58, 237, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .pawai-quick-pill:hover {
   transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.5);
 }
 
 .ai-sparkle-spin {
   color: #FDE047;
+  animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 .header-title {
@@ -161,7 +166,7 @@ function goBack() {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
 }
 
 .action-btn {
@@ -170,13 +175,14 @@ function goBack() {
   border-radius: 11px;
   display: grid;
   place-items: center;
-  color: var(--ink-primary);
+  color: var(--ink-secondary);
   position: relative;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .action-btn:hover {
   background: var(--bg-card-subtle);
+  color: var(--brand-dark);
 }
 
 .alert-icon {
@@ -198,7 +204,7 @@ function goBack() {
   align-items: center;
   justify-content: center;
   padding: 0 3px;
-  border: 2px solid var(--bg-app);
+  border: 2px solid var(--bg-header);
 }
 
 .badge-dot {
@@ -209,6 +215,7 @@ function goBack() {
   height: 7px;
   border-radius: 50%;
   background: var(--accent-rose);
+  border: 1.5px solid var(--bg-header);
 }
 
 .pulse {

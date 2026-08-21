@@ -15,6 +15,28 @@ export interface Owner {
   followingCount: number;
 }
 
+export interface VaccineCertificate {
+  vaccine: string;
+  dateAdministered: string;
+  validUntil: string;
+  batchNumber: string;
+  vetClinic: string;
+  vetSignature: string;
+  status: 'valid' | 'due' | 'expired';
+}
+
+export interface OwnerLineage {
+  primaryGuardian: string;
+  relationship: string;
+  phone: string;
+  email: string;
+  address: string;
+  emergencyContactName: string;
+  emergencyPhone: string;
+  primaryVetClinic: string;
+  breederOrShelter?: string;
+}
+
 export interface Pet {
   id: string;
   ownerId: string;
@@ -28,6 +50,19 @@ export interface Pet {
   isAnonymous: boolean;
   weight?: string;
   microchipId?: string;
+  passportNumber?: string;
+  gender?: string;
+  colorMarkings?: string;
+  bloodType?: string;
+  registrationAuthority?: string;
+  ownerLineage?: OwnerLineage;
+  vaccinationCertificates?: VaccineCertificate[];
+  healthClearance?: {
+    fitForTravel: boolean;
+    rabiesTitreClear: boolean;
+    lastDeworming: string;
+    allergies: string[];
+  };
   postsCount: number;
   followersCount: number;
   aiPersonality?: string;

@@ -3,6 +3,12 @@
     <TopBar />
 
     <div class="feed-scroll-body">
+      <!-- Locality Header -->
+      <div class="feed-header">
+        <h2 class="feed-title">My Neighborhood</h2>
+        <span class="feed-location">Palo Alto, CA</span>
+      </div>
+
       <!-- Stories Tray -->
       <StoryTray />
 
@@ -52,17 +58,33 @@ const activeLostPet = computed(() => {
   padding-bottom: 24px;
 }
 
+.feed-header {
+  padding: 16px 16px 8px;
+}
+
+.feed-title {
+  margin: 0;
+  font-size: 20px;
+  color: #4C1D95;
+}
+
+.feed-location {
+  font-size: 13px;
+  color: #7C3AED;
+  font-weight: 500;
+}
+
 .emergency-banner {
   margin: 10px 14px 4px;
-  background: linear-gradient(135deg, #FFF1F2, #FFE4E6);
-  border: 1.5px solid #FDA4AF;
+  background: linear-gradient(135deg, #F5F3FF, #EDE9FE);
+  border: 1.5px solid #C4B5FD;
   border-radius: var(--radius-md);
   padding: 10px 14px;
   display: flex;
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(244, 63, 94, 0.12);
+  box-shadow: 0 2px 6px rgba(124, 58, 237, 0.12);
   transition: transform 0.15s ease;
 }
 
@@ -83,12 +105,12 @@ const activeLostPet = computed(() => {
 .alert-title {
   font-size: 13px;
   font-weight: 800;
-  color: #9F1239;
+  color: #5B21B6;
 }
 
 .alert-subtitle {
   font-size: 11.5px;
-  color: #BE123C;
+  color: #7C3AED;
 }
 
 @keyframes bounce {

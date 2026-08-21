@@ -1,47 +1,31 @@
 <template>
   <nav class="bottom-nav">
-    <button 
-      class="nav-tab-btn" 
-      :class="{ active: currentTab === 'feed' }" 
-      @click="setTab('feed')"
-    >
+    <button class="nav-tab-btn" :class="{ active: currentTab === 'feed' }" @click="setTab('feed')">
       <Home class="nav-tab-icon" />
-      <span>Feed</span>
+      <span>Den</span>
     </button>
 
-    <button 
-      class="nav-tab-btn" 
-      :class="{ active: currentTab === 'explore' }" 
-      @click="setTab('explore')"
-    >
+    <button class="nav-tab-btn" :class="{ active: currentTab === 'explore' }" @click="setTab('explore')">
       <Compass class="nav-tab-icon" />
       <span>Explore</span>
     </button>
 
-    <!-- Center Create FAB -->
+    <!-- Center FAB -->
     <div class="fab-wrapper">
-      <button class="fab-create-btn" @click="isCreateSheetOpen = true" title="Create">
+      <button class="fab-create-btn" @click="isCreateSheetOpen = true" title="Create Post">
         <Plus :size="26" />
       </button>
     </div>
 
-    <!-- PawAI Dedicated Tab -->
-    <button 
-      class="nav-tab-btn ai-tab" 
-      :class="{ active: currentTab === 'ai' }" 
-      @click="setTab('ai')"
-    >
+    <!-- PawAI Tab -->
+    <button class="nav-tab-btn ai-tab" :class="{ active: currentTab === 'ai' }" @click="setTab('ai')">
       <div class="ai-icon-holder" :class="{ active: currentTab === 'ai' }">
         <Sparkles class="nav-tab-icon ai-sparkle" />
       </div>
-      <span class="ai-label">PawAI</span>
+      <span class="ai-label" :class="{ active: currentTab === 'ai' }">PawAI</span>
     </button>
 
-    <button 
-      class="nav-tab-btn" 
-      :class="{ active: currentTab === 'profile' }" 
-      @click="setTab('profile')"
-    >
+    <button class="nav-tab-btn" :class="{ active: currentTab === 'profile' }" @click="setTab('profile')">
       <div class="profile-nav-avatar" :class="{ active: currentTab === 'profile' }">
         <img :src="owner.avatarUrl" :alt="owner.displayName" />
       </div>
@@ -63,8 +47,14 @@ import { currentTab, setTab, isCreateSheetOpen, owner } from '../../stores/appSt
   flex: 1;
 }
 
-.ai-tab.active .ai-label {
-  background: linear-gradient(135deg, #6366F1, #9333EA);
+/* AI Tab */
+.ai-tab .ai-label {
+  color: var(--ink-muted);
+  transition: all 0.18s ease;
+}
+
+.ai-tab .ai-label.active {
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-dark));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 800;
@@ -74,23 +64,26 @@ import { currentTab, setTab, isCreateSheetOpen, owner } from '../../stores/appSt
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: color 0.18s ease;
+  color: var(--ink-muted);
 }
 
 .ai-icon-holder.active {
-  color: #6366F1;
+  color: var(--brand-dark);
 }
 
 .ai-sparkle {
   color: inherit;
 }
 
+/* Profile avatar */
 .profile-nav-avatar {
   width: 24px;
   height: 24px;
-  border-radius: 50%;
+  border-radius: 8px;
   overflow: hidden;
-  border: 1.5px solid transparent;
-  transition: all 0.15s ease;
+  border: 2px solid transparent;
+  transition: all 0.18s ease;
 }
 
 .profile-nav-avatar img {

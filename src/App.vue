@@ -1,18 +1,17 @@
 <template>
   <div class="mobile-app-root">
-    <!-- Main App Container (True Mobile Shell) -->
     <div class="mobile-container">
-      <!-- Status Bar for real mobile look -->
+      <!-- Status Bar -->
       <div class="mobile-statusbar">
         <span class="status-time">9:41</span>
         <div class="notch-island"></div>
         <div class="status-indicators">
           <span>5G</span>
-          <span class="battery-icon">100% 🔋</span>
+          <span class="battery-icon">🔋</span>
         </div>
       </div>
 
-      <!-- Active Screen Viewport -->
+      <!-- Screen Viewport -->
       <div class="screen-viewport">
         <FeedView v-if="currentTab === 'feed'" />
         <ExploreView v-else-if="currentTab === 'explore'" />
@@ -48,7 +47,6 @@ import CommentsModal from './components/feed/CommentsModal.vue';
 import ChatWindowModal from './components/chat/ChatWindowModal.vue';
 import CreateSheetModal from './components/create/CreateSheetModal.vue';
 
-// Views
 import FeedView from './views/FeedView.vue';
 import ExploreView from './views/ExploreView.vue';
 import PawAIView from './views/PawAIView.vue';
@@ -73,7 +71,7 @@ import { currentTab } from './stores/appStore';
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--bg-stage);
+  background: linear-gradient(145deg, #D8D0F2, #EDE7F6);
   overflow: hidden;
 }
 
@@ -87,17 +85,19 @@ import { currentTab } from './stores/appStore';
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
+  box-shadow:
+    0 30px 60px rgba(124, 58, 237, 0.22),
+    0 0 0 1px rgba(148, 125, 238, 0.3);
 }
 
 @media (min-width: 441px) {
   .mobile-container {
     height: calc(100vh - 24px);
-    border-radius: 40px;
-    border: 8px solid #2B2521;
-    box-shadow: 
-      0 30px 60px rgba(0, 0, 0, 0.35),
-      0 0 0 2px #443B35;
+    border-radius: 46px;
+    border: 8px solid #EDE7F6;
+    box-shadow:
+      0 40px 80px rgba(124, 58, 237, 0.3),
+      0 0 0 2px rgba(148, 125, 238, 0.4);
   }
 }
 
@@ -107,19 +107,27 @@ import { currentTab } from './stores/appStore';
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--ink-primary);
   z-index: 100;
   flex-shrink: 0;
-  background: var(--bg-glass);
+  background: var(--bg-header);
+}
+
+.status-time {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--brand-dark);
 }
 
 .notch-island {
   width: 110px;
   height: 24px;
-  background: #11100E;
+  background: var(--ink-primary);
   border-radius: 20px;
+  opacity: 0.85;
 }
 
 .status-indicators {
@@ -127,6 +135,11 @@ import { currentTab } from './stores/appStore';
   align-items: center;
   gap: 6px;
   font-size: 11px;
+  color: var(--ink-secondary);
+}
+
+.battery-icon {
+  font-size: 12px;
 }
 
 .screen-viewport {

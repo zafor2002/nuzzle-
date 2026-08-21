@@ -24,11 +24,71 @@ export const initialPets: Pet[] = [
     breed: 'Golden Retriever',
     bio: 'Professional stick collector & supreme ball fetcher 🎾 Always happy!',
     age: '2 yrs 4 mos',
-    birthDate: '2022-04-12',
+    birthDate: 'April 12, 2022',
     avatarUrl: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&auto=format&fit=crop&q=80',
     isAnonymous: false,
     weight: '29.5 kg',
-    microchipId: '985-1410-0921-334',
+    gender: 'Neutered Male ♂',
+    microchipId: 'CHIP: 985-1410-0921-334',
+    passportNumber: 'BD-NZL-2022-8842-GOLD',
+    colorMarkings: 'Honey Gold with White Chest Star',
+    bloodType: 'DEA 1.1 Negative (Universal Donor)',
+    registrationAuthority: 'Nuzzle Verified Pet Registry • Dhaka Central Division',
+    ownerLineage: {
+      primaryGuardian: 'Alex Rivers',
+      relationship: 'Legal Adopter & Primary Guardian',
+      phone: '+880 1712-345678',
+      email: 'alex.rivers@pawmail.com',
+      address: 'Road 79, House 14, Gulshan-2, Dhaka-1212',
+      emergencyContactName: 'Dr. Sarah Mitchell (Lead Veterinarian)',
+      emergencyPhone: '+880 1987-654321',
+      primaryVetClinic: 'Gulshan Pet Hospital & 24/7 Trauma Center',
+      breederOrShelter: 'Dhaka Paws Rescue Foundation (Shelter ID #DRF-902)'
+    },
+    vaccinationCertificates: [
+      {
+        vaccine: 'Rabies (Defensor 3 - 3yr)',
+        dateAdministered: 'June 10, 2024',
+        validUntil: 'June 10, 2027',
+        batchNumber: 'RB-2024-9981A',
+        vetClinic: 'Gulshan Pet Hospital',
+        vetSignature: 'Dr. Sarah Mitchell, DVM #BD-6421',
+        status: 'valid'
+      },
+      {
+        vaccine: 'DHPP (Distemper, Hepatitis, Parvo, Parainfluenza)',
+        dateAdministered: 'April 15, 2024',
+        validUntil: 'April 15, 2025',
+        batchNumber: 'DH-8841-B9',
+        vetClinic: 'Gulshan Pet Hospital',
+        vetSignature: 'Dr. Sarah Mitchell, DVM #BD-6421',
+        status: 'valid'
+      },
+      {
+        vaccine: 'Bordetella Bronchiseptica (Kennel Cough)',
+        dateAdministered: 'January 20, 2024',
+        validUntil: 'January 20, 2025',
+        batchNumber: 'KC-1102-X4',
+        vetClinic: 'Gulshan Pet Hospital',
+        vetSignature: 'Dr. Tanvir Ahmed, DVM #BD-5890',
+        status: 'valid'
+      },
+      {
+        vaccine: 'Canine Leptospirosis 4-Way',
+        dateAdministered: 'May 02, 2024',
+        validUntil: 'May 02, 2025',
+        batchNumber: 'LP-3321-K8',
+        vetClinic: 'Gulshan Pet Hospital',
+        vetSignature: 'Dr. Sarah Mitchell, DVM #BD-6421',
+        status: 'valid'
+      }
+    ],
+    healthClearance: {
+      fitForTravel: true,
+      rabiesTitreClear: true,
+      lastDeworming: 'August 01, 2024 (Drontal Plus)',
+      allergies: ['No known drug allergies', 'Mild sensitivity to chicken meal']
+    },
     postsCount: 34,
     followersCount: 940
   },
@@ -37,14 +97,65 @@ export const initialPets: Pet[] = [
     ownerId: 'owner_me',
     name: 'Mochi',
     species: 'Cat',
-    breed: 'Siamese mix',
+    breed: 'Siamese Mix (Seal Point)',
     bio: 'Sunbeam napper, midnight zoomies champion 🌙 Silent judge.',
     age: '1 yr 8 mos',
-    birthDate: '2023-01-20',
+    birthDate: 'January 20, 2023',
     avatarUrl: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200&auto=format&fit=crop&q=80',
     isAnonymous: false,
     weight: '4.2 kg',
-    microchipId: '985-1410-0921-889',
+    gender: 'Spayed Female ♀',
+    microchipId: 'CHIP: 985-1410-0921-889',
+    passportNumber: 'BD-NZL-2023-1109-SIAM',
+    colorMarkings: 'Cream body with dark chocolate seal points and sapphire eyes',
+    bloodType: 'Feline Type A',
+    registrationAuthority: 'Nuzzle Verified Pet Registry • Dhaka Central Division',
+    ownerLineage: {
+      primaryGuardian: 'Alex Rivers',
+      relationship: 'Legal Adopter & Primary Guardian',
+      phone: '+880 1712-345678',
+      email: 'alex.rivers@pawmail.com',
+      address: 'Road 79, House 14, Gulshan-2, Dhaka-1212',
+      emergencyContactName: 'Feline Care Specialist Rahat Kabir',
+      emergencyPhone: '+880 1987-654322',
+      primaryVetClinic: 'Dhanmondi Feline Health Clinic & Spa',
+      breederOrShelter: 'Dhaka Stray Cat Rescue Network (ID #CAT-410)'
+    },
+    vaccinationCertificates: [
+      {
+        vaccine: 'FVRCP (Feline Viral Rhinotracheitis, Calicivirus, Panleukopenia)',
+        dateAdministered: 'February 14, 2024',
+        validUntil: 'February 14, 2027',
+        batchNumber: 'FV-2024-4011C',
+        vetClinic: 'Dhanmondi Feline Health Clinic',
+        vetSignature: 'Dr. Farhana Yasmin, MRCVS #BD-7712',
+        status: 'valid'
+      },
+      {
+        vaccine: 'Feline Rabies (PureVax Feline)',
+        dateAdministered: 'March 01, 2024',
+        validUntil: 'March 01, 2025',
+        batchNumber: 'FR-9932-P1',
+        vetClinic: 'Dhanmondi Feline Health Clinic',
+        vetSignature: 'Dr. Farhana Yasmin, MRCVS #BD-7712',
+        status: 'valid'
+      },
+      {
+        vaccine: 'Feline Leukemia Virus (FeLV)',
+        dateAdministered: 'March 01, 2024',
+        validUntil: 'March 01, 2025',
+        batchNumber: 'FL-5501-M3',
+        vetClinic: 'Dhanmondi Feline Health Clinic',
+        vetSignature: 'Dr. Farhana Yasmin, MRCVS #BD-7712',
+        status: 'valid'
+      }
+    ],
+    healthClearance: {
+      fitForTravel: true,
+      rabiesTitreClear: true,
+      lastDeworming: 'July 15, 2024 (Profender Topical)',
+      allergies: ['No known allergies', 'Negative FeLV / FIV Certified']
+    },
     postsCount: 21,
     followersCount: 680
   }
