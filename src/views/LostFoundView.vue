@@ -186,7 +186,7 @@ function chatOwner(item: LostFoundPost) {
   );
 }
 
-function toggleClaim(id: string) {
+function toggleClaim(_id: string) {
   alert(`⚡ Claim-and-Lock Status Updated! Your responder dispatch route is now locked to prevent duplicate volunteer runs.`);
 }
 </script>
