@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="post-header">
       <div class="post-avatar-wrapper" @click="handleProfileClick">
-        <img :src="post.petAvatar || post.ownerAvatar" :alt="post.petName || post.ownerName" class="post-avatar" />
+        <img :src="post.petAvatar || post.ownerAvatar" :alt="post.petName || post.ownerName" class="post-avatar" @error="handleImgError($event, 'avatar')" />
         <div v-if="post.petId" class="pet-paw-badge">🐾</div>
       </div>
 
@@ -41,7 +41,7 @@
     <!-- Media — Organic Squircle Container (PPTX Slide 6: 22px asymmetric) -->
     <div class="post-media-area" @dblclick="handleDoubleTap">
       <div class="squircle-media-wrap">
-        <img :src="post.mediaUrls[0]" :alt="post.caption" class="post-img" />
+        <img :src="post.mediaUrls[0]" :alt="post.caption" class="post-img" @error="handleImgError($event, 'media')" />
 
         <!-- Floating Location Capsule -->
         <div class="floating-location" v-if="post.location">
@@ -145,6 +145,7 @@ import { ref, computed } from 'vue';
 import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, MapPin } from 'lucide-vue-next';
 import type { Post } from '../../types';
 import { togglePostLike, togglePostSave, openComments, setTab, activeHashtag } from '../../stores/appStore';
+import { handleImgError } from '../../utils/imageFallback';
 
 const props = defineProps<{ post: Post }>();
 

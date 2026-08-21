@@ -287,11 +287,11 @@ export const initialPosts: Post[] = [
     petId: 'pet_cleo',
     petName: 'Cleopatra',
     petBreed: 'Bengal Cat',
-    petAvatar: 'https://images.unsplash.com/photo-1513360309081-38f0762b781e?w=200&auto=format&fit=crop&q=80',
+    petAvatar: 'https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=200&auto=format&fit=crop&q=80',
     isAnonymous: false,
     caption: 'She discovered the top of the refrigerator is warm. We have officially lost all kitchen supremacy. 👑🐾 #bengalcat #catlife #queenstatus',
     mediaUrls: [
-      'https://images.unsplash.com/photo-1513360309081-38f0762b781e?w=800&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=800&auto=format&fit=crop&q=80'
     ],
     likesCount: 312,
     commentsCount: 42,

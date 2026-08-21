@@ -27,7 +27,7 @@
 
     <button class="nav-tab-btn" :class="{ active: currentTab === 'profile' }" @click="setTab('profile')">
       <div class="profile-nav-avatar" :class="{ active: currentTab === 'profile' }">
-        <img :src="owner.avatarUrl" :alt="owner.displayName" />
+        <img :src="owner.avatarUrl" :alt="owner.displayName" @error="handleImgError($event, 'human')" />
       </div>
       <span>Profile</span>
     </button>
@@ -37,6 +37,7 @@
 <script setup lang="ts">
 import { Home, Trees, Plus, Sparkles } from 'lucide-vue-next';
 import { currentTab, setTab, isCreateSheetOpen, owner } from '../../stores/appStore';
+import { handleImgError } from '../../utils/imageFallback';
 </script>
 
 <style scoped>

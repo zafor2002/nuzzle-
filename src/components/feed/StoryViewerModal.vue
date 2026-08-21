@@ -27,7 +27,7 @@
       <!-- Header Info -->
       <div class="story-top-info">
         <div class="creator-meta">
-          <img :src="selectedStory.creatorAvatar" :alt="selectedStory.creatorName" class="viewer-avatar" />
+          <img :src="selectedStory.creatorAvatar" :alt="selectedStory.creatorName" class="viewer-avatar" @error="handleImgError($event, 'avatar')" />
           <div class="creator-names">
             <span class="creator-title">{{ selectedStory.creatorName }}</span>
             <span v-if="selectedStory.petName" class="pet-sub">{{ selectedStory.petName }}</span>
@@ -45,6 +45,7 @@
           :src="currentSegment.mediaUrl" 
           :alt="currentSegment.caption || 'Story media'" 
           class="story-image"
+          @error="handleImgError($event, 'media')"
         />
 
         <!-- Left / Right Tap zones -->
@@ -78,6 +79,7 @@
 import { ref, computed, watch, onUnmounted } from 'vue';
 import { X, Send } from 'lucide-vue-next';
 import { selectedStory, closeStory, openChatWith } from '../../stores/appStore';
+import { handleImgError } from '../../utils/imageFallback';
 
 const currentSegmentIndex = ref(0);
 const progressPercent = ref(0);

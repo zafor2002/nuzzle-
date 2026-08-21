@@ -92,7 +92,7 @@
           <!-- Pet Media & Main Info -->
           <div class="alert-body-content">
             <div class="alert-img-holder">
-              <img :src="item.imageUrl" :alt="item.petName" class="alert-pet-img" />
+              <img :src="item.imageUrl" :alt="item.petName" class="alert-pet-img" @error="handleImgError($event, 'media')" />
               <!-- AI Visual Match Badge -->
               <div class="ai-match-tag">
                 <Sparkles :size="10" />
@@ -162,6 +162,7 @@ import { MapPin, Phone, MessageCircle, AlertCircle, Sparkles, Fingerprint } from
 import TopBar from '../components/layout/TopBar.vue';
 import { lostFoundList, openChatWith, isCreateSheetOpen } from '../stores/appStore';
 import type { LostFoundPost } from '../types';
+import { handleImgError } from '../utils/imageFallback';
 
 const filterStatus = ref<'all' | 'lost' | 'found'>('all');
 

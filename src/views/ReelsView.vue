@@ -76,7 +76,7 @@
         <!-- Bottom Creator Info & Caption -->
         <div class="reel-bottom-info">
           <div class="creator-badge-row">
-            <img :src="reel.creatorAvatar" :alt="reel.creatorName" class="reel-creator-avatar" />
+            <img :src="reel.creatorAvatar" :alt="reel.creatorName" class="reel-creator-avatar" @error="handleImgError($event, 'avatar')" />
             <div class="creator-labels">
               <span class="c-name">{{ reel.creatorName }}</span>
               <span v-if="reel.petName" class="c-pet">🐾 {{ reel.petName }}</span>
@@ -103,6 +103,7 @@
 import { Camera, Heart, MessageCircle, Bookmark, Share2, Music, Play } from 'lucide-vue-next';
 import { reels, toggleReelLike, toggleReelSave, isCreateSheetOpen, setTab } from '../stores/appStore';
 import type { Reel } from '../types';
+import { handleImgError } from '../utils/imageFallback';
 
 function formatCount(num: number): string {
   if (num >= 1000) {

@@ -21,7 +21,7 @@
           :class="{ active: activeProfileId === 'owner_me' }"
           @click="activeProfileId = 'owner_me'"
         >
-          <img :src="owner.avatarUrl" :alt="owner.displayName" class="persona-avatar" />
+          <img :src="owner.avatarUrl" :alt="owner.displayName" class="persona-avatar" @error="handleImgError($event, 'human')" />
           <span>{{ owner.displayName.split(' ')[0] }} (Owner)</span>
         </button>
 
@@ -32,7 +32,7 @@
           :class="{ active: activeProfileId === p.id }"
           @click="activeProfileId = p.id"
         >
-          <img :src="p.avatarUrl" :alt="p.name" class="persona-avatar" />
+          <img :src="p.avatarUrl" :alt="p.name" class="persona-avatar" @error="handleImgError($event, 'avatar')" />
           <span>🐾 {{ p.name }}</span>
         </button>
       </div>
@@ -63,7 +63,7 @@
       <div class="profile-hero-card card-item" :class="{ 'ghost-card': isCurrentAnonymous }">
         <div class="hero-top-row">
           <div class="hero-avatar-wrapper" :class="{ 'ghost-avatar': isCurrentAnonymous }">
-            <img :src="currentAvatar" :alt="currentDisplayName" class="hero-avatar" />
+            <img :src="currentAvatar" :alt="currentDisplayName" class="hero-avatar" @error="handleImgError($event, 'avatar')" />
             <div v-if="isCurrentAnonymous" class="ghost-mode-badge" title="Ghost Mask Active">👻</div>
             <div v-else-if="activePet" class="pet-star-badge">⭐</div>
           </div>
@@ -138,7 +138,7 @@
             class="pet-summary-card"
             @click="activeProfileId = p.id"
           >
-            <img :src="p.avatarUrl" :alt="p.name" class="p-thumb" />
+            <img :src="p.avatarUrl" :alt="p.name" class="p-thumb" @error="handleImgError($event, 'avatar')" />
             <span class="p-name">{{ p.name }}</span>
             <span class="p-breed">{{ p.breed }}</span>
           </div>
@@ -164,7 +164,7 @@
           :key="idx"
           class="grid-photo-cell"
         >
-          <img :src="img" alt="Post" class="grid-img" />
+          <img :src="img" alt="Post" class="grid-img" @error="handleImgError($event, 'media')" />
         </div>
       </div>
     </div>
@@ -182,6 +182,7 @@ import {
   setTab, 
   isCreateSheetOpen 
 } from '../stores/appStore';
+import { handleImgError } from '../utils/imageFallback';
 
 const currentProfileHandle = computed(() => {
   if (isCurrentAnonymous.value) {

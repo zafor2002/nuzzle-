@@ -12,6 +12,7 @@ import {
   runAiPetScan,
   openChatWith
 } from '../stores/appStore';
+import { handleImgError } from '../utils/imageFallback';
 
 const activeAiTab = ref<'scanner' | 'triage' | 'translator' | 'matcher' | 'portraits'>('triage');
 
@@ -129,6 +130,7 @@ function generateMagicArt() {
               alt="Scan pet" 
               class="scan-preview-img"
               :class="{ scanning: isAiScanning }"
+              @error="handleImgError($event, 'media')"
             />
 
             <!-- Scan Laser Animation Overlay -->
@@ -270,7 +272,7 @@ function generateMagicArt() {
           <!-- Translation Output -->
           <div v-if="translatedThought" class="thought-bubble-result">
             <div class="thought-avatar">
-              <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=150&auto=format&fit=crop&q=80" alt="Pet" />
+              <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=150&auto=format&fit=crop&q=80" alt="Pet" @error="handleImgError($event, 'avatar')" />
             </div>
             <div class="thought-text-col">
               <span class="speaker-lbl">Waffles (Golden Retriever) says:</span>
@@ -289,7 +291,7 @@ function generateMagicArt() {
 
           <div class="match-vs-row">
             <div class="pet-pick-box">
-              <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&auto=format&fit=crop&q=80" class="m-avatar" alt="Waffles" />
+              <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&auto=format&fit=crop&q=80" class="m-avatar" alt="Waffles" @error="handleImgError($event, 'avatar')" />
               <span class="m-name">Waffles</span>
               <span class="m-stat">High Energy</span>
             </div>
@@ -297,7 +299,7 @@ function generateMagicArt() {
             <div class="vs-badge">VS</div>
 
             <div class="pet-pick-box">
-              <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&auto=format&fit=crop&q=80" class="m-avatar" alt="Oliver" />
+              <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&auto=format&fit=crop&q=80" class="m-avatar" alt="Oliver" @error="handleImgError($event, 'avatar')" />
               <span class="m-name">Oliver</span>
               <span class="m-stat">Friendly Fetcher</span>
             </div>
@@ -344,7 +346,7 @@ function generateMagicArt() {
               :class="{ active: selectedStyle === s.name }"
               @click="selectedStyle = s.name"
             >
-              <img :src="s.preview" :alt="s.name" class="style-img" />
+              <img :src="s.preview" :alt="s.name" class="style-img" @error="handleImgError($event, 'media')" />
               <span class="style-label">{{ s.name }}</span>
             </div>
           </div>

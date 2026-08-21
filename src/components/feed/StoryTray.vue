@@ -4,7 +4,7 @@
     <!-- Add Story -->
     <div class="story-item" @click="isCreateSheetOpen = true">
       <div class="snuggle-circle add-circle">
-        <img :src="owner.avatarUrl" :alt="owner.displayName" class="story-avatar" />
+        <img :src="owner.avatarUrl" :alt="owner.displayName" class="story-avatar" @error="handleImgError($event, 'human')" />
         <div class="add-plus-badge"><Plus :size="11" /></div>
       </div>
       <span class="story-name">Your Story</span>
@@ -18,7 +18,7 @@
       @click="openStory(story)"
     >
       <div class="snuggle-circle" :class="{ unseen: story.hasUnseen, seen: !story.hasUnseen }">
-        <img :src="story.creatorAvatar" :alt="story.creatorName" class="story-avatar" />
+        <img :src="story.creatorAvatar" :alt="story.creatorName" class="story-avatar" @error="handleImgError($event, 'avatar')" />
         <!-- Live Activity Tag (Slide 8) -->
         <div v-if="story.hasUnseen" class="activity-tag">
           <span>{{ getActivityTag(story.id) }}</span>
@@ -32,6 +32,7 @@
 <script setup lang="ts">
 import { Plus } from 'lucide-vue-next';
 import { stories, openStory, owner, isCreateSheetOpen } from '../../stores/appStore';
+import { handleImgError } from '../../utils/imageFallback';
 
 // Live pet activity tags from PPTX Slide 8
 const activityTags = ['☁️ Zoomies', '🎶 Singing', '🌙 Napping', '🐟 Hungry', '🎾 Playful', '💤 Sleepy'];

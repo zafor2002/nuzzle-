@@ -98,7 +98,7 @@
             :class="{ featured: idx === 0 || idx === 7 }"
             @click="setTab('feed')"
           >
-            <img :src="img" alt="Explore pet" class="grid-img" />
+            <img :src="img" alt="Explore pet" class="grid-img" @error="handleImgError($event, 'media')" />
             <div class="tile-overlay">
               <Heart :size="16" fill="#fff" color="#fff" />
               <span class="like-label">{{ Math.floor(Math.random() * 400 + 100) }}</span>
@@ -116,6 +116,7 @@ import { Search, X, Heart } from 'lucide-vue-next';
 import TopBar from '../components/layout/TopBar.vue';
 import { exploreTrendingTags, speciesCommunities } from '../data/mockData';
 import { searchQuery, activeHashtag, setTab } from '../stores/appStore';
+import { handleImgError } from '../utils/imageFallback';
 
 const selectedCategory = ref('All');
 const categories = ['All', '🐕 Dogs', '🐱 Cats', '🐰 Bunnies', '🦜 Birds', '🏥 Health', '🐾 Adoption'];
@@ -140,7 +141,7 @@ const exploreImages = [
   'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500&auto=format&fit=crop&q=80',
   'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=500&auto=format&fit=crop&q=80',
   'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=500&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1513360309081-38f0762b781e?w=500&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=500&auto=format&fit=crop&q=80',
   'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=500&auto=format&fit=crop&q=80',
   'https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=500&auto=format&fit=crop&q=80',
   'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=500&auto=format&fit=crop&q=80',
