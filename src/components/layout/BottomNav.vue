@@ -6,8 +6,8 @@
     </button>
 
     <button class="nav-tab-btn" :class="{ active: currentTab === 'explore' }" @click="setTab('explore')">
-      <Compass class="nav-tab-icon" />
-      <span>Explore</span>
+      <Trees class="nav-tab-icon" />
+      <span>Park</span>
     </button>
 
     <!-- Center FAB -->
@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { Home, Compass, Plus, Sparkles } from 'lucide-vue-next';
+import { Home, Trees, Plus, Sparkles } from 'lucide-vue-next';
 import { currentTab, setTab, isCreateSheetOpen, owner } from '../../stores/appStore';
 </script>
 

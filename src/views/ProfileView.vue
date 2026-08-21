@@ -38,14 +38,14 @@
       </div>
 
       <!-- Anonymity / Ghost Mode Banner -->
-      <div class="anonymity-card card-item">
+      <div class="anonymity-card card-item" :class="{ 'ghost-active': isCurrentAnonymous }">
         <div class="anon-text-col">
           <div class="anon-badge-line">
             <EyeOff :size="15" class="anon-icon" />
-            <span class="anon-title">Anonymous Mode</span>
+            <span class="anon-title">{{ isCurrentAnonymous ? '👻 Ghost Mode Active' : 'Anonymous Ghost Mode' }}</span>
           </div>
           <p class="anon-explain">
-            Hides your real name & photo across public posts.
+            {{ isCurrentAnonymous ? 'Real name & photo masked as Ghost Paw across public posts.' : 'Hides your real name & photo across public posts.' }}
           </p>
         </div>
 
@@ -53,17 +53,19 @@
           class="toggle-switch" 
           :class="{ active: isCurrentAnonymous }"
           @click="toggleAnonymity"
+          title="Toggle Ghost Mode"
         >
           <div class="toggle-thumb"></div>
         </div>
       </div>
 
       <!-- Main Profile Bio & Numbers Card -->
-      <div class="profile-hero-card card-item">
+      <div class="profile-hero-card card-item" :class="{ 'ghost-card': isCurrentAnonymous }">
         <div class="hero-top-row">
-          <div class="hero-avatar-wrapper">
+          <div class="hero-avatar-wrapper" :class="{ 'ghost-avatar': isCurrentAnonymous }">
             <img :src="currentAvatar" :alt="currentDisplayName" class="hero-avatar" />
-            <div v-if="activePet" class="pet-star-badge">⭐</div>
+            <div v-if="isCurrentAnonymous" class="ghost-mode-badge" title="Ghost Mask Active">👻</div>
+            <div v-else-if="activePet" class="pet-star-badge">⭐</div>
           </div>
 
           <div class="stats-counts-group">
@@ -73,11 +75,11 @@
             </div>
             <div class="count-box">
               <span class="c-num">{{ currentFollowersCount }}</span>
-              <span class="c-label">Followers</span>
+              <span class="c-label">Pack</span>
             </div>
             <div class="count-box">
               <span class="c-num">{{ currentFollowingCount }}</span>
-              <span class="c-label">Following</span>
+              <span class="c-label">Snuggle Squad</span>
             </div>
           </div>
         </div>
@@ -182,21 +184,33 @@ import {
 } from '../stores/appStore';
 
 const currentProfileHandle = computed(() => {
+  if (isCurrentAnonymous.value) {
+    return activePet.value ? `ghost_${activePet.value.name.toLowerCase()}` : 'anonymous_paw';
+  }
   if (activePet.value) return activePet.value.name.toLowerCase() + '_official';
   return owner.username;
 });
 
 const currentDisplayName = computed(() => {
+  if (isCurrentAnonymous.value) {
+    return activePet.value ? `👻 Ghost ${activePet.value.name}` : '👻 Anonymous Pet Parent';
+  }
   if (activePet.value) return activePet.value.name;
   return owner.displayName;
 });
 
 const currentAvatar = computed(() => {
+  if (isCurrentAnonymous.value) {
+    return 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=200&auto=format&fit=crop&q=80'; // Ghost profile avatar
+  }
   if (activePet.value) return activePet.value.avatarUrl;
   return owner.avatarUrl;
 });
 
 const currentBio = computed(() => {
+  if (isCurrentAnonymous.value) {
+    return '👻 Posting anonymously via Nuzzle Ghost Mode. Identity masked for privacy.';
+  }
   if (activePet.value) return activePet.value.bio || 'Happy pet on PetSocial!';
   return owner.bio || 'Pet lover on PetSocial!';
 });
@@ -326,34 +340,70 @@ const userGridImages = [
   justify-content: space-between;
   margin-bottom: 12px;
   background: var(--bg-card-subtle);
-  border-color: var(--border-strong);
+  border: 1px solid var(--border-light);
+  transition: all 0.2s ease;
 }
 
-.anon-badge-line {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 2px;
+.anonymity-card.ghost-active {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(79, 70, 229, 0.08));
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 16px rgba(124, 58, 237, 0.2);
 }
 
-.anon-icon {
-  color: var(--ink-muted);
+.anonymity-card.ghost-active .anon-title {
+  color: var(--brand-dark);
 }
 
-.anon-title {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--ink-primary);
+.anonymity-card.ghost-active .anon-icon {
+  color: var(--brand-dark);
 }
 
-.anon-explain {
-  font-size: 11px;
-  color: var(--ink-muted);
+.toggle-switch {
+  width: 44px;
+  height: 24px;
+  background: var(--border-strong);
+  border-radius: 12px;
+  padding: 2px;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
 
-.profile-hero-card {
-  padding: 16px;
-  margin-bottom: 14px;
+.toggle-switch.active {
+  background: var(--brand-dark);
+}
+
+.toggle-thumb {
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.toggle-switch.active .toggle-thumb {
+  transform: translateX(20px);
+}
+
+.ghost-avatar .hero-avatar {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 16px rgba(124, 58, 237, 0.4);
+  filter: brightness(0.9) contrast(1.1);
+}
+
+.ghost-mode-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: var(--brand-dark);
+  color: #fff;
+  font-size: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--bg-card);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .hero-top-row {

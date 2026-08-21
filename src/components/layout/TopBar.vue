@@ -12,9 +12,9 @@
         <span class="brand-text">Nuzzle</span>
       </div>
 
-      <div v-if="owner.isAnonymous" class="anon-pill" title="Anonymous mode active">
+      <div v-if="isAnyAnonymous" class="anon-pill" title="Anonymous Ghost Mode Active">
         <EyeOff :size="11" />
-        <span>Ghost</span>
+        <span>Ghost Mode</span>
       </div>
     </div>
 
@@ -50,12 +50,16 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { PawPrint, MessageCircle, Bell, AlertTriangle, ArrowLeft, EyeOff, Sparkles } from 'lucide-vue-next';
-import { currentTab, setTab, owner, unreadMessagesCount, unreadNotificationsCount } from '../../stores/appStore';
+import { currentTab, setTab, owner, activePet, unreadMessagesCount, unreadNotificationsCount } from '../../stores/appStore';
 
 const props = defineProps<{
   title?: string;
   canGoBack?: boolean;
 }>();
+
+const isAnyAnonymous = computed(() => {
+  return owner.isAnonymous || (activePet.value?.isAnonymous ?? false);
+});
 
 const showBackButton = computed(() => {
   return props.canGoBack || !['feed', 'explore', 'ai', 'reels', 'profile'].includes(currentTab.value);

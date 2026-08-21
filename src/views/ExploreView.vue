@@ -1,6 +1,6 @@
 <template>
   <div class="explore-view">
-    <TopBar title="Explore & Communities" />
+    <TopBar title="🌳 Park & Playgrounds" />
 
     <div class="explore-scroll-body">
       <!-- Search Bar -->
@@ -9,7 +9,7 @@
           <Search :size="18" class="search-icon" />
           <input 
             v-model="searchQuery" 
-            placeholder="Search pets, breeds, #hashtags, owners..." 
+            placeholder="Search pets, breeds, #hashtags in The Park..." 
             class="search-input"
           />
           <button v-if="searchQuery" class="clear-btn" @click="searchQuery = ''">

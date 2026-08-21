@@ -1,289 +1,9 @@
-<template>
-  <div class="pawai-view">
-    <TopBar title="✨ PawAI Pet Intelligence" />
-
-    <div class="ai-scroll-body">
-      <!-- Hero Banner -->
-      <div class="ai-hero-card">
-        <div class="ai-glow-bg"></div>
-        <div class="hero-left">
-          <div class="ai-chip">
-            <Sparkles :size="12" class="sparkle-icon" />
-            <span>Next-Gen Pet AI</span>
-          </div>
-          <h2 class="ai-hero-title">PawAI Intelligence Suite</h2>
-          <p class="ai-hero-sub">AI Vision health scanner, 24/7 symptom triage & pet emotion translator.</p>
-        </div>
-        <div class="hero-robot-badge">🐾⚡</div>
-      </div>
-
-      <!-- Feature Tabs -->
-      <div class="ai-tabs-row">
-        <button 
-          v-for="tab in aiTabs" 
-          :key="tab.id"
-          class="ai-tab-pill"
-          :class="{ active: activeAiTab === tab.id }"
-          @click="activeAiTab = tab.id as any"
-        >
-          <span class="t-emoji">{{ tab.emoji }}</span>
-          <span>{{ tab.label }}</span>
-        </button>
-      </div>
-
-      <!-- TAB 1: PET VISION & HEALTH SCANNER -->
-      <div v-if="activeAiTab === 'scanner'" class="tab-pane">
-        <div class="scanner-card card-item">
-          <div class="scanner-viewport">
-            <img 
-              :src="scanImage" 
-              alt="Scan pet" 
-              class="scan-preview-img"
-              :class="{ scanning: isAiScanning }"
-            />
-
-            <!-- Scan Laser Animation Overlay -->
-            <div v-if="isAiScanning" class="scan-laser-line"></div>
-            
-            <div v-if="isAiScanning" class="scanning-badge">
-              <div class="spinner-dot"></div>
-              <span>AI Analyzing Biometrics & Coat...</span>
-            </div>
-
-            <div v-else-if="!currentScanResult" class="scan-prompt-overlay">
-              <Camera :size="28" class="cam-icon" />
-              <span>Tap 'Analyze Pet' to run AI Vision</span>
-            </div>
-          </div>
-
-          <div class="scanner-actions-bar">
-            <button 
-              class="btn-solid scan-btn"
-              :disabled="isAiScanning"
-              @click="() => runAiPetScan()"
-            >
-              <Sparkles :size="16" />
-              <span>{{ isAiScanning ? 'Processing Neural Scan...' : 'Analyze Pet with AI Vision' }}</span>
-            </button>
-          </div>
-
-          <!-- Scan Results -->
-          <div v-if="currentScanResult" class="scan-results-box">
-            <div class="res-header">
-              <div class="res-badge">
-                <CheckCircle2 :size="15" />
-                <span>{{ currentScanResult.breedMatch }}</span>
-              </div>
-              <span class="conf-score">{{ currentScanResult.confidence }}% Confidence</span>
-            </div>
-
-            <div class="mood-box">
-              <span class="mood-lbl">🧠 Detected Mood:</span>
-              <span class="mood-val">{{ currentScanResult.detectedMood }}</span>
-            </div>
-
-            <div class="observations-list">
-              <h5 class="obs-title">🔍 Clinical Biometric Observations:</h5>
-              <ul>
-                <li v-for="(obs, i) in currentScanResult.healthObservations" :key="i">
-                  ✓ {{ obs }}
-                </li>
-              </ul>
-            </div>
-
-            <div class="nutrition-box">
-              <span class="nut-lbl">🥑 AI Dietary Recommendation:</span>
-              <p class="nut-text">{{ currentScanResult.nutritionAdvice }}</p>
-            </div>
-
-            <div class="funfact-box">
-              💡 <strong>Breed Intelligence:</strong> {{ currentScanResult.funFact }}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB 2: 24/7 TRIAGE DOCTOR -->
-      <div v-else-if="activeAiTab === 'triage'" class="tab-pane">
-        <div class="triage-card card-item">
-          <div class="triage-header">
-            <div class="doc-avatar-badge">👨‍⚕️🤖</div>
-            <div class="doc-meta">
-              <h4 class="doc-title">PawDoctor 24/7 AI Triage</h4>
-              <span class="doc-sub">Veterinary-trained neural triage assistant</span>
-            </div>
-          </div>
-
-          <!-- Messages scroll -->
-          <div class="triage-messages" ref="triageBox">
-            <div 
-              v-for="msg in aiTriageMessages" 
-              :key="msg.id"
-              class="triage-msg-row"
-              :class="msg.sender"
-            >
-              <div 
-                class="triage-bubble"
-                :class="[msg.sender, msg.severity ? `severity-${msg.severity}` : '']"
-              >
-                <div v-if="msg.severity && msg.severity === 'urgent'" class="urgent-banner">
-                  🚨 EMERGENCY TRIAGE GUIDANCE
-                </div>
-                <p class="t-text">{{ msg.text }}</p>
-                <span class="t-stamp">{{ msg.timestamp }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Quick Symptom Prompts -->
-          <div class="triage-prompts">
-            <button 
-              v-for="p in triagePrompts" 
-              :key="p"
-              class="triage-prompt-chip"
-              @click="handleTriagePrompt(p)"
-            >
-              {{ p }}
-            </button>
-          </div>
-
-          <!-- Input bar -->
-          <div class="triage-input-bar">
-            <input 
-              v-model="triageInput" 
-              placeholder="Describe symptom (e.g. Dog ate chocolate)..." 
-              class="triage-input"
-              @keyup.enter="handleSendTriage"
-            />
-            <button class="send-triage-btn" @click="handleSendTriage">
-              <Send :size="16" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB 3: BARK & MEOW VOICE TRANSLATOR -->
-      <div v-else-if="activeAiTab === 'translator'" class="tab-pane">
-        <div class="translator-card card-item">
-          <div class="mic-stage">
-            <div class="waveform-container" :class="{ listening: isListening }">
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-            </div>
-
-            <button 
-              class="record-circle-btn" 
-              :class="{ recording: isListening }"
-              @click="toggleAudioListen"
-            >
-              <Mic :size="32" />
-            </button>
-
-            <span class="mic-status-text">
-              {{ isListening ? 'Listening to Pet Vocalization... 🎙️' : 'Tap Microphone to Translate Bark / Meow' }}
-            </span>
-          </div>
-
-          <div v-if="translatedThought" class="thought-bubble-result">
-            <div class="thought-avatar">
-              <img :src="pets[0].avatarUrl" alt="Waffles" />
-            </div>
-            <div class="thought-content">
-              <span class="speaker-lbl">🐾 Waffles (Translated to English):</span>
-              <p class="translated-dialogue">"{{ translatedThought }}"</p>
-              <span class="emotion-detected">Emotion: Excitement Level 9.8/10 🎾</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB 4: PLAYDATE COMPATIBILITY -->
-      <div v-else-if="activeAiTab === 'matcher'" class="tab-pane">
-        <div class="matcher-card card-item">
-          <h4 class="matcher-title">⚡ AI Playdate Compatibility Engine</h4>
-          <p class="matcher-sub">Calculates behavioral harmony, energy sync, and size safety.</p>
-
-          <div class="match-vs-row">
-            <div class="pet-pick-box">
-              <img :src="pets[0].avatarUrl" alt="Waffles" class="m-avatar" />
-              <span class="m-name">{{ pets[0].name }}</span>
-              <span class="m-stat">⚡ High Zoomies</span>
-            </div>
-
-            <div class="vs-badge">VS</div>
-
-            <div class="pet-pick-box">
-              <img src="https://images.unsplash.com/photo-1612536057832-2ff7ead58194?w=200&auto=format&fit=crop&q=80" alt="Oliver" class="m-avatar" />
-              <span class="m-name">Oliver (Corgi)</span>
-              <span class="m-stat">⚡ Playful Scout</span>
-            </div>
-          </div>
-
-          <div class="match-gauge-box">
-            <div class="gauge-ring">
-              <span class="gauge-percent">96%</span>
-              <span class="gauge-label">Match Score</span>
-            </div>
-            <div class="gauge-details">
-              <div class="g-line">
-                <span>⚡ Energy Level Sync:</span>
-                <strong class="green">98% (High Synergy)</strong>
-              </div>
-              <div class="g-line">
-                <span>🎾 Play Style:</span>
-                <strong class="green">Chase & Fetch Buddies</strong>
-              </div>
-              <div class="g-line">
-                <span>🛡️ Temperament Safety:</span>
-                <strong class="green">Verified Gentle</strong>
-              </div>
-            </div>
-          </div>
-
-          <button class="btn-solid invite-playdate-btn" @click="invitePlaydate">
-            <Calendar :size="16" />
-            <span>Schedule Park Playdate 🌳</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- TAB 5: AI MAGIC PORTRAIT STUDIO -->
-      <div v-else-if="activeAiTab === 'portraits'" class="tab-pane">
-        <div class="portrait-card card-item">
-          <h4 class="port-title">🎨 Magic Pet AI Portrait Studio</h4>
-          <p class="port-sub">Transform your pet into iconic digital art styles.</p>
-
-          <div class="styles-grid">
-            <div 
-              v-for="st in aiStyles" 
-              :key="st.name"
-              class="style-tile"
-              :class="{ active: selectedStyle === st.name }"
-              @click="selectedStyle = st.name"
-            >
-              <img :src="st.preview" :alt="st.name" class="style-img" />
-              <span class="style-label">{{ st.name }}</span>
-            </div>
-          </div>
-
-          <button class="btn-solid generate-art-btn" @click="generateMagicArt">
-            <Wand2 :size="16" />
-            <span>Generate {{ selectedStyle }} Portrait ✨</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Sparkles, Camera, CheckCircle2, Send, Mic, Calendar, Wand2 } from 'lucide-vue-next';
+import { 
+  Sparkles, Camera, CheckCircle2, Send, Mic, Volume2, Heart, ShieldAlert, 
+  AlertTriangle, ArrowRight, Calendar, Wand2 
+} from 'lucide-vue-next';
 import TopBar from '../components/layout/TopBar.vue';
 import { 
   pets, 
@@ -295,11 +15,11 @@ import {
   openChatWith
 } from '../stores/appStore';
 
-const activeAiTab = ref<'scanner' | 'triage' | 'translator' | 'matcher' | 'portraits'>('scanner');
+const activeAiTab = ref<'scanner' | 'triage' | 'translator' | 'matcher' | 'portraits'>('triage');
 
 const aiTabs = [
-  { id: 'scanner', label: 'PetScan AI', emoji: '🔬' },
   { id: 'triage', label: 'PawDoctor 24/7', emoji: '🩺' },
+  { id: 'scanner', label: 'PetScan AI', emoji: '🔬' },
   { id: 'translator', label: 'Voice Translator', emoji: '🎙️' },
   { id: 'matcher', label: 'Playdate Matcher', emoji: '⚡' },
   { id: 'portraits', label: 'Magic Studio', emoji: '🎨' }
@@ -368,6 +88,278 @@ function generateMagicArt() {
   alert(`✨ Generating ${selectedStyle.value} AI Portrait! Saved to your Pet Gallery.`);
 }
 </script>
+
+<template>
+  <div class="pawai-view">
+    <TopBar title="✨ PawAI Pet Intelligence" />
+
+    <div class="ai-scroll-body">
+      <!-- Hero Banner -->
+      <div class="ai-hero-card">
+        <div class="ai-glow-bg"></div>
+        <div class="hero-left">
+          <div class="ai-chip">
+            <Sparkles :size="12" class="sparkle-icon" />
+            <span>Next-Gen Pet AI</span>
+          </div>
+          <h2 class="ai-hero-title">PawAI Intelligence Suite</h2>
+          <p class="ai-hero-sub">AI Vision health scanner, 24/7 symptom triage & pet emotion translator.</p>
+        </div>
+        <div class="hero-robot-badge">🐾⚡</div>
+      </div>
+
+      <!-- Feature Tabs -->
+      <div class="ai-tabs-row">
+        <button 
+          v-for="tab in aiTabs" 
+          :key="tab.id"
+          class="ai-tab-pill"
+          :class="{ active: activeAiTab === tab.id }"
+          @click="activeAiTab = tab.id as any"
+        >
+          <span class="t-emoji">{{ tab.emoji }}</span>
+          <span>{{ tab.label }}</span>
+        </button>
+      </div>
+
+      <!-- TAB 1: PET VISION & HEALTH SCANNER -->
+      <div v-if="activeAiTab === 'scanner'" class="tab-pane">
+        <div class="scanner-card card-item">
+          <div class="scanner-viewport">
+            <img 
+              :src="scanImage" 
+              alt="Scan pet" 
+              class="scan-preview-img"
+              :class="{ scanning: isAiScanning }"
+            />
+
+            <!-- Scan Laser Animation Overlay -->
+            <div v-if="isAiScanning" class="scan-laser-line"></div>
+            
+            <div v-if="isAiScanning" class="scanning-badge">
+              <div class="spinner-dot"></div>
+              <span>AI Analyzing Biometrics & Coat...</span>
+            </div>
+
+            <div v-else-if="!currentScanResult" class="scan-prompt-overlay">
+              <Camera :size="28" class="cam-icon" />
+              <span>Tap 'Analyze Pet' to run AI Vision</span>
+            </div>
+          </div>
+
+          <div class="scanner-actions-bar">
+            <button 
+              class="btn-solid scan-btn"
+              :disabled="isAiScanning"
+              @click="runAiPetScan"
+            >
+              <Sparkles :size="16" />
+              <span>{{ isAiScanning ? 'Processing Neural Scan...' : 'Analyze Pet with AI Vision' }}</span>
+            </button>
+          </div>
+
+          <!-- Scan Results -->
+          <div v-if="currentScanResult" class="scan-results-box">
+            <div class="res-header">
+              <div class="res-badge">
+                <CheckCircle2 :size="15" />
+                <span>{{ currentScanResult.breedMatch }}</span>
+              </div>
+              <span class="conf-score">{{ currentScanResult.confidence }}% Confidence</span>
+            </div>
+
+            <div class="mood-box">
+              <div class="m-item">
+                <span class="m-lbl">Body Condition Score:</span>
+                <span class="m-val">{{ currentScanResult.bcs }}</span>
+              </div>
+              <div class="m-item">
+                <span class="m-lbl">Coat & Skin Health:</span>
+                <span class="m-val">{{ currentScanResult.coatHealth }}</span>
+              </div>
+              <div class="m-item">
+                <span class="m-lbl">Detected Mood:</span>
+                <span class="m-val">{{ currentScanResult.mood }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: 24/7 VET TRIAGE CHAT -->
+      <div v-else-if="activeAiTab === 'triage'" class="tab-pane">
+        <div class="triage-container card-item">
+          <div class="triage-header">
+            <div class="triage-badge">
+              <ShieldAlert :size="15" />
+              <span>24/7 AI Veterinary Triage</span>
+            </div>
+            <p class="triage-disclaimer">
+              Powered by licensed veterinary dataset. For severe crises, call your nearest emergency vet clinic immediately.
+            </p>
+          </div>
+
+          <!-- Quick Symptom Prompts -->
+          <div class="prompts-scroll">
+            <button 
+              v-for="prompt in triagePrompts" 
+              :key="prompt"
+              class="prompt-chip"
+              @click="handleTriagePrompt(prompt)"
+            >
+              {{ prompt }}
+            </button>
+          </div>
+
+          <!-- Chat Thread -->
+          <div class="triage-chat-box">
+            <div 
+              v-for="(msg, idx) in aiTriageMessages" 
+              :key="idx"
+              class="chat-bubble-row"
+              :class="msg.sender"
+            >
+              <div class="chat-bubble" :class="{ emergency: msg.isEmergency }">
+                <div v-if="msg.urgencyLevel" class="urgency-tag" :class="msg.urgencyLevel.toLowerCase()">
+                  🚨 Urgency: {{ msg.urgencyLevel }}
+                </div>
+                <p class="bubble-text">{{ msg.text }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Input Bar -->
+          <div class="triage-input-bar">
+            <input 
+              v-model="triageInput" 
+              placeholder="Describe symptoms or ask health questions..." 
+              class="triage-input"
+              @keyup.enter="handleSendTriage"
+            />
+            <button class="send-triage-btn" @click="handleSendTriage">
+              <Send :size="16" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: VOICE & EMOTION TRANSLATOR -->
+      <div v-else-if="activeAiTab === 'translator'" class="tab-pane">
+        <div class="translator-card card-item">
+          <div class="mic-stage">
+            <div class="waveform-container" :class="{ listening: isListening }">
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+            </div>
+
+            <button 
+              class="record-circle-btn"
+              :class="{ recording: isListening }"
+              @click="toggleAudioListen"
+            >
+              <Mic :size="28" />
+            </button>
+
+            <span class="mic-status-text">
+              {{ isListening ? 'Listening for Bark / Meow...' : 'Tap Mic to Capture Pet Sound' }}
+            </span>
+          </div>
+
+          <!-- Translation Output -->
+          <div v-if="translatedThought" class="thought-bubble-result">
+            <div class="thought-avatar">
+              <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=150&auto=format&fit=crop&q=80" alt="Pet" />
+            </div>
+            <div class="thought-text-col">
+              <span class="speaker-lbl">Waffles (Golden Retriever) says:</span>
+              <p class="translated-dialogue">"{{ translatedThought }}"</p>
+              <span class="emotion-detected">✨ Emotion: Excited & Loving (94% Accuracy)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: PLAYDATE HARMONY MATCHER -->
+      <div v-else-if="activeAiTab === 'matcher'" class="tab-pane">
+        <div class="matcher-card card-item">
+          <h3 class="matcher-title">⚡ AI Playdate Harmony Engine</h3>
+          <p class="matcher-sub">Neural matching checks behavioral compatibility before dogs meet in the park.</p>
+
+          <div class="match-vs-row">
+            <div class="pet-pick-box">
+              <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&auto=format&fit=crop&q=80" class="m-avatar" alt="Waffles" />
+              <span class="m-name">Waffles</span>
+              <span class="m-stat">High Energy</span>
+            </div>
+
+            <div class="vs-badge">VS</div>
+
+            <div class="pet-pick-box">
+              <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&auto=format&fit=crop&q=80" class="m-avatar" alt="Oliver" />
+              <span class="m-name">Oliver</span>
+              <span class="m-stat">Friendly Fetcher</span>
+            </div>
+          </div>
+
+          <div class="match-gauge-box">
+            <div class="gauge-ring">
+              <span class="gauge-percent">96%</span>
+              <span class="gauge-label">Match</span>
+            </div>
+            <div class="gauge-details">
+              <div class="g-line">
+                <span>Playstyle Synergy:</span>
+                <span class="green">High (Both Fetchers)</span>
+              </div>
+              <div class="g-line">
+                <span>Social Temperament:</span>
+                <span class="green">Extroverted</span>
+              </div>
+              <div class="g-line">
+                <span>Energy Match:</span>
+                <span class="green">98% Compatible</span>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-solid invite-playdate-btn" @click="invitePlaydate">
+            Send 1-Tap Playdate Invitation
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 5: MAGIC PORTRAIT STUDIO -->
+      <div v-else class="tab-pane">
+        <div class="portrait-card card-item">
+          <h3 class="port-title">🎨 Magic Pet Portrait Studio</h3>
+          <p class="port-sub">Generative AI transforms pet photos into fine art avatars.</p>
+
+          <div class="styles-grid">
+            <div 
+              v-for="s in aiStyles" 
+              :key="s.name"
+              class="style-tile"
+              :class="{ active: selectedStyle === s.name }"
+              @click="selectedStyle = s.name"
+            >
+              <img :src="s.preview" :alt="s.name" class="style-img" />
+              <span class="style-label">{{ s.name }}</span>
+            </div>
+          </div>
+
+          <button class="btn-solid generate-art-btn" @click="generateMagicArt">
+            <Wand2 :size="16" />
+            <span>Generate {{ selectedStyle }} Avatar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .pawai-view {
@@ -468,14 +460,15 @@ function generateMagicArt() {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
+  padding: 7px 14px;
   border-radius: var(--radius-full);
   background: var(--bg-card);
   border: 1.5px solid var(--border-light);
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--ink-secondary);
   white-space: nowrap;
+  cursor: pointer;
   transition: all 0.15s ease;
 }
 
@@ -483,17 +476,11 @@ function generateMagicArt() {
   background: linear-gradient(135deg, #6366F1, #8B5CF6);
   border-color: #6366F1;
   color: #fff;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-.tab-pane {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Scanner Styles */
 .scanner-card {
-  overflow: hidden;
+  padding: 14px;
 }
 
 .scanner-viewport {
@@ -501,6 +488,9 @@ function generateMagicArt() {
   width: 100%;
   height: 220px;
   background: #000;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 12px;
 }
 
 .scan-preview-img {
@@ -541,248 +531,224 @@ function generateMagicArt() {
   border-radius: var(--radius-full);
   font-size: 11.5px;
   font-weight: 700;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(56, 189, 248, 0.4);
   display: flex;
   align-items: center;
   gap: 8px;
-  z-index: 10;
+  backdrop-filter: blur(6px);
+  white-space: nowrap;
 }
 
 .spinner-dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: #38BDF8;
-  animation: pulse 1s infinite;
+  border: 2px solid #38BDF8;
+  border-top-color: transparent;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .scan-prompt-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: #fff;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 700;
-  backdrop-filter: blur(2px);
 }
 
 .scanner-actions-bar {
-  padding: 14px;
-  background: var(--bg-card);
+  margin-bottom: 14px;
 }
 
 .scan-btn {
   width: 100%;
+  padding: 12px;
   background: linear-gradient(135deg, #6366F1, #8B5CF6);
-  padding: 11px;
+  font-size: 14px;
 }
 
 .scan-results-box {
-  padding: 14px 16px;
-  border-top: 1px solid var(--border-light);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  background: var(--bg-card-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  border: 1px solid var(--border-light);
 }
 
 .res-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .res-badge {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 14px;
+  color: var(--brand-primary);
   font-weight: 800;
-  color: var(--accent-emerald);
+  font-size: 13.5px;
 }
 
 .conf-score {
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--ink-muted);
+  font-size: 11px;
+  color: var(--accent-emerald);
+  font-weight: 800;
+  background: var(--accent-emerald-soft);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
 }
 
 .mood-box {
-  background: var(--bg-card-subtle);
-  padding: 8px 12px;
-  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.m-item {
+  display: flex;
+  justify-content: space-between;
   font-size: 12px;
 }
 
-.mood-lbl {
+.m-lbl {
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+.m-val {
+  color: var(--ink-primary);
   font-weight: 700;
-  margin-right: 4px;
-}
-
-.observations-list {
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.obs-title {
-  font-size: 12.5px;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.observations-list ul {
-  list-style: none;
-  padding-left: 4px;
-}
-
-.nutrition-box {
-  background: #ECFDF5;
-  border: 1px solid #A7F3D0;
-  color: #065F46;
-  padding: 10px 12px;
-  border-radius: var(--radius-md);
-  font-size: 12px;
-}
-
-.nut-lbl {
-  font-weight: 800;
-}
-
-.funfact-box {
-  font-size: 11.5px;
-  color: var(--ink-secondary);
-  background: var(--bg-card-subtle);
-  padding: 8px 12px;
-  border-radius: var(--radius-md);
 }
 
 /* Triage Styles */
-.triage-card {
-  display: flex;
-  flex-direction: column;
-  height: 480px;
+.triage-container {
+  padding: 16px;
 }
 
 .triage-header {
-  display: flex;
+  margin-bottom: 12px;
+}
+
+.triage-badge {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border-light);
-}
-
-.doc-avatar-badge {
-  font-size: 24px;
-}
-
-.doc-title {
-  font-size: 14px;
+  gap: 6px;
+  background: var(--accent-rose-soft);
+  color: var(--accent-rose);
+  font-size: 11.5px;
   font-weight: 800;
-  color: var(--ink-primary);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  margin-bottom: 6px;
 }
 
-.doc-sub {
-  font-size: 10.5px;
+.triage-disclaimer {
+  font-size: 11px;
   color: var(--ink-muted);
+  line-height: 1.35;
 }
 
-.triage-messages {
-  flex: 1;
+.prompts-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-bottom: 12px;
+}
+
+.prompt-chip {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-light);
+  color: var(--ink-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.triage-chat-box {
+  background: var(--bg-card-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  height: 220px;
   overflow-y: auto;
-  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-light);
 }
 
-.triage-msg-row {
+.chat-bubble-row {
   display: flex;
 }
 
-.triage-msg-row.user {
+.chat-bubble-row.user {
   justify-content: flex-end;
 }
 
-.triage-msg-row.ai {
+.chat-bubble-row.bot {
   justify-content: flex-start;
 }
 
-.triage-bubble {
-  max-width: 82%;
-  padding: 10px 14px;
-  border-radius: 18px;
-  font-size: 13px;
+.chat-bubble {
+  max-width: 85%;
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-size: 12.5px;
   line-height: 1.4;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
 }
 
-.triage-bubble.user {
-  background: #6366F1;
+.chat-bubble-row.user .chat-bubble {
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
   color: #fff;
   border-bottom-right-radius: 4px;
 }
 
-.triage-bubble.ai {
-  background: var(--bg-card-subtle);
-  border: 1px solid var(--border-light);
+.chat-bubble-row.bot .chat-bubble {
+  background: var(--bg-card);
   color: var(--ink-primary);
+  border: 1px solid var(--border-light);
   border-bottom-left-radius: 4px;
 }
 
-.triage-bubble.severity-urgent {
+.chat-bubble.emergency {
   background: #FFF1F2;
-  border: 1.5px solid #F43F5E;
+  border: 1.5px solid #FDA4AF;
   color: #9F1239;
 }
 
-.urgent-banner {
+.urgency-tag {
   font-size: 10px;
   font-weight: 800;
+  margin-bottom: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.urgency-tag.critical {
+  background: #FFE4E6;
   color: #E11D48;
-  letter-spacing: 0.05em;
-  margin-bottom: 2px;
-}
-
-.t-stamp {
-  font-size: 9.5px;
-  align-self: flex-end;
-  opacity: 0.7;
-}
-
-.triage-prompts {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding: 8px 12px;
-  scrollbar-width: none;
-  background: var(--bg-card-subtle);
-  border-top: 1px solid var(--border-light);
-}
-
-.triage-prompt-chip {
-  flex-shrink: 0;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  color: var(--ink-secondary);
 }
 
 .triage-input-bar {
-  padding: 10px 12px;
   display: flex;
   gap: 8px;
-  background: var(--bg-card);
-  border-top: 1px solid var(--border-light);
 }
 
 .triage-input {
@@ -791,8 +757,7 @@ function generateMagicArt() {
   border: 1px solid var(--border-light);
   border-radius: var(--radius-full);
   padding: 8px 14px;
-  font-size: 13px;
-  outline: none;
+  font-size: 12.5px;
 }
 
 .send-triage-btn {
