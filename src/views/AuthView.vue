@@ -88,6 +88,11 @@
 
       <!-- 4. Interactive Form Container -->
       <form class="auth-form-card" @submit.prevent="handleSubmit">
+        <!-- Error Alert Banner -->
+        <div v-if="authError" class="auth-error-banner">
+          <span>⚠️ {{ authError }}</span>
+        </div>
+
         <!-- LOGIN FORM -->
         <div v-if="authMode === 'login'" class="form-fields-stack">
           <!-- Role Context Notice -->
@@ -423,11 +428,13 @@ import {
 } from 'lucide-vue-next';
 import NuzzleLogo from '../components/common/NuzzleLogo.vue';
 import type { UserRole } from '../types';
-import { loginAsRole, registerNewAccount } from '../stores/appStore';
+import { loginAsRole, loginWithCredentials, registerWithCredentials } from '../stores/appStore';
 
 const authMode = ref<'login' | 'signup'>('login');
 const selectedRole = ref<UserRole>('parent');
 const showPassword = ref(false);
+const authError = ref('');
+const isSubmitting = ref(false);
 
 // Login Fields
 const loginIdentifier = ref('');
@@ -459,38 +466,71 @@ const regVetPhone = ref('');
 const regVetAddress = ref('');
 const regIsProVetChecked = ref(true);
 
-function handleSubmit() {
-  if (authMode.value === 'login') {
-    loginAsRole(selectedRole.value, {
-      displayName: loginIdentifier.value || undefined
-    });
-  } else {
-    if (selectedRole.value === 'parent') {
-      registerNewAccount('parent', {
-        displayName: regParentName.value || 'Pet Parent',
-        username: regUsername.value || 'pet_parent',
-        email: regEmail.value || 'parent@example.com',
-        petName: regPetName.value || 'Buddy',
-        petSpecies: regPetSpecies.value || 'Dog',
-        isPro: regIsProChecked.value
+async function handleSubmit() {
+  authError.value = '';
+  isSubmitting.value = true;
+
+  try {
+    if (authMode.value === 'login') {
+      const res = await loginWithCredentials({
+        email: loginIdentifier.value.includes('@') ? loginIdentifier.value : undefined,
+        password: loginPassword.value || undefined,
+        role: !loginPassword.value ? selectedRole.value : undefined,
       });
-    } else if (selectedRole.value === 'store') {
-      registerNewAccount('store', {
-        displayName: regStoreName.value || 'Pet Boutique',
-        username: (regStoreName.value || 'pet_boutique').toLowerCase().replace(/\s+/g, '_'),
-        email: regEmail.value || 'store@example.com',
-        storeCategory: regStoreCategory.value,
-        isPro: regIsProStoreChecked.value
-      });
+
+      if (!res.success) {
+        authError.value = res.error || 'Invalid email or password.';
+      }
     } else {
-      registerNewAccount('vet', {
-        displayName: regVetDoctorName.value || 'Dr. Specialist, DVM',
-        username: (regClinicName.value || 'vet_clinic').toLowerCase().replace(/\s+/g, '_'),
-        email: regEmail.value || 'clinic@example.com',
-        clinicName: regClinicName.value || 'Companion Animal Hospital',
-        isPro: regIsProVetChecked.value
-      });
+      if (selectedRole.value === 'parent') {
+        const res = await registerWithCredentials({
+          email: regEmail.value,
+          password: regPassword.value,
+          displayName: regParentName.value || 'Pet Parent',
+          username: (regUsername.value || 'pet_parent').toLowerCase().replace(/\s+/g, '_'),
+          role: 'parent',
+          petName: regPetName.value || 'Buddy',
+          petSpecies: regPetSpecies.value || 'Dog',
+          isPro: regIsProChecked.value,
+        });
+
+        if (!res.success) {
+          authError.value = res.error || 'Failed to create parent account.';
+        }
+      } else if (selectedRole.value === 'store') {
+        const res = await registerWithCredentials({
+          email: regEmail.value,
+          password: regPassword.value,
+          displayName: regStoreName.value || 'Pet Boutique',
+          username: (regStoreName.value || 'pet_boutique').toLowerCase().replace(/\s+/g, '_'),
+          role: 'store',
+          storeCategory: regStoreCategory.value,
+          isPro: regIsProStoreChecked.value,
+        });
+
+        if (!res.success) {
+          authError.value = res.error || 'Failed to create store account.';
+        }
+      } else {
+        const res = await registerWithCredentials({
+          email: regEmail.value,
+          password: regPassword.value,
+          displayName: regVetDoctorName.value || 'Dr. Specialist, DVM',
+          username: (regClinicName.value || 'vet_clinic').toLowerCase().replace(/\s+/g, '_'),
+          role: 'vet',
+          clinicName: regClinicName.value || 'Companion Animal Hospital',
+          isPro: regIsProVetChecked.value,
+        });
+
+        if (!res.success) {
+          authError.value = res.error || 'Failed to create clinic account.';
+        }
+      }
     }
+  } catch (err: any) {
+    authError.value = err.message || 'An unexpected error occurred during authentication.';
+  } finally {
+    isSubmitting.value = false;
   }
 }
 
@@ -669,6 +709,21 @@ function handleForgotPassword() {
   border-radius: 18px;
   padding: 16px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.auth-error-banner {
+  background: #FFF1F2;
+  border: 1px solid #FFE4E6;
+  color: #E11D48;
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: fadeIn 0.2s ease;
 }
 
 .form-fields-stack {

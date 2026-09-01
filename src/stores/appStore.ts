@@ -843,7 +843,147 @@ export function registerNewAccount(role: UserRole, data: {
   });
 }
 
+// Real Authentication Functions (Supabase-backed)
+export async function loginWithCredentials(credentials: { email?: string; password?: string; role?: UserRole }) {
+  const res = await authService.login(credentials);
+  if (!res.success) {
+    return { success: false, error: res.error || 'Invalid login credentials' };
+  }
+
+  const data = res.data;
+  isAuthenticated.value = true;
+
+  if (data?.role) {
+    currentRole.value = data.role as UserRole;
+    owner.role = data.role as UserRole;
+  }
+
+  if (data?.owner || data?.user) {
+    const profile = data.owner || data.user;
+    owner.displayName = profile.displayName || owner.displayName;
+    owner.username = profile.username || owner.username;
+    if (profile.avatarUrl) owner.avatarUrl = profile.avatarUrl;
+    if (profile.bio) owner.bio = profile.bio;
+  }
+
+  if (data?.owner?.pets && data.owner.pets.length > 0) {
+    pets.splice(0, pets.length, ...data.owner.pets.map((p: any) => ({
+      id: p.id,
+      ownerId: owner.id,
+      name: p.name,
+      species: p.species || 'Dog',
+      breed: p.breed || 'Companion',
+      avatarUrl: p.avatarUrl || 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&auto=format&fit=crop&q=80',
+      isAnonymous: p.isAnonymous || false,
+      postsCount: p.postsCount || 0,
+      followersCount: p.followersCount || 1,
+      aiPersonality: p.aiPersonality || 'Enthusiastic Companion',
+      energyLevel: p.energyLevel || 'High Zoomies',
+      isProMember: owner.isProMember
+    })));
+  }
+
+  currentTab.value = 'feed';
+
+  notifications.unshift({
+    id: `notif_auth_${Date.now()}`,
+    type: 'ai_insight',
+    title: `🌟 Signed In as ${owner.role === 'store' ? 'Pet Store' : owner.role === 'vet' ? 'Vet Clinic' : 'Pet Guardian'}`,
+    message: `Welcome back, ${owner.displayName}! You are signed in via Supabase Auth.`,
+    avatarUrl: owner.avatarUrl,
+    timeAgo: 'Just now',
+    isRead: false
+  });
+
+  return { success: true, data };
+}
+
+export async function registerWithCredentials(data: {
+  email: string;
+  password: string;
+  displayName: string;
+  username: string;
+  role?: UserRole;
+  petName?: string;
+  petSpecies?: string;
+  storeCategory?: string;
+  clinicName?: string;
+  isPro?: boolean;
+}) {
+  const res = await authService.signup({
+    email: data.email,
+    password: data.password,
+    displayName: data.displayName,
+    username: data.username,
+    role: data.role || 'parent',
+    storeCategory: data.storeCategory,
+    clinicName: data.clinicName,
+    petName: data.petName,
+    petSpecies: data.petSpecies
+  } as any);
+
+  if (!res.success) {
+    return { success: false, error: res.error || 'Failed to create account.' };
+  }
+
+  isAuthenticated.value = true;
+  currentRole.value = data.role || 'parent';
+  owner.role = data.role || 'parent';
+  owner.displayName = data.displayName;
+  owner.username = data.username;
+
+  if (data.role === 'store') {
+    owner.avatarUrl = 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=200&auto=format&fit=crop&q=80';
+    owner.bio = `Official Pet Store: ${data.storeCategory || 'Pet Supplies'} • Verified Boutique`;
+    owner.storeCategory = data.storeCategory;
+  } else if (data.role === 'vet') {
+    owner.avatarUrl = 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&auto=format&fit=crop&q=80';
+    owner.bio = `Licensed Veterinary Practice: ${data.clinicName || 'Animal Care Center'} • Verified Clinic`;
+    owner.clinicName = data.clinicName;
+  } else {
+    owner.avatarUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80';
+    owner.bio = `Loving pet parent to ${data.petName || 'Companion'} • Nuzzle Community`;
+    if (data.petName) {
+      pets.unshift({
+        id: `pet_${Date.now()}`,
+        ownerId: owner.id,
+        name: data.petName,
+        species: (data.petSpecies as any) || 'Dog',
+        breed: 'Companion',
+        avatarUrl: data.petSpecies === 'Cat' 
+          ? 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200&auto=format&fit=crop&q=80'
+          : 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&auto=format&fit=crop&q=80',
+        isAnonymous: false,
+        postsCount: 0,
+        followersCount: 1,
+        aiPersonality: 'Enthusiastic Companion',
+        energyLevel: 'High Zoomies',
+        isProMember: data.isPro || false
+      });
+    }
+  }
+
+  if (data.isPro) {
+    subscribeToPro('monthly', 'bKash');
+  }
+
+  currentTab.value = 'feed';
+
+  notifications.unshift({
+    id: `notif_welcome_${Date.now()}`,
+    type: 'ai_insight',
+    title: '🎉 Welcome to Nuzzle!',
+    message: `Account created successfully for ${data.displayName} in Supabase Auth.`,
+    avatarUrl: owner.avatarUrl,
+    timeAgo: 'Just now',
+    isRead: false
+  });
+
+  return { success: true, data: res.data };
+}
+
 export function performLogout() {
+  authService.logout();
   isAuthenticated.value = false;
   currentTab.value = 'auth';
 }
