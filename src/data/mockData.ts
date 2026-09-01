@@ -187,14 +187,14 @@ export const initialPosts: Post[] = [
     petId: 'pet_cleo',
     petName: 'Cleopatra',
     petBreed: 'Bengal Cat',
-    petAvatar: 'https://images.unsplash.com/photo-1513360309081-38f0762b781e?w=200&auto=format&fit=crop&q=80',
+    petAvatar: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=200&auto=format&fit=crop&q=80',
     isAnonymous: false,
     caption: 'She discovered the top of the refrigerator is warm. We have officially lost all kitchen supremacy. 👑🐾 #bengalcat #catlife #queenstatus',
     petDialogue: 'Bow down, peasant. Feed me salmon from down there.',
     petMood: '👑 Mischief & Royalty',
     petSoundBite: '🎵 Gentle Low Rumble Purr',
     mediaUrls: [
-      'https://images.unsplash.com/photo-1513360309081-38f0762b781e?w=800&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=800&auto=format&fit=crop&q=80'
     ],
     likesCount: 312,
     commentsCount: 42,
@@ -491,7 +491,7 @@ export const initialVets: Vet[] = [
     clinicName: 'Cascade 24/7 Emergency & Surgical Hospital',
     location: '2100 SW River Pkwy, Portland, OR',
     bio: 'Board-Certified Veterinary Surgeon specializing in trauma triage, orthopedics, ACL TPLO surgery, and urgent care.',
-    avatarUrl: 'https://images.unsplash.com/photo-1594824813584-ea23df1f0d36?w=200&auto=format&fit=crop&q=80',
+    avatarUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&auto=format&fit=crop&q=80',
     rating: 5.0,
     reviewsCount: 218,
     isProSubscriber: true,

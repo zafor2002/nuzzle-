@@ -4,7 +4,7 @@
     <header class="card-header">
       <div class="author-cell" @click="handleProfileClick">
         <div class="avatar-ring">
-          <img :src="post.petAvatar || post.ownerAvatar" :alt="post.petName || post.ownerName" class="avatar-img" />
+          <img :src="post.petAvatar || post.ownerAvatar" :alt="post.petName || post.ownerName" class="avatar-img" @error="onAvatarError" />
           <span class="species-charm">{{ getSpeciesEmoji(post.petBreed) }}</span>
         </div>
 
@@ -30,7 +30,7 @@
 
     <!-- 2. Clean Media Frame -->
     <div class="media-container" @dblclick="handleDoubleTap">
-      <img :src="post.mediaUrls[0]" :alt="post.caption" class="media-img" />
+      <img :src="post.mediaUrls[0]" :alt="post.caption" class="media-img" @error="onMediaError" />
 
       <!-- Minimal Location Stamp -->
       <div v-if="post.location" class="location-pill">
@@ -293,6 +293,20 @@ function sharePost(post: Post) {
   } else {
     navigator.clipboard.writeText(window.location.href);
     alert('Link copied to clipboard! 🐾');
+  }
+}
+
+function onAvatarError(e: Event) {
+  const target = e.target as HTMLImageElement;
+  if (target) {
+    target.src = 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&auto=format&fit=crop&q=80';
+  }
+}
+
+function onMediaError(e: Event) {
+  const target = e.target as HTMLImageElement;
+  if (target) {
+    target.src = 'https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?w=800&auto=format&fit=crop&q=80';
   }
 }
 

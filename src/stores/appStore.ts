@@ -34,6 +34,14 @@ import {
   initialChats, 
   initialNotifications 
 } from '../data/mockData';
+import { 
+  authService, 
+  postService, 
+  vetService, 
+  lostFoundService, 
+  marketplaceService, 
+  pawAiService 
+} from '../services';
 
 // State
 export const currentTab = ref<TabType>('feed');
@@ -149,6 +157,9 @@ export function reactToPost(postId: string, reaction: PetReactionType) {
     post.reactions[reaction] = (post.reactions[reaction] || 0) + 1;
     post.isLiked = true;
   }
+
+  // Async sync to backend API
+  postService.reactToPost(postId, reaction).catch(() => {});
 }
 
 export function togglePostLike(postId: string) {
@@ -159,6 +170,7 @@ export function togglePostSave(postId: string) {
   const post = posts.find(p => p.id === postId);
   if (post) {
     post.isSaved = !post.isSaved;
+    postService.toggleSave(postId).catch(() => {});
   }
 }
 
@@ -181,6 +193,9 @@ export function addComment(postId: string, body: string, isAsPet: boolean = fals
 
   post.comments.push(newComment);
   post.commentsCount++;
+
+  // Async sync to backend API
+  postService.addComment(postId, body.trim(), authorName, isAsPet).catch(() => {});
 }
 
 export function toggleReelLike(reelId: string) {
@@ -318,6 +333,14 @@ export function sendAiTriageQuery(query: string) {
     severity = 'low';
   }
 
+  // Async sync to backend AI Triage endpoint
+  pawAiService.submitTriage({
+    petName: pets[0]?.name || 'Pet',
+    species: pets[0]?.species || 'Dog',
+    symptoms: query,
+    isProSubscriber: owner.isProMember
+  }).catch(() => {});
+
   setTimeout(() => {
     aiTriageMessages.push({
       id: `ai_${Date.now()}`,
@@ -417,6 +440,18 @@ export function bookVetSlot(vetId: string, day: string, time: string, petId: str
     isRead: false
   });
 
+  // Async sync to backend API
+  vetService.bookAppointment({
+    petId: pet.id,
+    petName: pet.name,
+    vetId: vet.id,
+    vetName: vet.name,
+    clinicName: vet.clinicName,
+    date: day,
+    time: time,
+    reason: reason || 'General Checkup'
+  }).catch(() => {});
+
   return true;
 }
 
@@ -447,6 +482,9 @@ export function createNewPost(caption: string, mediaUrl: string, asPetId?: strin
   if (selectedPet) {
     selectedPet.postsCount++;
   }
+
+  // Async sync to backend API
+  postService.createPost(newPost).catch(() => {});
 }
 
 export function reportLostPet(data: Omit<LostFoundPost, 'id' | 'reportedAt' | 'isResolved'>) {
@@ -467,6 +505,9 @@ export function reportLostPet(data: Omit<LostFoundPost, 'id' | 'reportedAt' | 'i
     timeAgo: 'Just now',
     isRead: false
   });
+
+  // Async sync to backend API
+  lostFoundService.createReport(newAlert).catch(() => {});
 }
 
 export function claimLostFoundPet(
@@ -503,6 +544,9 @@ export function claimLostFoundPet(
     timeAgo: 'Just now',
     isRead: false
   });
+
+  // Async sync to backend API
+  lostFoundService.claimRescue(postId, owner.displayName).catch(() => {});
 }
 
 export function releaseLostFoundClaim(postId: string) {
@@ -596,6 +640,17 @@ export function addMarketListing(data: Omit<MarketplaceListing, 'id' | 'status'>
 
   marketplace.unshift(newListing);
 
+  // Async sync to backend Marketplace endpoint
+  marketplaceService.createListing({
+    title: newListing.title,
+    category: newListing.category,
+    price: newListing.price,
+    description: newListing.description || '',
+    imageUrl: newListing.imageUrl || 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800&auto=format&fit=crop&q=80',
+    location: newListing.location,
+    sellerType: newListing.sellerType
+  }).catch(() => {});
+
   notifications.unshift({
     id: `notif_mkt_${Date.now()}`,
     type: 'ai_insight',
@@ -682,7 +737,7 @@ export function loginAsRole(role: UserRole, accountDetails?: Partial<UserAccount
   } else if (role === 'vet') {
     owner.displayName = accountDetails?.displayName || 'Dr. Sarah Al-Mansoor, DVM';
     owner.username = accountDetails?.username || 'cascade_emergency_vet';
-    owner.avatarUrl = accountDetails?.avatarUrl || 'https://images.unsplash.com/photo-1594824813584-ea23df1f0d36?w=200&auto=format&fit=crop&q=80';
+    owner.avatarUrl = accountDetails?.avatarUrl || 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&auto=format&fit=crop&q=80';
     owner.bio = 'Board-Certified Veterinary Surgeon • Cascade 24/7 Emergency & Surgical Hospital';
     owner.clinicName = accountDetails?.clinicName || 'Cascade 24/7 Animal Hospital';
   } else {
@@ -694,6 +749,12 @@ export function loginAsRole(role: UserRole, accountDetails?: Partial<UserAccount
   }
 
   currentTab.value = 'feed';
+
+  // Async sync to backend API
+  authService.login({
+    role,
+    email: accountDetails?.username ? `${accountDetails.username}@nuzzle.ai` : undefined,
+  }).catch(() => {});
 
   notifications.unshift({
     id: `notif_auth_${Date.now()}`,
@@ -759,6 +820,17 @@ export function registerNewAccount(role: UserRole, data: {
   }
 
   currentTab.value = 'feed';
+
+  // Async sync to backend API
+  authService.signup({
+    email: data.email || `${owner.username}@nuzzle.ai`,
+    password: 'Password123!',
+    username: owner.username,
+    displayName: data.displayName,
+    role,
+    storeCategory: data.storeCategory,
+    clinicName: data.clinicName,
+  }).catch(() => {});
 
   notifications.unshift({
     id: `notif_welcome_${Date.now()}`,

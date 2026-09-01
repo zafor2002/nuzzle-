@@ -724,6 +724,16 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
   });
 }
 
+// Ensure output directories exist
+const outputDir = path.dirname(OUTPUT_FILE);
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+}
+const v2OutputDir = path.dirname(V2_OUTPUT_FILE);
+if (!fs.existsSync(v2OutputDir)) {
+  fs.mkdirSync(v2OutputDir, { recursive: true });
+}
+
 // Generate Presentation
 pptx.writeFile({ fileName: OUTPUT_FILE })
   .then(fileName => {
