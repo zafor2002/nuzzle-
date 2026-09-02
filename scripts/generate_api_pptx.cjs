@@ -58,19 +58,19 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('🐾 Nuzzle Engine', {
     x: 0.8, y: 0.12, w: 4.0, h: 0.4,
-    fontSize: 14, fontFace: 'Outfit', bold: true, color: COLORS.primaryDark
+    fontSize: 14, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
   });
 
   slide.addText(`Slide ${slideNumber} / 10 • Full-Stack REST API Architecture`, {
     x: 7.5, y: 0.12, w: 5.0, h: 0.4,
-    fontSize: 10.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, align: 'right'
+    fontSize: 10.5, fontFace: 'Times New Roman', color: COLORS.textMuted, align: 'right'
   });
 
   // Eyebrow
   if (eyebrowText) {
     slide.addText(eyebrowText.toUpperCase(), {
       x: 0.8, y: 0.8, w: 11.733, h: 0.25,
-      fontSize: 9.5, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark, charSpacing: 1.2
+      fontSize: 9.5, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark, charSpacing: 1.2
     });
   }
 
@@ -78,7 +78,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
   if (titleText) {
     slide.addText(titleText, {
       x: 0.8, y: 1.05, w: 11.733, h: 0.5,
-      fontSize: 20, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+      fontSize: 20, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
     });
   }
 
@@ -90,7 +90,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('Nuzzle API v2.0 • Abu Zafor, Nadim Rahman, Rizvi Sarker • Technopreneurship 2026', {
     x: 0.8, y: 6.9, w: 8.0, h: 0.3,
-    fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textDim
+    fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textDim
   });
 
   if (speakerNotes) {
@@ -116,19 +116,19 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('🐾 NUZZLE FULL-STACK v2.0', {
     x: 1.0, y: 1.25, w: 2.6, h: 0.28,
-    fontSize: 9.5, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark, align: 'center'
+    fontSize: 9.5, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark, align: 'center'
   });
 
   slide.addText('RESTful API Architecture &\nFrontend-to-Backend Integration', {
     x: 1.0, y: 1.75, w: 7.5, h: 1.6,
-    fontSize: 28, fontFace: 'Outfit', bold: true, color: COLORS.textMain, lineSpacing: 34
+    fontSize: 28, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain, lineSpacing: 34
   });
 
   slide.addText(
     'A decoupled, production-grade cloud architecture connecting a high-performance Vue 3 Client with a Next.js 16 REST Engine, Prisma 7 ORM, and Supabase PostgreSQL with real-time authentication.',
     {
       x: 1.0, y: 3.45, w: 7.2, h: 0.9,
-      fontSize: 12.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 18
+      fontSize: 12.5, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 18
     }
   );
 
@@ -149,8 +149,8 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
     });
 
     slide.addText(c.icon, { x: xPos + 0.15, y: 4.65, w: 0.5, h: 0.4, fontSize: 18 });
-    slide.addText(c.title, { x: xPos + 0.15, y: 5.1, w: 2.0, h: 0.3, fontSize: 11, fontFace: 'Outfit', bold: true, color: COLORS.textMain });
-    slide.addText(c.sub, { x: xPos + 0.15, y: 5.4, w: 2.0, h: 0.4, fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted });
+    slide.addText(c.title, { x: xPos + 0.15, y: 5.1, w: 2.0, h: 0.3, fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain });
+    slide.addText(c.sub, { x: xPos + 0.15, y: 5.4, w: 2.0, h: 0.4, fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMuted });
   });
 
   // Right Side Architecture Visual Card
@@ -163,7 +163,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('CORE ARCHITECTURE STACK', {
     x: 9.1, y: 1.45, w: 3.0, h: 0.3,
-    fontSize: 10, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primary, charSpacing: 1.2
+    fontSize: 10, fontFace: 'Times New Roman', bold: true, color: COLORS.primary, charSpacing: 1.2
   });
 
   const stackItems = [
@@ -184,13 +184,13 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
       radius: 0.1
     });
 
-    slide.addText(item.label, { x: 9.2, y: yPos + 0.05, w: 2.8, h: 0.2, fontSize: 9, fontFace: 'Plus Jakarta Sans', color: '9589B0' });
-    slide.addText(item.val, { x: 9.2, y: yPos + 0.26, w: 2.8, h: 0.25, fontSize: 10.5, fontFace: 'Outfit', bold: true, color: item.color });
+    slide.addText(item.label, { x: 9.2, y: yPos + 0.05, w: 2.8, h: 0.2, fontSize: 9, fontFace: 'Times New Roman', color: '9589B0' });
+    slide.addText(item.val, { x: 9.2, y: yPos + 0.26, w: 2.8, h: 0.25, fontSize: 10.5, fontFace: 'Times New Roman', bold: true, color: item.color });
   });
 
   slide.addText('Technopreneurship 2026 • Abu Zafor, Nadim Rahman, Rizvi Sarker', {
     x: 1.0, y: 6.9, w: 10.0, h: 0.3,
-    fontSize: 10, fontFace: 'Plus Jakarta Sans', color: COLORS.textDim
+    fontSize: 10, fontFace: 'Times New Roman', color: COLORS.textDim
   });
 
   slide.notes = "Welcome to the Nuzzle Full-Stack REST API & Architecture presentation. Today we will walk through the decoupled three-tier architecture, API endpoint suite, Supabase authentication lifecycle, and how our Vue 3 frontend connects seamlessly with the Next.js and PostgreSQL backend.";
@@ -250,23 +250,23 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
     slide.addText(t.num, {
       x: xPos + 0.25, y: 1.94, w: 1.1, h: 0.22,
-      fontSize: 9, fontFace: 'Plus Jakarta Sans', bold: true,
+      fontSize: 9, fontFace: 'Times New Roman', bold: true,
       color: idx === 1 ? COLORS.primaryDark : idx === 2 ? '0369A1' : '15803D', align: 'center'
     });
 
     slide.addText(t.name, {
       x: xPos + 0.25, y: 2.3, w: 3.3, h: 0.35,
-      fontSize: 14, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+      fontSize: 14, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
     });
 
     slide.addText(t.tech, {
       x: xPos + 0.25, y: 2.65, w: 3.3, h: 0.25,
-      fontSize: 10.5, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark
+      fontSize: 10.5, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
     });
 
     slide.addText(t.desc, {
       x: xPos + 0.25, y: 2.95, w: 3.3, h: 0.8,
-      fontSize: 10, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 14
+      fontSize: 10, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 14
     });
 
     slide.addShape(pptx.ShapeType.line, {
@@ -276,14 +276,14 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
     slide.addText('CORE CAPABILITIES:', {
       x: xPos + 0.25, y: 4.0, w: 3.3, h: 0.2,
-      fontSize: 9, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.textDim
+      fontSize: 9, fontFace: 'Times New Roman', bold: true, color: COLORS.textDim
     });
 
     t.bullets.forEach((b, bIdx) => {
       const bY = 4.3 + bIdx * 0.48;
       slide.addText('• ' + b, {
         x: xPos + 0.25, y: bY, w: 3.3, h: 0.42,
-        fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMain, lineSpacing: 12
+        fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMain, lineSpacing: 12
       });
     });
   });
@@ -310,7 +310,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('3-ROLE HIERARCHY & PERMISSIONS', {
     x: 1.1, y: 1.9, w: 5.2, h: 0.3,
-    fontSize: 11, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark
+    fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
   });
 
   const roles = [
@@ -328,13 +328,13 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
       radius: 0.1
     });
 
-    slide.addText(r.name, { x: 1.25, y: yPos + 0.1, w: 3.8, h: 0.3, fontSize: 11.5, fontFace: 'Outfit', bold: true, color: COLORS.textMain });
-    slide.addText(r.sub, { x: 1.25, y: yPos + 0.4, w: 4.9, h: 0.35, fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted });
+    slide.addText(r.name, { x: 1.25, y: yPos + 0.1, w: 3.8, h: 0.3, fontSize: 11.5, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain });
+    slide.addText(r.sub, { x: 1.25, y: yPos + 0.4, w: 4.9, h: 0.35, fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMuted });
   });
 
   slide.addText('Session Token Protocol: Bearer JWT stored in localStorage and automatically forwarded via apiClient.ts Request Interceptors with 401 token refresh.', {
     x: 1.1, y: 5.3, w: 5.2, h: 0.9,
-    fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 14
+    fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 14
   });
 
   // Right Side: API Endpoint Signatures
@@ -347,7 +347,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('AUTHENTICATION REST HANDLERS', {
     x: 7.1, y: 1.9, w: 5.0, h: 0.3,
-    fontSize: 10.5, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primary
+    fontSize: 10.5, fontFace: 'Times New Roman', bold: true, color: COLORS.primary
   });
 
   const authEndpoints = [
@@ -374,9 +374,9 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
       radius: 0.1
     });
 
-    slide.addText(ep.m, { x: 7.25, y: yPos + 0.12, w: 0.8, h: 0.25, fontSize: 10, fontFace: 'Outfit', bold: true, color: COLORS.emerald });
+    slide.addText(ep.m, { x: 7.25, y: yPos + 0.12, w: 0.8, h: 0.25, fontSize: 10, fontFace: 'Times New Roman', bold: true, color: COLORS.emerald });
     slide.addText(ep.path, { x: 8.05, y: yPos + 0.12, w: 4.0, h: 0.25, fontSize: 11, fontFace: 'Consolas', bold: true, color: COLORS.codeText });
-    slide.addText(ep.desc, { x: 7.25, y: yPos + 0.45, w: 4.8, h: 0.65, fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: '9589B0', lineSpacing: 13 });
+    slide.addText(ep.desc, { x: 7.25, y: yPos + 0.45, w: 4.8, h: 0.65, fontSize: 9.5, fontFace: 'Times New Roman', color: '9589B0', lineSpacing: 13 });
   });
 }
 
@@ -401,7 +401,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('CORE FEED & MOMENTS CAPABILITIES', {
     x: 1.1, y: 1.9, w: 6.2, h: 0.3,
-    fontSize: 11, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark
+    fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
   });
 
   const feedFeatures = [
@@ -420,8 +420,8 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
       radius: 0.1
     });
 
-    slide.addText(f.title, { x: 1.25, y: yPos + 0.1, w: 5.8, h: 0.28, fontSize: 11, fontFace: 'Outfit', bold: true, color: COLORS.textMain });
-    slide.addText(f.desc, { x: 1.25, y: yPos + 0.38, w: 5.8, h: 0.4, fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted });
+    slide.addText(f.title, { x: 1.25, y: yPos + 0.1, w: 5.8, h: 0.28, fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain });
+    slide.addText(f.desc, { x: 1.25, y: yPos + 0.38, w: 5.8, h: 0.4, fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMuted });
   });
 
   // Right Card: 5 Reaction Dock Visual
@@ -434,7 +434,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('5 TACTILE PET REACTIONS', {
     x: 8.1, y: 1.9, w: 4.0, h: 0.3,
-    fontSize: 11, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark
+    fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
   });
 
   const reactions = [
@@ -455,8 +455,8 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
     });
 
     slide.addText(r.emoji, { x: 8.25, y: yPos + 0.12, w: 0.5, h: 0.45, fontSize: 18 });
-    slide.addText(r.name, { x: 8.85, y: yPos + 0.1, w: 3.2, h: 0.25, fontSize: 11, fontFace: 'Outfit', bold: true, color: COLORS.textMain });
-    slide.addText(r.action, { x: 8.85, y: yPos + 0.35, w: 3.2, h: 0.28, fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted });
+    slide.addText(r.name, { x: 8.85, y: yPos + 0.1, w: 3.2, h: 0.25, fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain });
+    slide.addText(r.action, { x: 8.85, y: yPos + 0.35, w: 3.2, h: 0.28, fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMuted });
   });
 }
 
@@ -481,14 +481,14 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('5-MILE GEOLOCATION RADAR', {
     x: 1.1, y: 1.9, w: 5.2, h: 0.3,
-    fontSize: 11, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.rose
+    fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.rose
   });
 
   slide.addText(
     'When a pet is reported lost, the Radar Engine broadcasts a high-priority push notification to all pet parents, verified stores, and clinics within a 5.0-mile radius.',
     {
       x: 1.1, y: 2.25, w: 5.2, h: 0.7,
-      fontSize: 10.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 15
+      fontSize: 10.5, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 15
     }
   );
 
@@ -507,8 +507,8 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
       radius: 0.1
     });
 
-    slide.addText(rc.title, { x: 1.25, y: yPos + 0.1, w: 4.9, h: 0.28, fontSize: 11, fontFace: 'Outfit', bold: true, color: COLORS.textMain });
-    slide.addText(rc.desc, { x: 1.25, y: yPos + 0.4, w: 4.9, h: 0.52, fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 13 });
+    slide.addText(rc.title, { x: 1.25, y: yPos + 0.1, w: 4.9, h: 0.28, fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain });
+    slide.addText(rc.desc, { x: 1.25, y: yPos + 0.4, w: 4.9, h: 0.52, fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 13 });
   });
 
   // Right Column: JSON Schema Snapshot
@@ -521,7 +521,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('RADAR ALERT PAYLOAD SCHEMA', {
     x: 7.1, y: 1.9, w: 5.0, h: 0.3,
-    fontSize: 10.5, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primary
+    fontSize: 10.5, fontFace: 'Times New Roman', bold: true, color: COLORS.primary
   });
 
   const schemaJson = 
@@ -592,7 +592,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
     slide.addText(p.title, {
       x: xPos + 0.25, y: 1.95, w: 3.3, h: 0.35,
-      fontSize: 13.5, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+      fontSize: 13.5, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
     });
 
     slide.addText(p.endpoint, {
@@ -602,7 +602,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
     slide.addText(p.desc, {
       x: xPos + 0.25, y: 2.65, w: 3.3, h: 0.75,
-      fontSize: 10, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 14
+      fontSize: 10, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 14
     });
 
     slide.addShape(pptx.ShapeType.line, {
@@ -621,7 +621,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
       slide.addText('✓ ' + item, {
         x: xPos + 0.4, y: iY + 0.18, w: 3.0, h: 0.35,
-        fontSize: 10, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.textMain
+        fontSize: 10, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
       });
     });
   });
@@ -648,7 +648,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('🛍️ VERIFIED PET MARKETPLACE API', {
     x: 1.1, y: 1.9, w: 5.2, h: 0.3,
-    fontSize: 11, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark
+    fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
   });
 
   const marketPoints = [
@@ -666,8 +666,8 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
       radius: 0.1
     });
 
-    slide.addText(mp.title, { x: 1.25, y: yPos + 0.1, w: 4.9, h: 0.28, fontSize: 11, fontFace: 'Outfit', bold: true, color: COLORS.textMain });
-    slide.addText(mp.desc, { x: 1.25, y: yPos + 0.4, w: 4.9, h: 0.52, fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 13 });
+    slide.addText(mp.title, { x: 1.25, y: yPos + 0.1, w: 4.9, h: 0.28, fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain });
+    slide.addText(mp.desc, { x: 1.25, y: yPos + 0.4, w: 4.9, h: 0.52, fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 13 });
   });
 
   // Right Card: Adoption Hub
@@ -680,7 +680,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('🏠 RESCUE & ADOPTION NETWORK API', {
     x: 7.1, y: 1.9, w: 5.0, h: 0.3,
-    fontSize: 11, fontFace: 'Plus Jakarta Sans', bold: true, color: '0284C7'
+    fontSize: 11, fontFace: 'Times New Roman', bold: true, color: '0284C7'
   });
 
   const adoptPoints = [
@@ -698,8 +698,8 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
       radius: 0.1
     });
 
-    slide.addText(ap.title, { x: 7.25, y: yPos + 0.1, w: 4.8, h: 0.28, fontSize: 11, fontFace: 'Outfit', bold: true, color: COLORS.textMain });
-    slide.addText(ap.desc, { x: 7.25, y: yPos + 0.4, w: 4.8, h: 0.52, fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 13 });
+    slide.addText(ap.title, { x: 7.25, y: yPos + 0.1, w: 4.8, h: 0.28, fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain });
+    slide.addText(ap.desc, { x: 7.25, y: yPos + 0.4, w: 4.8, h: 0.52, fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 13 });
   });
 }
 
@@ -724,7 +724,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('CLINICAL TRIAGE CLASSIFICATION', {
     x: 1.1, y: 1.9, w: 5.4, h: 0.3,
-    fontSize: 11, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark
+    fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
   });
 
   const triageLevels = [
@@ -742,8 +742,8 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
       radius: 0.1
     });
 
-    slide.addText(tl.level, { x: 1.25, y: yPos + 0.12, w: 5.1, h: 0.28, fontSize: 11, fontFace: 'Outfit', bold: true, color: tl.color });
-    slide.addText(tl.desc, { x: 1.25, y: yPos + 0.42, w: 5.1, h: 0.65, fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 13 });
+    slide.addText(tl.level, { x: 1.25, y: yPos + 0.12, w: 5.1, h: 0.28, fontSize: 11, fontFace: 'Times New Roman', bold: true, color: tl.color });
+    slide.addText(tl.desc, { x: 1.25, y: yPos + 0.42, w: 5.1, h: 0.65, fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 13 });
   });
 
   // Right Column: Endpoint Code Sample
@@ -838,12 +838,12 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
     slide.addText(s.name, {
       x: xPos + 0.2, y: yPos + 0.15, w: 5.4, h: 0.3,
-      fontSize: 12, fontFace: 'Outfit', bold: true, color: COLORS.primaryDark
+      fontSize: 12, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
     });
 
     slide.addText(s.desc, {
       x: xPos + 0.2, y: yPos + 0.45, w: 5.4, h: 0.65,
-      fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 13
+      fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 13
     });
 
     slide.addShape(pptx.ShapeType.roundRect, {
@@ -881,7 +881,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('PRODUCTION CLOUD TOPOLOGY', {
     x: 1.1, y: 1.9, w: 5.2, h: 0.3,
-    fontSize: 11, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark
+    fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
   });
 
   const topology = [
@@ -901,8 +901,8 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
     });
 
     slide.addText(top.icon, { x: 1.25, y: yPos + 0.18, w: 0.4, h: 0.4, fontSize: 16 });
-    slide.addText(top.label, { x: 1.75, y: yPos + 0.1, w: 4.4, h: 0.25, fontSize: 10, fontFace: 'Plus Jakarta Sans', color: COLORS.textDim });
-    slide.addText(top.val, { x: 1.75, y: yPos + 0.35, w: 4.4, h: 0.4, fontSize: 10.5, fontFace: 'Outfit', bold: true, color: COLORS.textMain });
+    slide.addText(top.label, { x: 1.75, y: yPos + 0.1, w: 4.4, h: 0.25, fontSize: 10, fontFace: 'Times New Roman', color: COLORS.textDim });
+    slide.addText(top.val, { x: 1.75, y: yPos + 0.35, w: 4.4, h: 0.4, fontSize: 10.5, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain });
   });
 
   // Right Column: Summary Metrics & Repositories
@@ -915,7 +915,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('FULL-STACK REPOSITORIES & METRICS', {
     x: 7.1, y: 1.9, w: 5.0, h: 0.3,
-    fontSize: 11, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark
+    fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
   });
 
   const metrics = [
@@ -938,8 +938,8 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
       radius: 0.1
     });
 
-    slide.addText(m.num, { x: xPos + 0.15, y: yPos + 0.1, w: 2.15, h: 0.45, fontSize: 20, fontFace: 'Outfit', bold: true, color: m.color });
-    slide.addText(m.label, { x: xPos + 0.15, y: yPos + 0.55, w: 2.15, h: 0.35, fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted });
+    slide.addText(m.num, { x: xPos + 0.15, y: yPos + 0.1, w: 2.15, h: 0.45, fontSize: 20, fontFace: 'Times New Roman', bold: true, color: m.color });
+    slide.addText(m.label, { x: xPos + 0.15, y: yPos + 0.55, w: 2.15, h: 0.35, fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMuted });
   });
 
   // Repo Links Box
@@ -952,7 +952,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('📦 GITHUB REPOSITORIES:', {
     x: 7.3, y: 4.95, w: 4.7, h: 0.25,
-    fontSize: 9.5, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark
+    fontSize: 9.5, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
   });
 
   slide.addText('• Frontend: https://github.com/zafor2002/nuzzle-\n• Backend:  https://github.com/zafor2002/nuzzle-backend\n• Documentation: API_DOCUMENTATION.md', {

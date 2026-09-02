@@ -49,19 +49,19 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('🐾 Nuzzle', {
     x: 0.8, y: 0.12, w: 3.5, h: 0.4,
-    fontSize: 14, fontFace: 'Outfit', bold: true, color: COLORS.primaryDark
+    fontSize: 14, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
   });
 
   slide.addText(`Slide ${slideNumber} / 10 • UI/UX Pitch`, {
     x: 8.5, y: 0.12, w: 4.0, h: 0.4,
-    fontSize: 10.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, align: 'right'
+    fontSize: 10.5, fontFace: 'Times New Roman', color: COLORS.textMuted, align: 'right'
   });
 
   // Eyebrow
   if (eyebrowText) {
     slide.addText(eyebrowText.toUpperCase(), {
       x: 0.8, y: 0.8, w: 11.733, h: 0.25,
-      fontSize: 9.5, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark, charSpacing: 1.2
+      fontSize: 9.5, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark, charSpacing: 1.2
     });
   }
 
@@ -69,7 +69,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
   if (titleText) {
     slide.addText(titleText, {
       x: 0.8, y: 1.05, w: 11.733, h: 0.5,
-      fontSize: 20, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+      fontSize: 20, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
     });
   }
 
@@ -81,7 +81,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('Technopreneurship 2026 • Abu Zafor, Nadim Rahman, Rizvi Sarker', {
     x: 0.8, y: 6.9, w: 8.0, h: 0.3,
-    fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textDim
+    fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textDim
   });
 
   if (speakerNotes) {
@@ -107,24 +107,24 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('SESSION-01: UI/UX PRESENTATION • 5-MINUTE PITCH', {
     x: 1.8, y: 1.25, w: 9.733, h: 0.3,
-    fontSize: 11, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark, align: 'center', charSpacing: 1.5
+    fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark, align: 'center', charSpacing: 1.5
   });
 
   slide.addText('Nuzzle: The AI-Powered Pet Social Network', {
     x: 1.8, y: 1.65, w: 9.733, h: 0.65,
-    fontSize: 26, fontFace: 'Outfit', bold: true, color: COLORS.textMain, align: 'center'
+    fontSize: 26, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain, align: 'center'
   });
 
   slide.addText('Built for Bangladesh • MVP Development & Dhaka Launch', {
     x: 1.8, y: 2.35, w: 9.733, h: 0.35,
-    fontSize: 13.5, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primary, align: 'center'
+    fontSize: 13.5, fontFace: 'Times New Roman', bold: true, color: COLORS.primary, align: 'center'
   });
 
   slide.addText(
     '"An AI-powered, pet-first mobile social ecosystem uniting Dhaka\'s pet parents through dedicated pet profiles, 24/7 AI health triage, visual lost-pet matching, and emergency street-rescue dispatch."',
     {
       x: 2.0, y: 2.9, w: 9.333, h: 1.2,
-      fontSize: 13, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, italic: true, align: 'center', lineSpacing: 18
+      fontSize: 13, fontFace: 'Times New Roman', color: COLORS.textMuted, italic: true, align: 'center', lineSpacing: 18
     }
   );
 
@@ -136,7 +136,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('👥 Project Team: Abu Zafor • Nadim Rahman • Rizvi Sarker    |    📍 Focus: Dhaka Launch (July 2026)', {
     x: 2.2, y: 4.65, w: 8.933, h: 0.35,
-    fontSize: 11.5, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.textMain, align: 'center'
+    fontSize: 11.5, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain, align: 'center'
   });
 
   slide.notes = `Good day honorable judges and participants. My name is Abu Zafor, and on behalf of our team with Nadim Rahman and Rizvi Sarker, I am excited to present Nuzzle. In one sentence: Nuzzle is an AI-powered, pet-first mobile social ecosystem that combines everyday locality-based pet social networking with 24/7 AI health triage, visual lost-pet matching, and emergency rescue dispatch for Bangladesh's rapidly growing pet community. Let's dive in!`;
@@ -159,14 +159,14 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('🐾 What is Nuzzle?', {
     x: 1.05, y: 1.9, w: 5.166, h: 0.35,
-    fontSize: 14, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+    fontSize: 14, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
   });
 
   slide.addText(
     'The structural decision that defines the product: The pet holds the account, not the owner. An animal has its own profile with photo history, milestones, health logs, and personality-driven bio.\n\nOn top of this social foundation sit 3 AI systems:\n• Visual Lost-Pet Matching (embedding similarity)\n• 24/7 Health Urgency Triage (Bangla/English)\n• Adoption Compatibility Matching & Street Rescue Alerts.',
     {
       x: 1.05, y: 2.35, w: 5.166, h: 3.9,
-      fontSize: 11, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 16
+      fontSize: 11, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 16
     }
   );
 
@@ -179,14 +179,14 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('⚡ What Problem Are We Solving?', {
     x: 7.1, y: 1.9, w: 5.166, h: 0.35,
-    fontSize: 14, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+    fontSize: 14, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
   });
 
   slide.addText(
     'Bangladesh pet ownership surged +170% in 3 years (Tk 500 Cr cat food market), yet all interactions happen in unorganized Facebook groups:\n\n1. Lost pets go unrecovered due to massive post volume.\n2. First-time owners panic over basic symptoms.\n3. Injured street animals have zero dispatch route.\n4. Pet businesses have no targeted storefronts.',
     {
       x: 7.1, y: 2.35, w: 5.166, h: 2.4,
-      fontSize: 10.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 15
+      fontSize: 10.5, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 15
     }
   );
 
@@ -199,12 +199,12 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('Daily Social Layer ⇄ Episodic AI Utility', {
     x: 7.25, y: 5.08, w: 4.866, h: 0.28,
-    fontSize: 11, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark
+    fontSize: 11, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
   });
 
   slide.addText('Social retention generates the local density & training data that makes AI matching work in crises.', {
     x: 7.25, y: 5.38, w: 4.866, h: 0.75,
-    fontSize: 10, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 13
+    fontSize: 10, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 13
   });
 }
 
@@ -258,12 +258,12 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
     slide.addText(item.title, {
       x: xPos + 0.15, y: 2.45, w: 2.445, h: 0.45,
-      fontSize: 12.5, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+      fontSize: 12.5, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
     });
 
     slide.addText(item.desc, {
       x: xPos + 0.15, y: 3.0, w: 2.445, h: 2.7,
-      fontSize: 10.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 14
+      fontSize: 10.5, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 14
     });
 
     slide.addShape(pptx.ShapeType.roundRect, {
@@ -274,7 +274,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
     slide.addText(item.tag, {
       x: xPos + 0.15, y: 6.0, w: 2.445, h: 0.25,
-      fontSize: 9, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark, align: 'center'
+      fontSize: 9, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark, align: 'center'
     });
   });
 }
@@ -302,17 +302,17 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('+170% Pet Ownership Surge (3 Years)', {
     x: 1.2, y: 2.0, w: 4.866, h: 0.35,
-    fontSize: 14, fontFace: 'Outfit', bold: true, color: COLORS.primaryDark
+    fontSize: 14, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
   });
 
   slide.addText('~90% cats • Tk 500 Cr (US$43M) cat-food market • 4,000+ shops • 225+ clinics', {
     x: 1.2, y: 2.35, w: 4.866, h: 0.35,
-    fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted
+    fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMuted
   });
 
   slide.addText('Core Pain Points in Bangladesh:', {
     x: 1.05, y: 3.05, w: 5.166, h: 0.35,
-    fontSize: 12.5, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+    fontSize: 12.5, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
   });
 
   const problems = [
@@ -324,7 +324,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText(problems.join('\n'), {
     x: 1.05, y: 3.45, w: 5.166, h: 2.8,
-    fontSize: 10.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 15
+    fontSize: 10.5, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 15
   });
 
   // Right Box: 3 Target Personas
@@ -336,7 +336,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('3 Core Customer Segments (Dhaka Focus):', {
     x: 7.1, y: 1.9, w: 5.166, h: 0.35,
-    fontSize: 13, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+    fontSize: 13, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
   });
 
   const segments = [
@@ -355,12 +355,12 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
     slide.addText(seg.title, {
       x: 7.25, y: yP + 0.1, w: 4.866, h: 0.28,
-      fontSize: 10.5, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark
+      fontSize: 10.5, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
     });
 
     slide.addText(seg.desc, {
       x: 7.25, y: yP + 0.42, w: 4.866, h: 0.7,
-      fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 13
+      fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 13
     });
   });
 }
@@ -409,12 +409,12 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
     slide.addText(p.title, {
       x: xP + 0.2, y: 2.55, w: 3.277, h: 0.45,
-      fontSize: 13.5, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+      fontSize: 13.5, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
     });
 
     slide.addText(p.desc, {
       x: xP + 0.2, y: 3.1, w: 3.277, h: 2.6,
-      fontSize: 10.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 15
+      fontSize: 10.5, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 15
     });
 
     slide.addShape(pptx.ShapeType.roundRect, {
@@ -425,7 +425,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
     slide.addText(p.sub, {
       x: xP + 0.2, y: 6.0, w: 3.277, h: 0.25,
-      fontSize: 9, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark, align: 'center'
+      fontSize: 9, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark, align: 'center'
     });
   });
 }
@@ -462,7 +462,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('✨ Key UI Components & Interactions:', {
     x: 7.1, y: 1.9, w: 5.166, h: 0.35,
-    fontSize: 13, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+    fontSize: 13, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
   });
 
   const uiItems = [
@@ -482,12 +482,12 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
     slide.addText(item.title, {
       x: 7.25, y: yP + 0.08, w: 4.866, h: 0.25,
-      fontSize: 10.5, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark
+      fontSize: 10.5, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark
     });
 
     slide.addText(item.desc, {
       x: 7.25, y: yP + 0.36, w: 4.866, h: 0.55,
-      fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 13
+      fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 13
     });
   });
 }
@@ -535,12 +535,12 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
     slide.addText(sc.title, {
       x: xP + 0.15, y: 4.05, w: 3.377, h: 0.35,
-      fontSize: 12.5, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+      fontSize: 12.5, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
     });
 
     slide.addText(sc.desc, {
       x: xP + 0.15, y: 4.45, w: 3.377, h: 1.9,
-      fontSize: 10, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 14
+      fontSize: 10, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 14
     });
   });
 }
@@ -588,12 +588,12 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
     slide.addText(sc.title, {
       x: xP + 0.15, y: 4.05, w: 3.377, h: 0.35,
-      fontSize: 12.5, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+      fontSize: 12.5, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
     });
 
     slide.addText(sc.desc, {
       x: xP + 0.15, y: 4.45, w: 3.377, h: 1.9,
-      fontSize: 10, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 14
+      fontSize: 10, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 14
     });
   });
 }
@@ -615,14 +615,14 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('🎨 Curated Design Tokens:', {
     x: 1.05, y: 1.9, w: 5.166, h: 0.35,
-    fontSize: 13.5, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+    fontSize: 13.5, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
   });
 
   slide.addText(
     '• Primary Lavender (#947DEE): Evokes care, calm, and clinical trust.\n• Deep Violet (#7C3AED): High-contrast accent for interactive states.\n• Pearl White (#FCFAFF): Textured background reducing glare.\n• Deep Plum Ink (#261E38): WCAG AAA compliant text contrast.\n• Frosted Glassmorphism: backdrop-filter: blur(24px) with multi-layer shadows.\n• Typography: Plus Jakarta Sans (body) & Outfit (display branding).',
     {
       x: 1.05, y: 2.35, w: 5.166, h: 4.0,
-      fontSize: 10.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 16
+      fontSize: 10.5, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 16
     }
   );
 
@@ -643,12 +643,12 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('🌙 Dual Light & Dark Theme Accessibility', {
     x: 7.1, y: 5.5, w: 5.166, h: 0.3,
-    fontSize: 12, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+    fontSize: 12, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
   });
 
   slide.addText('Seamless toggle preserving high-contrast legibility across bright daylight and night.', {
     x: 7.1, y: 5.85, w: 5.166, h: 0.55,
-    fontSize: 9.5, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted
+    fontSize: 9.5, fontFace: 'Times New Roman', color: COLORS.textMuted
   });
 }
 
@@ -669,7 +669,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('🚀 6-Month Roadmap & Gate Criteria (Dhaka):', {
     x: 1.05, y: 1.9, w: 5.166, h: 0.35,
-    fontSize: 13, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+    fontSize: 13, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
   });
 
   const roadmap = [
@@ -682,7 +682,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText(roadmap.join('\n\n'), {
     x: 1.05, y: 2.35, w: 5.166, h: 3.9,
-    fontSize: 10, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 14
+    fontSize: 10, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 14
   });
 
   // Right Box: Key Learnings & Closing
@@ -694,14 +694,14 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('💡 Key Prototype Learnings:', {
     x: 7.1, y: 1.9, w: 5.166, h: 0.35,
-    fontSize: 13.5, fontFace: 'Outfit', bold: true, color: COLORS.textMain
+    fontSize: 13.5, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain
   });
 
   slide.addText(
     'The social layer earns daily attention and generates continuous multi-photo training data; the AI features provide indispensable crisis support.\n\nNeither half functions without the other, and building them together creates a compounding network moat.',
     {
       x: 7.1, y: 2.3, w: 5.166, h: 1.8,
-      fontSize: 11, fontFace: 'Plus Jakarta Sans', color: COLORS.textMuted, lineSpacing: 15
+      fontSize: 11, fontFace: 'Times New Roman', color: COLORS.textMuted, lineSpacing: 15
     }
   );
 
@@ -715,12 +715,12 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 
   slide.addText('🐾 CLOSING REMARK', {
     x: 7.3, y: 4.65, w: 4.766, h: 0.25,
-    fontSize: 9.5, fontFace: 'Plus Jakarta Sans', bold: true, color: COLORS.primaryDark, charSpacing: 1
+    fontSize: 9.5, fontFace: 'Times New Roman', bold: true, color: COLORS.primaryDark, charSpacing: 1
   });
 
   slide.addText('"Pets are family. Nuzzle gives them the dedicated, intelligent, and compassionate platform they deserve."', {
     x: 7.3, y: 5.0, w: 4.766, h: 1.1,
-    fontSize: 12, fontFace: 'Outfit', bold: true, color: COLORS.textMain, italic: true
+    fontSize: 12, fontFace: 'Times New Roman', bold: true, color: COLORS.textMain, italic: true
   });
 }
 
@@ -735,13 +735,24 @@ if (!fs.existsSync(v2OutputDir)) {
 }
 
 // Generate Presentation
-pptx.writeFile({ fileName: OUTPUT_FILE })
-  .then(fileName => {
-    console.log(`✅ Successfully generated Nuzzle PowerPoint presentation at: ${fileName}`);
-    // Also copy to V2
-    fs.copyFileSync(OUTPUT_FILE, V2_OUTPUT_FILE);
-    console.log(`✅ Also copied to: ${V2_OUTPUT_FILE}`);
-  })
-  .catch(err => {
-    console.error('❌ Error generating presentation:', err);
-  });
+async function build() {
+  const filesToSave = [
+    OUTPUT_FILE,
+    V2_OUTPUT_FILE,
+    path.resolve(__dirname, '../../Nuzzle_UIUX_Presentation.pptx'),
+    path.resolve(__dirname, '../../Nuzzle_UIUX_Presentation_v2.pptx')
+  ];
+
+  for (const file of filesToSave) {
+    try {
+      await pptx.writeFile({ fileName: file });
+      console.log(`✅ Saved: ${file}`);
+    } catch (err) {
+      console.warn(`Could not overwrite ${file} (likely open in PowerPoint).`);
+    }
+  }
+}
+
+build().catch(err => {
+  console.error('❌ Error generating presentation:', err);
+});
