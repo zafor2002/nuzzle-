@@ -107,13 +107,6 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
   const slide = pptx.addSlide();
   slide.background = { color: COLORS.bgSlide };
 
-  // Decorative Glow
-  slide.addShape(pptx.ShapeType.ellipse, {
-    x: 7.5, y: -1.0, w: 6.5, h: 6.5,
-    fill: { color: 'EDE7F6', transparency: 50 },
-    line: { color: 'FFFFFF', width: 0 }
-  });
-
   slide.addShape(pptx.ShapeType.rect, {
     x: 1.0, y: 1.2, w: 2.6, h: 0.38,
     fill: { color: 'EDE7F6' },
@@ -971,10 +964,24 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
 // Generate Presentation Files
 async function build() {
   console.log('Generating Nuzzle REST API Presentation...');
-  await pptx.writeFile({ fileName: OUTPUT_FILE });
-  await pptx.writeFile({ fileName: V2_OUTPUT_FILE });
-  await pptx.writeFile({ fileName: ROOT_OUTPUT_FILE });
-  console.log(`Presentation generated successfully:\n- ${OUTPUT_FILE}\n- ${V2_OUTPUT_FILE}\n- ${ROOT_OUTPUT_FILE}`);
+  
+  const filesToSave = [
+    path.resolve(OUTPUT_DIR, 'Nuzzle_REST_API_Architecture_v2.pptx'),
+    path.resolve(__dirname, '../Nuzzle_REST_API_Architecture_v2.pptx'),
+    path.resolve(__dirname, '../../Nuzzle_REST_API_Architecture_v2.pptx'),
+    OUTPUT_FILE,
+    V2_OUTPUT_FILE,
+    ROOT_OUTPUT_FILE
+  ];
+
+  for (const file of filesToSave) {
+    try {
+      await pptx.writeFile({ fileName: file });
+      console.log(`✓ Saved: ${file}`);
+    } catch (err) {
+      console.warn(`Could not overwrite ${file} (likely open in PowerPoint).`);
+    }
+  }
 }
 
 build().catch(err => {
