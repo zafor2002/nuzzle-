@@ -65,6 +65,13 @@
                   <span class="p-chip-species">{{ p.species }} • {{ p.breed || 'Companion' }}</span>
                 </div>
               </div>
+              <div v-if="pets.length === 0" class="pet-chip-option active">
+                <img :src="activeTargetPet.avatarUrl" alt="Companion" class="p-chip-avatar" />
+                <div class="p-chip-info">
+                  <span class="p-chip-name">{{ activeTargetPet.name }}</span>
+                  <span class="p-chip-species">{{ activeTargetPet.species }} • {{ activeTargetPet.breed || 'Companion' }}</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -662,6 +669,7 @@ import { ref, computed } from 'vue';
 import { Sparkles, Camera, CheckCircle2, Send, Mic, Calendar, Wand2 } from 'lucide-vue-next';
 import TopBar from '../components/layout/TopBar.vue';
 import { 
+  owner,
   pets, 
   vets,
   aiTriageMessages, 
@@ -709,7 +717,17 @@ const conditionPresets = [
 ];
 
 const activeTargetPet = computed(() => {
-  return pets.find(p => p.id === selectedPetId.value) || pets[0];
+  return pets.find(p => p.id === selectedPetId.value) || pets[0] || {
+    id: 'pet_companion',
+    ownerId: owner.id || 'owner_me',
+    name: 'Pet Companion',
+    species: 'Dog',
+    breed: 'Companion',
+    avatarUrl: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&auto=format&fit=crop&q=80',
+    isAnonymous: false,
+    postsCount: 0,
+    followersCount: 0
+  };
 });
 
 const activeConditionDisplayName = computed(() => {
@@ -751,7 +769,7 @@ interface EvaluatedVet {
 
 const evaluatedVetsList = computed<EvaluatedVet[]>(() => {
   const currentPet = activeTargetPet.value;
-  const petSpecies = currentPet.species;
+  const petSpecies = currentPet?.species || 'Dog';
   const query = (customConditionText.value || '').toLowerCase();
 
   return vets.map(vet => {
