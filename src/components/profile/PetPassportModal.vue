@@ -305,11 +305,23 @@ const pages = [
 ];
 
 const selectedPet = computed<Pet>(() => {
-  return pets.find(p => p.id === selectedPetId.value) || pets[0];
+  return pets.find(p => p.id === selectedPetId.value) || pets[0] || {
+    id: 'pet_draft',
+    ownerId: owner.id,
+    name: 'Pet Companion',
+    species: 'Dog',
+    breed: 'Companion',
+    avatarUrl: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&auto=format&fit=crop&q=80',
+    isAnonymous: false,
+    weight: '5.0 kg',
+    microchipId: '985-0000-0000-000',
+    postsCount: 0,
+    followersCount: 0
+  };
 });
 
 const currentPetVaccines = computed(() => {
-  const isDog = selectedPet.value.species !== 'Cat';
+  const isDog = selectedPet.value?.species !== 'Cat';
   if (isDog) {
     return [
       {

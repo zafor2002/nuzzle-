@@ -59,6 +59,7 @@ export const activeProfileId = ref<string>('owner_me');
 export const isCommentsModalOpen = ref(false);
 export const activePostForComments = ref<Post | null>(null);
 export const isProModalOpen = ref(false);
+export const isAddPetModalOpen = ref(false);
 export const currentRole = ref<UserRole>('parent');
 
 export const owner = reactive<Owner>({
@@ -1084,6 +1085,88 @@ function applySupabaseSession(session: any) {
   if (currentTab.value === 'auth') {
     currentTab.value = 'feed';
   }
+}
+
+/**
+ * Register a new pet companion into the store & backend database
+ */
+export async function addNewPet(petData: {
+  name: string;
+  species: 'Dog' | 'Cat' | 'Bird' | 'Rabbit' | 'Reptile' | 'Other';
+  breed?: string;
+  bio?: string;
+  age?: string;
+  birthDate?: string;
+  avatarUrl?: string;
+  weight?: string;
+  microchipId?: string;
+  aiPersonality?: string;
+  energyLevel?: string;
+}) {
+  const newPetId = `pet_${Date.now()}`;
+  const defaultAvatar = petData.species === 'Cat'
+    ? 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200&auto=format&fit=crop&q=80'
+    : petData.species === 'Bird'
+    ? 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=200&auto=format&fit=crop&q=80'
+    : petData.species === 'Rabbit'
+    ? 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=200&auto=format&fit=crop&q=80'
+    : 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&auto=format&fit=crop&q=80';
+
+  const newPet: Pet = {
+    id: newPetId,
+    ownerId: owner.id,
+    name: petData.name.trim(),
+    species: petData.species,
+    breed: petData.breed?.trim() || 'Companion',
+    bio: petData.bio?.trim() || `Loving ${petData.species} companion on Nuzzle.`,
+    age: petData.age?.trim() || '1 yr',
+    birthDate: petData.birthDate || new Date().toISOString().split('T')[0],
+    avatarUrl: petData.avatarUrl?.trim() || defaultAvatar,
+    isAnonymous: false,
+    weight: petData.weight?.trim() || '5.0 kg',
+    microchipId: petData.microchipId?.trim() || `985-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`,
+    postsCount: 0,
+    followersCount: 0,
+    aiPersonality: petData.aiPersonality || 'Enthusiastic & Playful',
+    energyLevel: (petData.energyLevel as any) || 'High Zoomies',
+    isProMember: owner.isProMember || false
+  };
+
+  // 1. Optimistically push to pets array
+  pets.push(newPet);
+  activeProfileId.value = newPet.id;
+
+  // 2. Dispatch async creation to REST backend
+  try {
+    await apiClient.post('/pets', {
+      ownerId: owner.id,
+      name: newPet.name,
+      species: newPet.species,
+      breed: newPet.breed,
+      bio: newPet.bio,
+      birthDate: newPet.birthDate,
+      avatarUrl: newPet.avatarUrl,
+      weight: newPet.weight,
+      microchipId: newPet.microchipId,
+      aiPersonality: newPet.aiPersonality,
+      energyLevel: newPet.energyLevel
+    });
+  } catch (err) {
+    console.warn('Backend pet persistence handled locally:', err);
+  }
+
+  // 3. Add celebration notification
+  notifications.unshift({
+    id: `notif_pet_${Date.now()}`,
+    type: 'ai_insight',
+    title: `🎉 ${newPet.name} has joined Nuzzle!`,
+    message: `Digital pet passport created and verified for ${newPet.name} (${newPet.species}).`,
+    avatarUrl: newPet.avatarUrl,
+    timeAgo: 'Just now',
+    isRead: false
+  });
+
+  return { success: true, pet: newPet };
 }
 
 

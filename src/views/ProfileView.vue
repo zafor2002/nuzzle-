@@ -286,10 +286,22 @@
             <span class="persona-name">{{ p.name }} ({{ p.species }})</span>
           </button>
 
-          <button class="persona-pill-btn add-pet-pill-btn" @click="isPassportModalOpen = true">
+          <button class="persona-pill-btn add-pet-pill-btn" @click="isAddPetModalOpen = true">
             <span class="plus-ico">+</span>
             <span class="persona-name">Add Pet</span>
           </button>
+        </div>
+
+        <!-- 1B. Fresh Account: Register Companion Callout -->
+        <div v-if="pets.length === 0" class="empty-pets-welcome-card">
+          <div class="empty-pets-badge">🐾</div>
+          <div class="empty-pets-info">
+            <h4 class="empty-pets-title">Register Your Pet Companion</h4>
+            <p class="empty-pets-desc">Create an official biometric passport, track vaccinations, and unlock PawDoctor AI diagnostics.</p>
+            <button class="btn-solid register-pet-cta" @click="isAddPetModalOpen = true">
+              <span>+ Register Pet Companion</span>
+            </button>
+          </div>
         </div>
 
         <!-- 2. Nuzzle Pro Membership VIP Banner (90 BDT / month) -->
@@ -484,6 +496,12 @@
       @close="isPassportModalOpen = false" 
     />
 
+    <!-- ADD PET REGISTRATION MODAL -->
+    <AddPetModal 
+      :is-open="isAddPetModalOpen" 
+      @close="isAddPetModalOpen = false" 
+    />
+
     <!-- Toast Notification -->
     <transition name="toast-slide">
       <div v-if="profileToast" class="profile-toast-bar">
@@ -509,6 +527,7 @@ import {
   MessageCircle 
 } from 'lucide-vue-next';
 import PetPassportModal from '../components/profile/PetPassportModal.vue';
+import AddPetModal from '../components/profile/AddPetModal.vue';
 import { 
   owner, 
   pets, 
@@ -517,6 +536,7 @@ import {
   activePet, 
   setTab,
   isProModalOpen,
+  isAddPetModalOpen,
   marketplace,
   appointments,
   isCreateSheetOpen
@@ -1843,5 +1863,65 @@ function callEmergencyHotline() {
   font-weight: 700;
   border-radius: var(--radius-full);
   margin: 0 auto;
+}
+
+.empty-pets-welcome-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, rgba(148, 125, 238, 0.12), rgba(124, 58, 237, 0.05));
+  border: 1px dashed var(--primary);
+  border-radius: var(--radius-xl);
+  margin-bottom: 12px;
+}
+
+.empty-pets-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(148, 125, 238, 0.3);
+}
+
+.empty-pets-info {
+  flex: 1;
+}
+
+.empty-pets-title {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 4px;
+}
+
+.empty-pets-desc {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0 0 10px;
+}
+
+.register-pet-cta {
+  padding: 8px 18px;
+  font-size: 12px;
+  font-weight: 800;
+  border-radius: var(--radius-full);
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(148, 125, 238, 0.3);
+  transition: all 0.2s;
+}
+
+.register-pet-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(148, 125, 238, 0.4);
 }
 </style>
