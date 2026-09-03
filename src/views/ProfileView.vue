@@ -285,6 +285,11 @@
             <img :src="p.avatarUrl" :alt="p.name" class="persona-thumb" />
             <span class="persona-name">{{ p.name }} ({{ p.species }})</span>
           </button>
+
+          <button class="persona-pill-btn add-pet-pill-btn" @click="isPassportModalOpen = true">
+            <span class="plus-ico">+</span>
+            <span class="persona-name">Add Pet</span>
+          </button>
         </div>
 
         <!-- 2. Nuzzle Pro Membership VIP Banner (90 BDT / month) -->
@@ -451,7 +456,7 @@
         </div>
 
         <!-- 8. Memories Photo Grid -->
-        <div class="memories-photo-grid">
+        <div v-if="userGridImages.length > 0" class="memories-photo-grid">
           <div 
             v-for="(img, idx) in userGridImages" 
             :key="idx" 
@@ -460,6 +465,14 @@
           >
             <img :src="img" alt="Memory" class="grid-image" />
           </div>
+        </div>
+        <div v-else class="empty-memories-card">
+          <span class="empty-mem-icon">📸</span>
+          <h4 class="empty-mem-title">No Memories Shared Yet</h4>
+          <p class="empty-mem-sub">Share your pet's playful moments, park runs, or cozy naps with Dhaka's pet community.</p>
+          <button class="btn-solid bark-cta-btn" @click="isCreateSheetOpen = true">
+            <span>🐾 Bark First Memory</span>
+          </button>
         </div>
       </div>
     </div>
@@ -499,6 +512,7 @@ import PetPassportModal from '../components/profile/PetPassportModal.vue';
 import { 
   owner, 
   pets, 
+  posts,
   activeProfileId, 
   activePet, 
   setTab,
@@ -552,23 +566,25 @@ const currentBio = computed(() => {
   return owner.bio || 'Certified Pet Guardian • Portland, OR';
 });
 
+const userGridImages = computed(() => {
+  const myPosts = posts.filter(p => p.ownerId === owner.id || p.ownerName === owner.displayName || pets.some(pet => pet.name === p.petName));
+  const images: string[] = [];
+  for (const p of myPosts) {
+    if (p.mediaUrls && p.mediaUrls.length > 0) {
+      images.push(...p.mediaUrls);
+    }
+  }
+  return images;
+});
+
 const currentPostsCount = computed(() => {
-  if (activePet.value) return activePet.value.postsCount || 12;
-  return 24;
+  if (activePet.value) return activePet.value.postsCount || 0;
+  return userGridImages.value.length;
 });
 
 const myStoreListings = computed(() => {
   return marketplace.filter(m => m.sellerType === 'verified_shop' || m.sellerName.toLowerCase().includes('urbanhound') || m.sellerName === owner.displayName);
 });
-
-const userGridImages = [
-  'https://images.unsplash.com/photo-1552053831-71594a27632d?w=500&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=500&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=500&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=500&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=500&auto=format&fit=crop&q=80'
-];
 
 function toggleAnonymity() {
   if (activePet.value) {
@@ -1777,5 +1793,55 @@ function callEmergencyHotline() {
 .toast-slide-enter-from, .toast-slide-leave-to {
   opacity: 0;
   transform: translate(-50%, 10px);
+}
+
+/* Fresh User Empty States */
+.add-pet-pill-btn {
+  background: rgba(148, 125, 238, 0.1) !important;
+  border: 1px dashed var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+.plus-ico {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.empty-memories-card {
+  text-align: center;
+  padding: 32px 20px;
+  background: var(--bg-card);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-xl);
+  margin-top: 8px;
+}
+
+.empty-mem-icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.empty-mem-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 6px;
+}
+
+.empty-mem-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.bark-cta-btn {
+  padding: 10px 20px;
+  font-size: 12.5px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  margin: 0 auto;
 }
 </style>

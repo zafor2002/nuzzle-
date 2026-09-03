@@ -20,8 +20,6 @@ import type {
   UserAccount
 } from '../types';
 import { 
-  initialOwner, 
-  initialPets, 
   initialStories, 
   initialPosts, 
   initialReels, 
@@ -63,19 +61,22 @@ export const activePostForComments = ref<Post | null>(null);
 export const isProModalOpen = ref(false);
 export const currentRole = ref<UserRole>('parent');
 
-export const owner = reactive<Owner>({ ...initialOwner });
-export const pets = reactive<Pet[]>([
-  {
-    ...initialPets[0],
-    aiPersonality: 'Silly Goofball & Master Fetcher',
-    energyLevel: 'High Zoomies'
-  },
-  {
-    ...initialPets[1],
-    aiPersonality: 'Aristocratic Sunbather & Secret Poet',
-    energyLevel: 'Moderate'
-  }
-]);
+export const owner = reactive<Owner>({
+  id: 'owner_me',
+  username: 'petparent',
+  displayName: 'Pet Parent',
+  avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
+  bio: '🐾 Pet lover on Nuzzle • Welcome to Dhaka\'s Pet Community!',
+  isAnonymous: false,
+  isPrivate: false,
+  notifyLikes: true,
+  notifyComments: true,
+  notifyFollows: true,
+  followersCount: 0,
+  followingCount: 0
+});
+
+export const pets = reactive<Pet[]>([]);
 export const stories = reactive<Story[]>([...initialStories]);
 export const posts = reactive<Post[]>([...initialPosts]);
 export const reels = reactive<Reel[]>([...initialReels]);
@@ -875,6 +876,11 @@ export async function loginWithCredentials(credentials: { email?: string; passwo
     if (profile.bio) owner.bio = profile.bio;
   }
 
+  // Reset personal records to fresh state
+  pets.splice(0, pets.length);
+  healthLogs.splice(0, healthLogs.length);
+  appointments.splice(0, appointments.length);
+
   if (data?.owner?.pets && data.owner.pets.length > 0) {
     pets.splice(0, pets.length, ...data.owner.pets.map((p: any) => ({
       id: p.id,
@@ -940,6 +946,13 @@ export async function registerWithCredentials(data: {
   owner.role = data.role || 'parent';
   owner.displayName = data.displayName;
   owner.username = data.username;
+  owner.followersCount = 0;
+  owner.followingCount = 0;
+
+  // Clear mock records for a completely fresh account
+  pets.splice(0, pets.length);
+  healthLogs.splice(0, healthLogs.length);
+  appointments.splice(0, appointments.length);
 
   if (data.role === 'store') {
     owner.avatarUrl = 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=200&auto=format&fit=crop&q=80';
@@ -951,9 +964,9 @@ export async function registerWithCredentials(data: {
     owner.clinicName = data.clinicName;
   } else {
     owner.avatarUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80';
-    owner.bio = `Loving pet parent to ${data.petName || 'Companion'} • Nuzzle Community`;
+    owner.bio = `Loving pet parent • Nuzzle Community`;
     if (data.petName) {
-      pets.unshift({
+      pets.push({
         id: `pet_${Date.now()}`,
         ownerId: owner.id,
         name: data.petName,
@@ -964,7 +977,7 @@ export async function registerWithCredentials(data: {
           : 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&auto=format&fit=crop&q=80',
         isAnonymous: false,
         postsCount: 0,
-        followersCount: 1,
+        followersCount: 0,
         aiPersonality: 'Enthusiastic Companion',
         energyLevel: 'High Zoomies',
         isProMember: data.isPro || false
@@ -994,6 +1007,13 @@ export async function registerWithCredentials(data: {
 export async function performLogout() {
   await authService.logout();
   isAuthenticated.value = false;
+  owner.displayName = 'Pet Parent';
+  owner.username = 'petparent';
+  owner.followersCount = 0;
+  owner.followingCount = 0;
+  pets.splice(0, pets.length);
+  healthLogs.splice(0, healthLogs.length);
+  appointments.splice(0, appointments.length);
   currentTab.value = 'auth';
 }
 
@@ -1026,15 +1046,39 @@ function applySupabaseSession(session: any) {
   isAuthenticated.value = true;
 
   const meta = session.user.user_metadata || {};
-  if (meta.full_name || meta.name) {
-    owner.displayName = meta.full_name || meta.name;
-  }
+  owner.id = session.user.id;
+  owner.displayName = meta.full_name || meta.name || session.user.email?.split('@')[0] || 'Pet Parent';
+  owner.username = session.user.email ? session.user.email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '') : 'petparent';
   if (meta.avatar_url || meta.picture) {
     owner.avatarUrl = meta.avatar_url || meta.picture;
   }
-  if (session.user.email) {
-    owner.username = session.user.email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '');
-  }
+  owner.bio = '🐾 Pet lover on Nuzzle • Welcome to Dhaka\'s Pet Community!';
+  owner.followersCount = 0;
+  owner.followingCount = 0;
+  owner.role = 'parent';
+  currentRole.value = 'parent';
+
+  // Ensure personal records are fresh for this user
+  pets.splice(0, pets.length);
+  healthLogs.splice(0, healthLogs.length);
+  appointments.splice(0, appointments.length);
+  activeProfileId.value = owner.id;
+
+  // Sync profile & pets from backend if already saved
+  authService.getCurrentUser().then(res => {
+    if (res.success && res.data) {
+      const p = res.data;
+      if (p.displayName) owner.displayName = p.displayName;
+      if (p.username) owner.username = p.username;
+      if (p.avatarUrl) owner.avatarUrl = p.avatarUrl;
+      if (p.bio) owner.bio = p.bio;
+      if (p.followersCount !== undefined) owner.followersCount = p.followersCount;
+      if (p.followingCount !== undefined) owner.followingCount = p.followingCount;
+      if (p.pets && Array.isArray(p.pets) && p.pets.length > 0) {
+        pets.splice(0, pets.length, ...p.pets);
+      }
+    }
+  }).catch(() => {});
 
   // Switch to feed screen if user was on auth screen
   if (currentTab.value === 'auth') {
