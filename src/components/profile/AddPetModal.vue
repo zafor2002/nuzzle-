@@ -301,10 +301,10 @@ async function handleSubmit() {
 .add-pet-modal-shell {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-2xl);
+  border-radius: 24px;
   width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
+  max-width: 420px;
+  max-height: 86vh;
   display: flex;
   flex-direction: column;
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
@@ -324,40 +324,41 @@ async function handleSubmit() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 22px;
+  padding: 14px 18px;
   background: linear-gradient(135deg, rgba(148, 125, 238, 0.12), rgba(124, 58, 237, 0.06));
   border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
 .header-badge-group {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .gold-badge-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   background: linear-gradient(135deg, #F59E0B, #D97706);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 18px;
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 }
 
 .modal-title {
-  font-size: 17px;
+  font-size: 15.5px;
   font-weight: 800;
   color: var(--text-main);
   margin: 0;
 }
 
 .modal-sub {
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--text-muted);
-  margin: 2px 0 0;
+  margin: 1px 0 0;
 }
 
 .close-btn {
@@ -388,10 +389,10 @@ async function handleSubmit() {
 .form-scrollable-content {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 22px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 }
 
 .form-scrollable-content::-webkit-scrollbar {
@@ -518,9 +519,9 @@ async function handleSubmit() {
 
 .avatar-preset-thumb {
   position: relative;
-  width: 54px;
-  height: 54px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
   overflow: hidden;
   border: 2px solid transparent;
   cursor: pointer;
