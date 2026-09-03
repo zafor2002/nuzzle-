@@ -67,7 +67,12 @@ import NotificationsView from './views/NotificationsView.vue';
 import ProfileView from './views/ProfileView.vue';
 import SettingsView from './views/SettingsView.vue';
 
-import { currentTab } from './stores/appStore';
+import { onMounted } from 'vue';
+import { currentTab, initSupabaseAuthListener } from './stores/appStore';
+
+onMounted(() => {
+  initSupabaseAuthListener();
+});
 </script>
 
 <style scoped>

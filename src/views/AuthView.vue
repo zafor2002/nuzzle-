@@ -390,7 +390,7 @@
         </div>
 
         <div class="social-icons-row">
-          <button type="button" class="social-btn" @click="quickLogin(selectedRole)">
+          <button type="button" class="social-btn google-btn" :disabled="isSubmitting" @click="handleGoogleSignIn">
             <span class="social-icon">G</span>
             <span>Google</span>
           </button>
@@ -534,9 +534,26 @@ async function handleSubmit() {
   }
 }
 
+import { authService } from '../services/authService';
+
 function quickLogin(role: UserRole) {
   selectedRole.value = role;
   loginAsRole(role);
+}
+
+async function handleGoogleSignIn() {
+  authError.value = '';
+  isSubmitting.value = true;
+  try {
+    const { error } = await authService.loginWithGoogle();
+    if (error) {
+      authError.value = error.message || 'Google sign-in failed. Please try again.';
+    }
+  } catch (err: any) {
+    authError.value = err.message || 'Could not initialize Google authentication.';
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 
 function handleForgotPassword() {

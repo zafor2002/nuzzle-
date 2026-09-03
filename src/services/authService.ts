@@ -1,4 +1,5 @@
 import { apiClient } from './apiClient';
+import { supabase, signInWithGoogle } from './supabaseClient';
 import type { UserRole } from '../types';
 
 export interface SignupPayload {
@@ -34,11 +35,19 @@ export const authService = {
     return res;
   },
 
+  async loginWithGoogle() {
+    return signInWithGoogle();
+  },
+
   async getCurrentUser() {
     return apiClient.get('/auth/me');
   },
 
-  logout() {
+  async logout() {
     apiClient.setToken(null);
+    try {
+      await supabase.auth.signOut();
+    } catch {}
   },
 };
+

@@ -40,8 +40,10 @@ import {
   vetService, 
   lostFoundService, 
   marketplaceService, 
-  pawAiService 
+  pawAiService,
+  apiClient 
 } from '../services';
+import { supabase } from '../services/supabaseClient';
 
 // State
 export const currentTab = ref<TabType>('feed');
@@ -982,10 +984,55 @@ export async function registerWithCredentials(data: {
   return { success: true, data: res.data };
 }
 
-export function performLogout() {
-  authService.logout();
+export async function performLogout() {
+  await authService.logout();
   isAuthenticated.value = false;
   currentTab.value = 'auth';
+}
+
+/**
+ * Listen for Supabase OAuth returns (e.g. Google Sign-In redirect)
+ */
+export function initSupabaseAuthListener() {
+  // Check initial session
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (session?.user) {
+      applySupabaseSession(session);
+    }
+  });
+
+  // Listen for auth state changes
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (session?.user && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED')) {
+      applySupabaseSession(session);
+    } else if (event === 'SIGNED_OUT') {
+      isAuthenticated.value = false;
+      currentTab.value = 'auth';
+    }
+  });
+}
+
+function applySupabaseSession(session: any) {
+  if (!session?.user) return;
+  const token = session.access_token;
+  apiClient.setToken(token);
+  isAuthenticated.value = true;
+
+  const meta = session.user.user_metadata || {};
+  if (meta.full_name || meta.name) {
+    owner.displayName = meta.full_name || meta.name;
+  }
+  if (meta.avatar_url || meta.picture) {
+    owner.avatarUrl = meta.avatar_url || meta.picture;
+  }
+  if (session.user.email) {
+    owner.username = session.user.email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '');
+  }
+
+  // Switch to feed screen if user was on auth screen
+  if (currentTab.value === 'auth') {
+    currentTab.value = 'feed';
+  }
 }
 
 
