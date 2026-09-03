@@ -1,181 +1,312 @@
-# 🐾 NuzzleAI — Next-Gen AI-Powered Pet Social & Health Ecosystem
+# 🐾 Nuzzle — Full-Stack Social & Healthcare Ecosystem for Pets
 
 <div align="center">
-  <p align="center">
-    <strong>Where Pets Have Personas, Health Meets AI, and Communities Connect.</strong>
-  </p>
 
-  [![Vue 3](https://img.shields.io/badge/Vue-3.5-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)](https://vuejs.org/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-  [![Vite](https://img.shields.io/badge/Vite-6.4-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-  [![Live Demo](https://img.shields.io/badge/Live_Demo-Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://nuzzleai.netlify.app/)
+**Round 2: Backend & API Integration (Weeks 3–4)**  
+*Session 2: Building RESTful APIs & Connecting Frontend to Backend*
+
+[![Vue 3](https://img.shields.io/badge/Vue-3.5-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)](https://vuejs.org/)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16_REST-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Prisma 7](https://img.shields.io/badge/Prisma-7.0-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL_%26_Auth-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+[![Vercel](https://img.shields.io/badge/Deployed-Vercel-black?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+
+**Live GitHub Repositories:**  
+Frontend Client: [https://github.com/zafor2002/nuzzle-](https://github.com/zafor2002/nuzzle-)  
+Backend REST Engine: [https://github.com/zafor2002/nuzzle-backend](https://github.com/zafor2002/nuzzle-backend)
+
 </div>
 
 ---
 
-## 🌟 Overview
+## 📖 Table of Contents
 
-**NuzzleAI** is a comprehensive, mobile-first social ecosystem crafted specifically for pet parents, rescue organizations, veterinary clinics, and animal lovers. Blending cutting-edge multimodal AI tools, biometric digital pet passports, real-time emergency dispatch coordination, and community adoption booking, Nuzzle redefines how pet care and pet social networks converge.
-
-🌐 **Live Demo Application**: [https://nuzzleai.netlify.app/](https://nuzzleai.netlify.app/)
-
----
-
-## 🚀 Key Feature Suite
-
-### 1. 🛂 Official Digital Pet Passport & RFID Biometrics
-* **Diplomatic Gold-Embossed Digital Passports**: Biometric identity card with security watermarks, ISO 11784 RFID microchip barcode, and scannable QR Code for veterinary clinics and emergency recovery.
-* **Verified Immunization & Booster Visas**: Gold-stamped records for Rabies 3-Year, DHPP 5-in-1, Bordetella, and FVRCP with clinic authentication signatures and booster countdowns.
-* **Travel Clearance Certification**: Flight cabin & cargo compliance clearance with USDA/IATA safety tags and behavioral temperament certification.
-* **Multi-Pet Switcher**: Seamless instant switching between multiple pets and guardian profiles.
-
-### 2. 👻 Anonymous / Ghost Mode
-* **One-Tap Identity Concealment**: Toggle ghost mode to conceal real names and profile avatars across public feeds, discovery channels, and community comments.
-* **Ethereal Visual Feedback**: Dynamic purple glow status, masked `@anon_handle` personas, and private browsing safeguards.
-
-### 3. 🚨 Lost & Found Emergency Radar (Claim-and-Lock Dispatch)
-* **5-Mile Geofenced Community Broadcast**: Instant neighborhood broadcast system for missing pets with photo alerts, last seen coordinates, and microchip numbers.
-* **Claim-and-Lock Rescue Dispatch**: Volunteers, shelters, or owners can claim an alert with one click to lock duplicate search runs, coordinate veterinary care, or mark pets as **🎉 Reunited with Family**.
-
-### 4. 🏡 Pet Adoption Center & Meet-and-Greet Booking
-* **Verified Shelter & Foster Listings**: Browse adoptable dogs, cats, rabbits, and birds with vaccination badges and temperament tags.
-* **Integrated Meet & Greet Scheduler**: Select preferred visit days and time slots with immediate calendar integration.
-* **48-Hour Adoption Hold Guarantee**: Place a priority reservation hold on a pet while application screening paperwork is processed.
-* **Foster Care & Medical Sponsorship**: Community sponsorship for emergency veterinary procedures and foster parenting.
-
-### 5. 🤖 PawAI Multi-Tool Intelligence Hub
-* 🔍 **Vision Breed Scanner**: Real-time camera recognition with genetic purity percentages and breed history.
-* 🩺 **24/7 AI Health & Triage Assistant**: Symptom analysis, urgency tiering (🟢 Low / 🟡 Moderate / 🔴 Emergency), and home-care guidance.
-* 🗣️ **Mood & Vocalization Translator**: Bark & meow acoustic analysis to decode emotional states (Happy, Anxious, Playful, Hungry).
-* 🐕 **Playdate Matchmaker**: Compatibility scoring based on breed energy levels, size, and social temperaments.
-* 🎨 **AI Studio Portraits**: Transform everyday pet photos into Royal Renaissance, Cyberpunk, and Watercolor masterpieces.
-
-### 6. 📱 Social Den Feed, Snuggle Circles & Pet Reels
-* **Interactive Den Feed**: Infinite scroll with photo carousels, double-tap heart animations, pet reactions (🐾 Paws, ❤️ Love, 🦴 Bones), and nested comment threads.
-* **Snuggle Circles Stories**: 24-hour visual stories with progress indicators, tap navigation, and direct story reactions.
-* **Vertical Pet Reels**: Full-screen short-form video reel experience with audio track metadata and community comments.
-
-### 7. 🏥 Tele-Vet Clinic Booking & Health Passports
-* **Verified Vet Directory**: Direct scheduling for preventative wellness checkups, emergency triage, vaccination boosters, and dental care.
-* **Digital Health Logs**: Weight trackers, allergy histories, medication schedules, and exportable PDF medical cards.
-
-### 8. 🛍️ Marketplace & Direct Messaging
-* **Curated Pet Marketplace**: High-grade nutrition, orthopedic beds, GPS collars, and interactive toys with instant cart checkout.
-* **Direct Pet Messaging**: Real-time simulated chat with typing indicators, photo attachments, and appointment confirmations.
+1. [Executive Summary & Project Context](#-executive-summary--project-context)
+2. [Full-Stack Architecture Overview](#-full-stack-architecture-overview)
+3. [RESTful API Architecture & Principles](#-restful-api-architecture--principles)
+4. [Database Schema & Cloud Persistence (Prisma 7 + Supabase)](#-database-schema--cloud-persistence)
+5. [Authentication & Security Architecture](#-authentication--security-architecture)
+6. [API Endpoints Reference Suite](#-api-endpoints-reference-suite)
+7. [Frontend-to-Backend Integration Layer](#-frontend-to-backend-integration-layer)
+8. [Fresh Account Lifecycle & First-Visit Auth Gate](#-fresh-account-lifecycle--first-visit-auth-gate)
+9. [Environment Variables Reference](#-environment-variables-reference)
+10. [Local Development & Execution Guide](#-local-development--execution-guide)
+11. [Production Cloud Deployment Guide](#-production-cloud-deployment-guide)
+12. [Academic Deliverables & Presentation Deck](#-academic-deliverables--presentation-deck)
 
 ---
 
-## 🛠️ Technology Stack
+## 🌟 Executive Summary & Project Context
 
-| Layer | Technologies |
-|---|---|
-| **Frontend Framework** | [Vue 3](https://vuejs.org/) (Composition API, `<script setup lang="ts">`) |
-| **Language** | [TypeScript 5.8](https://www.typescriptlang.org/) |
-| **Build & Bundler** | [Vite 6.4](https://vitejs.dev/) |
-| **State Management** | Centralized Reactive Store with LocalStorage Persistence |
-| **Icons** | [Lucide Vue Next](https://lucide.dev/) |
-| **Design System** | Custom Lavender & Indigo Design System with Glassmorphism, Dark/Light Theme Engine, and Mobile-First Viewports |
-| **Slide Presentation** | HTML5 Presentation Hub & Automated PPTX Generator |
+**Nuzzle** is an AI-powered, mobile-first social and healthcare network uniting pet parents, veterinary clinics, and pet stores. 
+
+This repository and document represent the core deliverables for **Round 2: Backend & API Integration (Weeks 3–4)**, fulfilling **Session 2: Building RESTful APIs & Connecting Frontend to Backend**:
+- **Deliverable 1**: Overview of Backend Architecture (REST principles, schema, authentication).
+- **Deliverable 2**: API Integration Demo (connecting the Vue.js frontend with live REST endpoints).
+- **Deliverable 3**: Lessons Learned & Improvements Made (connection poolers, Google OAuth 2.0, fresh account lifecycle, and production cloud release).
 
 ---
 
-## 📂 Project Structure
+## 🏛️ Full-Stack Architecture Overview
+
+Nuzzle implements a decoupled, modern three-tier cloud architecture designed for high throughput, sub-50ms latency, and zero client-server coupling.
 
 ```
-nuzzle/
-├── presentation/               # Interactive HTML5 pitch deck & slide assets
-│   ├── index.html              # Standalone interactive pitch deck
-│   └── PRESENTATION_SCRIPT...  # Slide transcripts & presenter cues
-├── presentation_screenshots/   # High-resolution application screenshots
-├── public/                     # Static public assets
-├── scripts/
-│   ├── capture_screens.cjs     # Automated screenshot capture script
-│   └── generate_pptx.cjs       # PowerPoint deck generation utility
-├── src/
-│   ├── assets/                 # SVGs and vector graphics
-│   ├── components/
-│   │   ├── chat/               # Chat window modal & message threads
-│   │   ├── common/             # Monogram logo & shared UI components
-│   │   ├── create/             # Create sheet & post publication modal
-│   │   ├── feed/               # PostCard, StoryTray, StoryViewerModal
-│   │   ├── layout/             # TopBar, BottomNav navigation
-│   │   └── profile/            # PetPassportModal & Passport components
-│   ├── data/
-│   │   └── mockData.ts         # Mock datasets for feeds, stories, vets, adoptions
-│   ├── stores/
-│   │   └── appStore.ts         # Central reactive state engine & store actions
-│   ├── types/
-│   │   └── index.ts            # TypeScript interfaces & domain types
-│   ├── views/
-│   │   ├── AdoptionView.vue    # Pet Adoption Center & Meet & Greet booking
-│   │   ├── ExploreView.vue     # Discovery & hashtag communities
-│   │   ├── FeedView.vue        # Social den feed & story tray
-│   │   ├── HealthLogsView.vue  # Medical records & health tracker
-│   │   ├── LostFoundView.vue   # Emergency radar & Claim-and-Lock dispatch
-│   │   ├── MarketplaceView.vue # Curated pet supplies marketplace
-│   │   ├── MessagesView.vue    # Inbox & direct messaging
-│   │   ├── PawAIView.vue       # AI vision scanner, triage & translator
-│   │   ├── ProfileView.vue     # Pet personas, passport widget & ghost mode
-│   │   ├── ReelsView.vue       # Vertical short-form pet reels
-│   │   ├── SettingsView.vue    # App settings, theme toggles & preferences
-│   │   └── VetBookingView.vue  # Clinic directory & vet slot booking
-│   ├── App.vue                 # Root application component
-│   ├── main.ts                 # Vue app initialization
-│   └── style.css               # Global CSS design tokens & utilities
-├── index.html                  # HTML entry point
-├── package.json                # Project dependencies and npm scripts
-├── tsconfig.json               # TypeScript configuration
-└── vite.config.ts              # Vite configuration
+┌────────────────────────────────────────────────────────────────────────┐
+│                         TIER 1: CLIENT APPLICATION                     │
+│               Vue 3 (Composition API) • Vite 6 • TypeScript            │
+│  • Reactive State (appStore.ts)          • Tactile Pet Reactions (🐾)  │
+│  • Typed HTTP Client (apiClient.ts)      • First-Visit Auth Gate       │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ HTTP / JSON (Bearer JWT)
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        TIER 2: REST API GATEWAY                        │
+│               Next.js 16 Route Handlers • Serverless Functions         │
+│  • Stateless REST Resource Routes        • Standard JSON Envelopes     │
+│  • Zod Input Validation                  • Multi-Role Access Control   │
+│  • PawDoctor AI Triage Processor         • CORS & Error Boundaries     │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ TCP / Connection Pooling
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                  TIER 3: PERSISTENCE & CLOUD SECURITY                  │
+│               Prisma 7 ORM • Supabase PostgreSQL • Auth                │
+│  • 18 Relational Database Models         • Google OAuth 2.0 Provider   │
+│  • Transaction Pooler (Port 6543)        • Session Pooler (Port 5432)  │
+│  • PostgreSQL Row Level Security         • Encrypted JWT Sessions      │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## ⚡ Getting Started
+## ⚡ RESTful API Architecture & Principles
 
-### Prerequisites
-* **Node.js**: v18.0.0 or higher
-* **npm**: v9.0.0 or higher
+The backend REST engine strictly adheres to foundational REST architectural constraints:
 
-### Installation
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/Nadim1341/NuzzleAI.git
-   cd NuzzleAI
+1. **Stateless Communication**: Every request carries complete authentication context via `Authorization: Bearer <Supabase_JWT>` headers. No session state is held in server memory.
+2. **Resource-Oriented URI Design**: All URIs represent intuitive plural noun resources (e.g., `/api/posts`, `/api/lost-found`, `/api/vet/appointments`, `/api/marketplace`).
+3. **Standard HTTP Verbs**:
+   - `GET`: Safe, idempotent resource retrieval.
+   - `POST`: Creation of new entities or action dispatches (e.g., reactions, claims, triage).
+   - `PATCH` / `PUT`: Updates to existing resource attributes.
+   - `DELETE`: Safe removal of resources.
+4. **Standard JSON Envelopes**:
+   Every response uses a predictable structure for seamless client consumption:
+   ```json
+   {
+     "success": true,
+     "data": { ... },
+     "meta": { "count": 18, "page": 1 }
+   }
    ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Start local development server**:
-   ```bash
-   npm run dev
-   ```
-   Open your browser at `http://localhost:5173/`
-
-4. **Build for production**:
-   ```bash
-   npm run build
+   On errors:
+   ```json
+   {
+     "success": false,
+     "error": "Descriptive error message",
+     "statusCode": 400
+   }
    ```
 
 ---
 
-## 🎨 Design Philosophy & Aesthetics
+## 🗄️ Database Schema & Cloud Persistence
 
-* **Curated Palette**: Signature Lavender `#947DEE`, Soft Violet `#7C3AED`, Rose `#E11D48`, and Gold Accents `#F59E0B`.
-* **Dark Mode Engine**: Automatic system theme detection with manual light/dark toggle and high-contrast accessibility.
-* **Fluid Micro-Animations**: Spring-like tab switching, heart burst particles, slide-in sheets, and shimmer loaders.
-* **Mobile-First Layout**: Optimized viewport frame with responsive desktop wrapper and native mobile feel.
+The persistent data layer is powered by **Prisma 7** mapping to a managed **Supabase PostgreSQL** cloud cluster.
+
+### 18 Relational Models Synchronized:
+- **Identity & Accounts**: `Owner`, `Pet`, `Follow`
+- **Social Den Feed**: `Post`, `Comment`, `Like`, `Hashtag`, `HashtagsOnPosts`
+- **Ephemeral Media**: `Story`, `StoryView`, `Reel`, `ReelLike`
+- **Emergency & Radar**: `LostFoundPost` (with geolocation lat/long coordinates & volunteer claim lock)
+- **Clinical & Telemedicine**: `Vet`, `Appointment`, `HealthLog`
+- **Boutique & Adoption**: `MarketplaceListing`, `AdoptionListing`
+- **Direct Messaging & Activity**: `Message`, `Notification`
+
+### Dual Connection Pooling Strategy:
+To solve connection starvation on serverless runtime platforms, Nuzzle implements two distinct Supabase connection strings:
+- **Transaction Pooler (Port 6543, `pgbouncer=true`)**: Used for `DATABASE_URL`. Serves all runtime API queries, multiplexing thousands of concurrent client requests over a lean pool of PostgreSQL connections.
+- **Session Pooler (Port 5432)**: Used for `DIRECT_URL`. Dedicated exclusively to schema migrations (`prisma db push`) and structural DDL modifications requiring session-level locks.
 
 ---
 
-## 📄 License
+## 🔐 Authentication & Security Architecture
 
-This project is open-source and licensed under the [MIT License](LICENSE).
+Nuzzle features a production-grade multi-role authentication engine integrated with **Supabase Auth**:
+
+### 1. Three-Role Hierarchy:
+- 🐾 **Pet Guardian (`parent`)**: Can register pets, log vaccines, publish social moments, book vet appointments, and broadcast 5-mile lost pet radar alerts.
+- 🛍️ **Verified Pet Store (`store`)**: Can publish marketplace items, manage boutique inventory, and display the official Gold Shield verification badge.
+- 🏥 **Licensed Vet Clinic (`vet`)**: Manages telemedicine calendar slots, reviews medical histories, and receives PawDoctor clinical emergency triage dispatches.
+
+### 2. Google OAuth 2.0 Integration ("Continue with Google"):
+- **One-Click Onboarding**: Users authenticate with their Google accounts in a single click.
+- **Auto-Provisioning**: On callback, `/api/auth/me` automatically creates an isolated `Owner` record in PostgreSQL with their real Google name and avatar.
+- **Supabase OAuth Return Listener**: `initSupabaseAuthListener()` in `appStore.ts` detects token redirects and switches directly into the Den Feed.
+
+---
+
+## 📡 API Endpoints Reference Suite
+
+| Category | Method | Endpoint URI | Description |
+|---|---|---|---|
+| **Auth** | `POST` | `/api/auth/signup` | Registers email/password in Supabase Auth & creates PostgreSQL Owner. |
+| **Auth** | `POST` | `/api/auth/login` | Authenticates credentials and returns Supabase Bearer JWT token. |
+| **Auth** | `GET` | `/api/auth/me` | Validates Bearer token & auto-provisions fresh owner record. |
+| **Den Feed** | `GET` | `/api/posts` | Returns paginated social moments with category and hashtag filters. |
+| **Den Feed** | `POST` | `/api/posts` | Publishes a new moment with pet persona tag and media URLs. |
+| **Reactions** | `POST` | `/api/posts/:id/react` | Toggles one of 5 tactile reactions (🐾 Paw, 💜 Nuzzle, 🦴 Treat, 🎾 Ball, 😻 Purr). |
+| **Comments** | `POST` | `/api/posts/:id/comments` | Submits threaded comment as either human guardian or pet persona. |
+| **Stories** | `GET` | `/api/stories` | Retrieves active 24-hour visual Snuggle Circle story reels. |
+| **Radar** | `GET` | `/api/lost-found` | Queries missing/found pets filtered by 5-mile coordinate bounding box. |
+| **Radar** | `POST` | `/api/lost-found` | Broadcasts high-priority emergency lost pet push alert. |
+| **Rescue** | `POST` | `/api/lost-found/:id/claim` | Locks rescue case to 1 volunteer to prevent duplicate dispatch runs. |
+| **Vets** | `GET` | `/api/vet/directory` | Lists accredited veterinary hospitals with ratings and distance radius. |
+| **Appointments**| `POST` | `/api/vet/appointments` | Schedules consultation preventing calendar slot collisions. |
+| **Marketplace** | `GET` | `/api/marketplace` | Returns products filtered by category (Food, Toys, Beds, Health). |
+| **Marketplace** | `POST` | `/api/marketplace` | Verified merchants list authentic products with stock counts. |
+| **Adoption** | `GET` | `/api/adoption` | Lists rescue animals with vaccination visas and temperament tags. |
+| **PawAI** | `POST` | `/api/pawai/triage` | 24/7 symptom triage engine with bilingual (Bangla/English) analysis. |
+
+---
+
+## 🔗 Frontend-to-Backend Integration Layer
+
+The Vue 3 frontend communicates with the REST API via a clean, decoupled service architecture:
+
+### 1. `apiClient.ts` Core HTTP Client
+- Restores Bearer JWT from `localStorage`.
+- Automatically attaches `Authorization: Bearer <token>` to outbound requests.
+- Unwraps `{ success, data, error }` envelopes and provides typed generic responses.
+
+### 2. Domain Service Modules
+Business logic is organized into modular services:
+- `authService`: Signup, login, Google OAuth, session retrieval, logout.
+- `postService`: Feed pagination, publishing, tactile reactions.
+- `vetService`: Hospital directory and slot booking.
+- `lostFoundService`: Emergency radar broadcasts and volunteer claim-and-lock.
+- `pawAiService`: 24/7 symptom triage dispatches.
+
+### 3. Optimistic UI Updates & Error Rollback
+For tactile actions (e.g. reacting with 💜 Nuzzle or claiming a lost pet), the Vue reactive store (`appStore.ts`) increments the UI counter **instantly** (0ms perceived latency). It then sends the asynchronous REST request in the background. If the server fails, the state rolls back automatically and displays an alert toast.
+
+---
+
+## 🌱 Fresh Account Lifecycle & First-Visit Auth Gate
+
+To ensure a true production experience upon launch:
+
+1. **First-Visit Auth Gate**:
+   - Fresh visitors with no active session in `localStorage` land directly on the **Sign In / Sign Up / Continue with Google** screen.
+   - The navigation bar is hidden until the user signs in.
+2. **Account Isolation & Clean Slate**:
+   - New users receive an isolated personal profile with **0 followers**, **0 following**, and **0 pre-loaded stranger pets**.
+   - Their personal passport displays a clean `+ Add Pet` prompt to register their own companions.
+   - Their profile memories grid shows only the photos **they** post, rather than hardcoded mock images.
+
+---
+
+## ⚙️ Environment Variables Reference
+
+### Backend (`Pet Social media/.env` & `.env.local`):
+```env
+# Database Connection (Transaction Pooler - Port 6543)
+DATABASE_URL="postgresql://postgres.knykelyweiuslgfljiir:eVldjiOQoMS9okV7@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true"
+
+# Database Connection (Session Pooler - Port 5432 - Schema Migrations)
+DIRECT_URL="postgresql://postgres.knykelyweiuslgfljiir:eVldjiOQoMS9okV7@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres"
+
+# Supabase Cloud Project Credentials (Both Private & Public supported)
+SUPABASE_URL="https://knykelyweiuslgfljiir.supabase.co"
+SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+### Frontend (`forntenduse vue js/.env`):
+```env
+# Live Backend REST API Endpoint
+VITE_API_BASE_URL="http://localhost:3000/api"
+
+# Supabase Auth Credentials
+VITE_SUPABASE_URL="https://knykelyweiuslgfljiir.supabase.co"
+VITE_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+---
+
+## 💻 Local Development & Execution Guide
+
+### Prerequisites:
+- **Node.js**: v18.0.0 or higher
+- **npm**: v9.0.0 or higher
+- Active internet connection for Supabase Cloud PostgreSQL and Auth
+
+### 1. Start the Backend REST API Engine:
+```bash
+cd "Pet Social media"
+npm install
+npm run dev
+```
+The Next.js REST API engine will start on **`http://localhost:3000`**.  
+Visiting `http://localhost:3000` opens the **Nuzzle API v2.0 Console & Status Dashboard**.
+
+### 2. Start the Vue.js Frontend Client:
+```bash
+cd "forntenduse vue js"
+npm install
+npm run dev
+```
+The Vue 3 client will start on **`http://localhost:5173`**.
+
+---
+
+## 🚀 Production Cloud Deployment Guide
+
+### Deploying Frontend to Vercel:
+1. Import repository `https://github.com/zafor2002/nuzzle-`.
+2. Framework Preset: **Vite**.
+3. Add Environment Variables:
+   - `VITE_API_BASE_URL` = `https://nuzzle-backend.vercel.app/api`
+   - `VITE_SUPABASE_URL` = `https://knykelyweiuslgfljiir.supabase.co`
+   - `VITE_SUPABASE_ANON_KEY` = `eyJhbGciOi...`
+4. Deploy!
+
+### Deploying Backend to Vercel:
+1. Import repository `https://github.com/zafor2002/nuzzle-backend`.
+2. Framework Preset: **Next.js**.
+3. Add Environment Variables:
+   - `DATABASE_URL`, `DIRECT_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`.
+4. Deploy!
+
+### Supabase URL Configuration (Production):
+In **Supabase Dashboard ➔ Authentication ➔ URL Configuration**:
+- **Site URL**: `https://your-frontend-app.vercel.app`
+- **Redirect URLs**:
+  - `https://your-frontend-app.vercel.app/**`
+  - `http://localhost:5173/**`
+
+---
+
+## 📊 Academic Deliverables & Presentation Deck
+
+An automated 16:9 widescreen PowerPoint deck is generated directly from source:
+
+- **Presentation File**: [`Nuzzle_Round2_Backend_API_Presentation.pptx`](./Nuzzle_Round2_Backend_API_Presentation.pptx)
+- **Generator Script**: [`forntenduse vue js/scripts/generate_round2_pptx.cjs`](./forntenduse%20vue%20js/scripts/generate_round2_pptx.cjs)
+- **Structure**: 10 Slides formatted for a **5-minute pitch per participant**, strictly using **Times New Roman** typography.
+
+To rebuild the presentation at any time:
+```bash
+cd "forntenduse vue js"
+node scripts/generate_round2_pptx.cjs
+```
+
+---
 
 <div align="center">
-  <sub>Built with ❤️ for pets and their humans worldwide.</sub>
+
+**Nuzzle Full-Stack Engine**  
+*Built for Gigalogy Technopreneurship 2026 • Abu Zafor, Nadim Rahman, Rizvi Sarker*
+
 </div>
