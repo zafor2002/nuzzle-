@@ -15,143 +15,146 @@
         </button>
       </div>
 
-      <!-- Scrollable Form Body -->
+      <!-- Form Container -->
       <form class="add-pet-form" @submit.prevent="handleSubmit">
-        <!-- 1. Pet Name & Species -->
-        <div class="form-section">
-          <label class="section-label">1. Pet Name & Species *</label>
-          <div class="input-group">
-            <input 
-              v-model="form.name" 
-              type="text" 
-              placeholder="Pet name (e.g. Archie, Luna, Milo)" 
-              required
-              class="text-input pet-name-input"
-            />
-          </div>
-
-          <!-- Species Chips -->
-          <div class="species-chips-grid">
-            <button 
-              v-for="s in speciesOptions" 
-              :key="s.value"
-              type="button"
-              class="species-chip"
-              :class="{ active: form.species === s.value }"
-              @click="handleSelectSpecies(s.value)"
-            >
-              <span class="s-emoji">{{ s.emoji }}</span>
-              <span class="s-label">{{ s.label }}</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 2. Breed & Age -->
-        <div class="form-section">
-          <label class="section-label">2. Breed & Physical Traits</label>
-          <div class="two-col-grid">
-            <div class="input-field">
-              <span class="field-caption">Breed</span>
+        <div class="form-scrollable-content">
+          <!-- 1. Pet Name & Species -->
+          <div class="form-section">
+            <label class="section-label">1. Pet Name & Species *</label>
+            <div class="input-group">
               <input 
-                v-model="form.breed" 
+                v-model="form.name" 
                 type="text" 
-                :placeholder="form.species === 'Dog' ? 'Golden Retriever' : form.species === 'Cat' ? 'Persian / Mixed' : 'Breed or Variety'" 
+                placeholder="Pet name (e.g. Archie, Luna, Milo)" 
+                required
+                class="text-input pet-name-input"
+                autofocus
+              />
+            </div>
+
+            <!-- Species Chips -->
+            <div class="species-chips-grid">
+              <button 
+                v-for="s in speciesOptions" 
+                :key="s.value"
+                type="button"
+                class="species-chip"
+                :class="{ active: form.species === s.value }"
+                @click="handleSelectSpecies(s.value)"
+              >
+                <span class="s-emoji">{{ s.emoji }}</span>
+                <span class="s-label">{{ s.label }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. Breed & Physical Traits -->
+          <div class="form-section">
+            <label class="section-label">2. Breed & Physical Traits</label>
+            <div class="two-col-grid">
+              <div class="input-field">
+                <span class="field-caption">Breed</span>
+                <input 
+                  v-model="form.breed" 
+                  type="text" 
+                  :placeholder="form.species === 'Dog' ? 'Golden Retriever' : form.species === 'Cat' ? 'Persian / Mixed' : 'Breed or Variety'" 
+                  class="text-input"
+                />
+              </div>
+              <div class="input-field">
+                <span class="field-caption">Age / Approx. Years</span>
+                <input 
+                  v-model="form.age" 
+                  type="text" 
+                  placeholder="e.g. 2 yrs, 6 mos" 
+                  class="text-input"
+                />
+              </div>
+            </div>
+
+            <div class="two-col-grid mt-2">
+              <div class="input-field">
+                <span class="field-caption">Weight</span>
+                <input 
+                  v-model="form.weight" 
+                  type="text" 
+                  placeholder="e.g. 14.2 kg" 
+                  class="text-input"
+                />
+              </div>
+              <div class="input-field">
+                <span class="field-caption">Microchip ID</span>
+                <input 
+                  v-model="form.microchipId" 
+                  type="text" 
+                  placeholder="Auto-generated if blank" 
+                  class="text-input"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Avatar Selection -->
+          <div class="form-section">
+            <label class="section-label">3. Passport Photo</label>
+            <span class="field-desc">Choose a portrait or enter your pet's photo link:</span>
+            
+            <div class="avatar-presets-strip">
+              <div 
+                v-for="(img, idx) in currentPresetAvatars" 
+                :key="idx"
+                class="avatar-preset-thumb"
+                :class="{ selected: form.avatarUrl === img }"
+                @click="form.avatarUrl = img"
+              >
+                <img :src="img" alt="Preset Avatar" class="preset-img" />
+                <div v-if="form.avatarUrl === img" class="check-overlay">✓</div>
+              </div>
+            </div>
+
+            <div class="input-field mt-2">
+              <span class="field-caption">Custom Photo URL (optional)</span>
+              <input 
+                v-model="form.avatarUrl" 
+                type="url" 
+                placeholder="https://..." 
                 class="text-input"
               />
             </div>
+          </div>
+
+          <!-- 4. Bio & Personality -->
+          <div class="form-section">
+            <label class="section-label">4. Personality & Bio</label>
             <div class="input-field">
-              <span class="field-caption">Age / Approx. Years</span>
-              <input 
-                v-model="form.age" 
-                type="text" 
-                placeholder="e.g. 2 yrs, 6 mos" 
-                class="text-input"
-              />
+              <span class="field-caption">AI Personality Archetype</span>
+              <select v-model="form.aiPersonality" class="text-input select-input">
+                <option value="Enthusiastic Companion">Enthusiastic Companion ⚡</option>
+                <option value="Gentle Guardian">Gentle Guardian 🛡️</option>
+                <option value="Master Fetcher & Zoomer">Master Fetcher & Zoomer 🎾</option>
+                <option value="Cozy Purr Machine">Cozy Purr Machine 😻</option>
+                <option value="Curious Adventurer">Curious Adventurer 🌲</option>
+              </select>
+            </div>
+
+            <div class="input-field mt-2">
+              <span class="field-caption">Short Bio</span>
+              <textarea 
+                v-model="form.bio" 
+                placeholder="Share a fun fact about your pet! Favorite toys, park habits, or quirky behaviors..." 
+                rows="2"
+                class="text-input textarea-input"
+              ></textarea>
             </div>
           </div>
 
-          <div class="two-col-grid mt-2">
-            <div class="input-field">
-              <span class="field-caption">Weight</span>
-              <input 
-                v-model="form.weight" 
-                type="text" 
-                placeholder="e.g. 14.2 kg" 
-                class="text-input"
-              />
-            </div>
-            <div class="input-field">
-              <span class="field-caption">Microchip ID</span>
-              <input 
-                v-model="form.microchipId" 
-                type="text" 
-                placeholder="Auto-generated if blank" 
-                class="text-input"
-              />
-            </div>
+          <!-- Submit Error / Feedback -->
+          <div v-if="errorMessage" class="error-banner">
+            {{ errorMessage }}
           </div>
         </div>
 
-        <!-- 3. Avatar Selection -->
-        <div class="form-section">
-          <label class="section-label">3. Passport Photo</label>
-          <span class="field-desc">Choose a portrait or enter your pet's photo link:</span>
-          
-          <div class="avatar-presets-strip">
-            <div 
-              v-for="(img, idx) in currentPresetAvatars" 
-              :key="idx"
-              class="avatar-preset-thumb"
-              :class="{ selected: form.avatarUrl === img }"
-              @click="form.avatarUrl = img"
-            >
-              <img :src="img" alt="Preset Avatar" class="preset-img" />
-              <div v-if="form.avatarUrl === img" class="check-overlay">✓</div>
-            </div>
-          </div>
-
-          <div class="input-field mt-2">
-            <span class="field-caption">Custom Photo URL (optional)</span>
-            <input 
-              v-model="form.avatarUrl" 
-              type="url" 
-              placeholder="https://..." 
-              class="text-input"
-            />
-          </div>
-        </div>
-
-        <!-- 4. Bio & Personality -->
-        <div class="form-section">
-          <label class="section-label">4. Personality & Bio</label>
-          <div class="input-field">
-            <span class="field-caption">AI Personality Archetype</span>
-            <select v-model="form.aiPersonality" class="text-input select-input">
-              <option value="Enthusiastic Companion">Enthusiastic Companion ⚡</option>
-              <option value="Gentle Guardian">Gentle Guardian 🛡️</option>
-              <option value="Master Fetcher & Zoomer">Master Fetcher & Zoomer 🎾</option>
-              <option value="Cozy Purr Machine">Cozy Purr Machine 😻</option>
-              <option value="Curious Adventurer">Curious Adventurer 🌲</option>
-            </select>
-          </div>
-
-          <div class="input-field mt-2">
-            <span class="field-caption">Short Bio</span>
-            <textarea 
-              v-model="form.bio" 
-              placeholder="Share a fun fact about your pet! Favorite toys, park habits, or quirky behaviors..." 
-              rows="2"
-              class="text-input textarea-input"
-            ></textarea>
-          </div>
-        </div>
-
-        <!-- Submit Error / Feedback -->
-        <div v-if="errorMessage" class="error-banner">
-          {{ errorMessage }}
-        </div>
-
-        <!-- Modal Footer Actions -->
+        <!-- Sticky Modal Footer Actions (Always Visible!) -->
         <div class="modal-footer-row">
           <button type="button" class="btn-ghost cancel-btn" @click="close">
             Cancel
@@ -375,11 +378,37 @@ async function handleSubmit() {
 }
 
 .add-pet-form {
-  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.form-scrollable-content {
+  flex: 1;
   overflow-y: auto;
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
   gap: 18px;
+}
+
+.form-scrollable-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.form-scrollable-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.form-scrollable-content::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 999px;
+}
+
+.form-scrollable-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
 }
 
 .form-section {
@@ -545,11 +574,14 @@ async function handleSubmit() {
 
 .modal-footer-row {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 6px;
-  padding-top: 14px;
+  gap: 12px;
+  padding: 14px 22px;
+  background: var(--bg-card);
   border-top: 1px solid var(--border-color);
+  flex-shrink: 0;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .cancel-btn {
