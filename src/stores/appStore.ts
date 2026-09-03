@@ -45,8 +45,12 @@ import {
 } from '../services';
 import { supabase } from '../services/supabaseClient';
 
+// Check if user has an existing saved session
+const savedToken = typeof window !== 'undefined' ? localStorage.getItem('nuzzle_auth_token') : null;
+
 // State
-export const currentTab = ref<TabType>('feed');
+export const isAuthenticated = ref<boolean>(!!savedToken);
+export const currentTab = ref<TabType>(savedToken ? 'feed' : 'auth');
 export const isDarkMode = ref(false);
 export const isCreateSheetOpen = ref(false);
 export const selectedStory = ref<Story | null>(null);
@@ -57,7 +61,6 @@ export const activeProfileId = ref<string>('owner_me');
 export const isCommentsModalOpen = ref(false);
 export const activePostForComments = ref<Post | null>(null);
 export const isProModalOpen = ref(false);
-export const isAuthenticated = ref(true);
 export const currentRole = ref<UserRole>('parent');
 
 export const owner = reactive<Owner>({ ...initialOwner });
@@ -122,6 +125,10 @@ export const activePosts = computed(() => {
 
 // Actions
 export function setTab(tab: TabType) {
+  if (!isAuthenticated.value && tab !== 'auth') {
+    currentTab.value = 'auth';
+    return;
+  }
   currentTab.value = tab;
 }
 
