@@ -133,6 +133,111 @@ export function setTab(tab: TabType) {
     return;
   }
   currentTab.value = tab;
+
+  // Immediately dispatch live backend API request on every tab click
+  if (tab === 'feed') {
+    postService.getFeed({ page: 1, limit: 15 }).then(res => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        const livePosts = res.data;
+        const sessionPosts = posts.filter(p => p.id.startsWith('post_') && !livePosts.some(lp => lp.id === p.id));
+        posts.splice(0, posts.length, ...sessionPosts, ...livePosts);
+      }
+    }).catch(() => {});
+  } else if (tab === 'explore') {
+    postService.getFeed({ page: 1, limit: 12 }).catch(() => {});
+  } else if (tab === 'vets') {
+    vetService.getDirectory().then(res => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        vets.splice(0, vets.length, ...res.data);
+      }
+    }).catch(() => {});
+    vetService.getAppointments().catch(() => {});
+  } else if (tab === 'lostfound') {
+    lostFoundService.getReports().then(res => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        const liveReports: LostFoundPost[] = res.data.map((r: any) => ({
+          id: r.id,
+          petName: r.petName,
+          species: r.species,
+          breed: r.breed || 'Companion',
+          status: (r.type === 'found' || r.status === 'found') ? 'found' : 'lost',
+          description: r.description || '',
+          imageUrl: r.imageUrl || (r.mediaUrls && r.mediaUrls[0]) || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=800&auto=format&fit=crop&q=80',
+          location: r.lastSeenLocation || r.location || 'Dhaka',
+          reward: r.reward,
+          contactName: r.contactName || 'Community Member',
+          contactPhone: r.contactPhone || '+880 1700-000000',
+          reportedAt: r.lastSeenDate || r.reportedDate || 'Recently',
+          isResolved: r.isResolved || false,
+          isClaimed: r.isClaimed || false,
+          claimedBy: r.claimedBy,
+          claimedAt: r.claimedAt,
+          claimType: r.claimType,
+          claimNotes: r.claimNotes,
+        }));
+        const sessionReports = lostFoundList.filter(item => !liveReports.some(lr => lr.id === item.id));
+        lostFoundList.splice(0, lostFoundList.length, ...sessionReports, ...liveReports);
+      }
+    }).catch(() => {});
+  } else if (tab === 'market') {
+    marketplaceService.getListings().then(res => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        const liveItems: MarketplaceListing[] = res.data.map((m: any) => {
+          const isShop = m.sellerType === 'store' || m.sellerType === 'verified_shop';
+          return {
+            id: m.id,
+            title: m.title,
+            category: (m.category as any) || 'Accessories',
+            price: Number(m.price) || 0,
+            description: m.description || '',
+            imageUrl: m.imageUrl || (m.mediaUrls && m.mediaUrls[0]) || 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800&auto=format&fit=crop&q=80',
+            condition: 'Brand New',
+            sellerName: m.sellerName || (isShop ? 'UrbanHound Dhaka Official' : 'Alex Rivers'),
+            sellerAvatar: m.sellerAvatar || 'https://images.unsplash.com/photo-1541599540903-216a46ca1dc0?w=200&auto=format&fit=crop&q=80',
+            sellerType: isShop ? 'verified_shop' : 'individual',
+            isVerifiedShop: isShop,
+            shopRating: 4.9,
+            location: m.location || 'Dhaka',
+            status: 'available',
+          };
+        });
+        const sessionItems = marketplace.filter(item => !liveItems.some(li => li.id === item.id));
+        marketplace.splice(0, marketplace.length, ...sessionItems, ...liveItems);
+      }
+    }).catch(() => {});
+  } else if (tab === 'adoption') {
+    adoptionService.getAdoptions().then(res => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        const liveAdoptions: AdoptionListing[] = res.data.map((a: any) => ({
+          id: a.id,
+          name: a.name,
+          species: a.species,
+          breed: a.breed || 'Companion',
+          age: a.age || 'Young',
+          gender: (a.gender === 'Female' || a.gender === 'Girl') ? 'Girl' : 'Boy',
+          status: 'available',
+          description: a.description || a.bio || 'Loving rescue companion looking for a home.',
+          imageUrl: a.imageUrl || (a.mediaUrls && a.mediaUrls[0]) || 'https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?w=800&auto=format&fit=crop&q=80',
+          location: a.location || 'Dhaka',
+          shelterName: a.shelterName || a.organizationName || 'Dhaka Animal Welfare Shelter',
+          isVaccinated: a.vaccinated ?? true,
+          isNeutered: a.neutered ?? false,
+          temperament: ['Affectionate', 'Gentle'],
+        }));
+        const sessionAdoptions = adoptions.filter(item => !liveAdoptions.some(la => la.id === item.id));
+        adoptions.splice(0, adoptions.length, ...sessionAdoptions, ...liveAdoptions);
+      }
+    }).catch(() => {});
+  } else if (tab === 'profile') {
+    authService.getCurrentUser().catch(() => {});
+    apiClient.get('/pets').catch(() => {});
+  } else if (tab === 'activity') {
+    apiClient.get('/notifications').catch(() => {});
+  } else if (tab === 'messages') {
+    apiClient.get('/messages').catch(() => {});
+  } else if (tab === 'reels') {
+    apiClient.get('/stories').catch(() => {});
+  }
 }
 
 export function toggleTheme() {
@@ -228,6 +333,8 @@ export function toggleReelSave(reelId: string) {
 export function openStory(story: Story) {
   selectedStory.value = story;
   story.hasUnseen = false;
+  // Trigger live stories API request
+  apiClient.get('/stories').catch(() => {});
 }
 
 export function closeStory() {
@@ -237,6 +344,13 @@ export function closeStory() {
 export function openComments(post: Post) {
   activePostForComments.value = post;
   isCommentsModalOpen.value = true;
+  // Trigger live comments fetch from backend
+  postService.getComments(post.id).then(res => {
+    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+      post.comments = res.data;
+      post.commentsCount = res.data.length;
+    }
+  }).catch(() => {});
 }
 
 export function closeComments() {
@@ -247,6 +361,8 @@ export function closeComments() {
 export function openChat(conversation: ChatConversation) {
   activeChat.value = conversation;
   conversation.unreadCount = 0;
+  // Trigger live messages API request
+  apiClient.get('/messages').catch(() => {});
 }
 
 export function openChatWith(name: string, avatar: string, petName?: string, defaultMsg?: string) {

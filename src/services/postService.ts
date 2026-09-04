@@ -25,4 +25,8 @@ export const postService = {
   async toggleSave(postId: string) {
     return apiClient.post(`/posts/${postId}/save`);
   },
+
+  async getComments(postId: string) {
+    return apiClient.get(`/posts/${postId}/comments`);
+  },
 };

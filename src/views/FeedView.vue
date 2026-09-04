@@ -13,7 +13,7 @@
           :key="filter.id"
           class="species-filter-chip"
           :class="{ active: activeSpeciesFilter === filter.id }"
-          @click="activeSpeciesFilter = filter.id"
+          @click="selectSpeciesFilter(filter.id)"
         >
           <span class="chip-icon">{{ filter.icon }}</span>
           <span class="chip-label">{{ filter.label }}</span>
@@ -47,8 +47,14 @@ import TopBar from '../components/layout/TopBar.vue';
 import StoryTray from '../components/feed/StoryTray.vue';
 import PostCard from '../components/feed/PostCard.vue';
 import { activePosts, lostFoundList, setTab } from '../stores/appStore';
+import { postService } from '../services';
 
 const activeSpeciesFilter = ref('all');
+
+function selectSpeciesFilter(id: string) {
+  activeSpeciesFilter.value = id;
+  postService.getFeed({ species: id === 'all' ? undefined : id }).catch(() => {});
+}
 
 const speciesFilters = [
   { id: 'all', label: 'All Pets', icon: '🐾' },

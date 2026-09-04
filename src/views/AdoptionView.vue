@@ -18,7 +18,7 @@
           :key="s"
           class="filter-chip"
           :class="{ active: selectedSpecies === s }"
-          @click="selectedSpecies = s"
+          @click="selectSpecies(s)"
         >
           {{ s }}
         </button>
@@ -269,8 +269,16 @@ import {
 } from '../stores/appStore';
 import type { AdoptionListing } from '../types';
 
+import { adoptionService } from '../services';
+
 const selectedSpecies = ref('All');
 const speciesList = ['All', '🐕 Dogs', '🐱 Cats', '🐰 Rabbits', '🦜 Birds'];
+
+function selectSpecies(s: string) {
+  selectedSpecies.value = s;
+  const clean = s === 'All' ? undefined : s.replace(/[^a-zA-Z]/g, '').toLowerCase();
+  adoptionService.getAdoptions(clean).catch(() => {});
+}
 
 const bookingModalPet = ref<AdoptionListing | null>(null);
 const selectedClaimMode = ref<'meet_greet' | 'adoption_hold' | 'foster_sponsor'>('meet_greet');

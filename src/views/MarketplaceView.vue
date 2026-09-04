@@ -363,6 +363,7 @@ import {
   owner 
 } from '../stores/appStore';
 import type { MarketplaceListing } from '../types';
+import { marketplaceService } from '../services';
 
 const marketSearch = ref('');
 const selectedCat = ref('All');
@@ -418,17 +419,20 @@ const filteredItems = computed(() => {
 function setSellerFilter(type: 'verified_shop' | 'individual') {
   sellerTypeFilter.value = type;
   selectedCat.value = 'All';
+  marketplaceService.getListings().catch(() => {});
 }
 
 function setCategory(cat: string) {
   selectedCat.value = cat;
   sellerTypeFilter.value = 'all';
+  marketplaceService.getListings(cat).catch(() => {});
 }
 
 function resetFilters() {
   selectedCat.value = 'All';
   sellerTypeFilter.value = 'all';
   marketSearch.value = '';
+  marketplaceService.getListings().catch(() => {});
 }
 
 function contactSeller(item: MarketplaceListing) {

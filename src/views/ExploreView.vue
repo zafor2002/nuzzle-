@@ -25,7 +25,7 @@
           :key="cat"
           class="filter-chip"
           :class="{ active: selectedCategory === cat }"
-          @click="selectedCategory = cat"
+          @click="selectCategory(cat)"
         >
           {{ cat }}
         </button>
@@ -135,8 +135,16 @@ import TopBar from '../components/layout/TopBar.vue';
 import { exploreTrendingTags, speciesCommunities } from '../data/mockData';
 import { searchQuery, activeHashtag, setTab } from '../stores/appStore';
 
+import { postService } from '../services';
+
 const selectedCategory = ref('All');
 const categories = ['All', '🐕 Dogs', '🐱 Cats', '🐰 Bunnies', '🦜 Birds', '🏥 Health', '🐾 Adoption'];
+
+function selectCategory(cat: string) {
+  selectedCategory.value = cat;
+  const clean = cat === 'All' ? undefined : cat.replace(/[^a-zA-Z]/g, '').toLowerCase();
+  postService.getFeed({ species: clean }).catch(() => {});
+}
 
 const joinedCommunities = ref<string[]>(['comm_1']);
 

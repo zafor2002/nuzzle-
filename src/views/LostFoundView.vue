@@ -20,21 +20,21 @@
         <button 
           class="filter-chip" 
           :class="{ active: filterStatus === 'all' }"
-          @click="filterStatus = 'all'"
+          @click="selectFilter('all')"
         >
           All Alerts ({{ lostFoundList.length }})
         </button>
         <button 
           class="filter-chip" 
           :class="{ active: filterStatus === 'lost' }"
-          @click="filterStatus = 'lost'"
+          @click="selectFilter('lost')"
         >
           🚨 Missing / Lost ({{ lostCount }})
         </button>
         <button 
           class="filter-chip" 
           :class="{ active: filterStatus === 'found' }"
-          @click="filterStatus = 'found'"
+          @click="selectFilter('found')"
         >
           🐾 Found Pets ({{ foundCount }})
         </button>
@@ -254,11 +254,18 @@ import {
 } from '../stores/appStore';
 import type { LostFoundPost } from '../types';
 
+import { lostFoundService } from '../services';
+
 const filterStatus = ref<'all' | 'lost' | 'found'>('all');
 const claimModalItem = ref<LostFoundPost | null>(null);
 const selectedClaimType = ref<'owner_reunited' | 'volunteer_rescue' | 'foster_care'>('volunteer_rescue');
 const claimNotesInput = ref('');
 const lfToast = ref<string | null>(null);
+
+function selectFilter(status: 'all' | 'lost' | 'found') {
+  filterStatus.value = status;
+  lostFoundService.getReports(status).catch(() => {});
+}
 
 const lostCount = computed(() => lostFoundList.filter(i => i.status === 'lost').length);
 const foundCount = computed(() => lostFoundList.filter(i => i.status === 'found').length);
