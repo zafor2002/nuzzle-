@@ -68,10 +68,11 @@ import ProfileView from './views/ProfileView.vue';
 import SettingsView from './views/SettingsView.vue';
 
 import { onMounted } from 'vue';
-import { currentTab, initSupabaseAuthListener } from './stores/appStore';
+import { currentTab, initSupabaseAuthListener, syncLiveBackendData } from './stores/appStore';
 
 onMounted(() => {
   initSupabaseAuthListener();
+  syncLiveBackendData();
 });
 </script>
 

@@ -39,6 +39,7 @@ import {
   lostFoundService, 
   marketplaceService, 
   pawAiService,
+  adoptionService,
   apiClient 
 } from '../services';
 import { supabase } from '../services/supabaseClient';
@@ -1168,6 +1169,113 @@ export async function addNewPet(petData: {
 
   return { success: true, pet: newPet };
 }
+
+/**
+ * Dynamically synchronize live data from backend REST API into the reactive store
+ */
+export async function syncLiveBackendData() {
+  try {
+    // 1. Sync Posts Feed
+    postService.getFeed({ page: 1, limit: 15 }).then(res => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        const livePosts = res.data;
+        // Keep any newly created posts from current user session
+        const sessionPosts = posts.filter(p => p.id.startsWith('post_') && !livePosts.some(lp => lp.id === p.id));
+        posts.splice(0, posts.length, ...sessionPosts, ...livePosts);
+      }
+    }).catch(err => console.warn('Live feed sync handled gracefully:', err));
+
+    // 2. Sync Vet Directory
+    vetService.getDirectory().then(res => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        vets.splice(0, vets.length, ...res.data);
+      }
+    }).catch(err => console.warn('Live vets sync handled gracefully:', err));
+
+    // 3. Sync Lost & Found Emergency Radar
+    lostFoundService.getReports().then(res => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        const liveReports: LostFoundPost[] = res.data.map((r: any) => ({
+          id: r.id,
+          petName: r.petName,
+          species: r.species,
+          breed: r.breed || 'Companion',
+          status: (r.type === 'found' || r.status === 'found') ? 'found' : 'lost',
+          description: r.description || '',
+          imageUrl: r.imageUrl || (r.mediaUrls && r.mediaUrls[0]) || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=800&auto=format&fit=crop&q=80',
+          location: r.lastSeenLocation || r.location || 'Dhaka',
+          reward: r.reward,
+          contactName: r.contactName || 'Community Member',
+          contactPhone: r.contactPhone || '+880 1700-000000',
+          reportedAt: r.lastSeenDate || r.reportedDate || 'Recently',
+          isResolved: r.isResolved || false,
+          isClaimed: r.isClaimed || false,
+          claimedBy: r.claimedBy,
+          claimedAt: r.claimedAt,
+          claimType: r.claimType,
+          claimNotes: r.claimNotes,
+        }));
+        const sessionReports = lostFoundList.filter(item => !liveReports.some(lr => lr.id === item.id));
+        lostFoundList.splice(0, lostFoundList.length, ...sessionReports, ...liveReports);
+      }
+    }).catch(err => console.warn('Live lost-found sync handled gracefully:', err));
+
+    // 4. Sync Marketplace
+    marketplaceService.getListings().then(res => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        const liveItems: MarketplaceListing[] = res.data.map((m: any) => {
+          const isShop = m.sellerType === 'store' || m.sellerType === 'verified_shop';
+          return {
+            id: m.id,
+            title: m.title,
+            category: (m.category as any) || 'Accessories',
+            price: Number(m.price) || 0,
+            description: m.description || '',
+            imageUrl: m.imageUrl || (m.mediaUrls && m.mediaUrls[0]) || 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800&auto=format&fit=crop&q=80',
+            condition: 'Brand New',
+            sellerName: m.sellerName || (isShop ? 'UrbanHound Dhaka Official' : 'Alex Rivers'),
+            sellerAvatar: m.sellerAvatar || 'https://images.unsplash.com/photo-1541599540903-216a46ca1dc0?w=200&auto=format&fit=crop&q=80',
+            sellerType: isShop ? 'verified_shop' : 'individual',
+            isVerifiedShop: isShop,
+            shopRating: 4.9,
+            location: m.location || 'Dhaka',
+            status: 'available',
+          };
+        });
+        const sessionItems = marketplace.filter(item => !liveItems.some(li => li.id === item.id));
+        marketplace.splice(0, marketplace.length, ...sessionItems, ...liveItems);
+      }
+    }).catch(err => console.warn('Live marketplace sync handled gracefully:', err));
+
+    // 5. Sync Adoption Listings
+    adoptionService.getAdoptions().then(res => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        const liveAdoptions: AdoptionListing[] = res.data.map((a: any) => ({
+          id: a.id,
+          name: a.name,
+          species: a.species,
+          breed: a.breed || 'Companion',
+          age: a.age || 'Young',
+          gender: (a.gender === 'Female' || a.gender === 'Girl') ? 'Girl' : 'Boy',
+          status: 'available',
+          description: a.description || a.bio || 'Loving rescue companion looking for a home.',
+          imageUrl: a.imageUrl || (a.mediaUrls && a.mediaUrls[0]) || 'https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?w=800&auto=format&fit=crop&q=80',
+          location: a.location || 'Dhaka',
+          shelterName: a.shelterName || a.organizationName || 'Dhaka Animal Welfare Shelter',
+          isVaccinated: a.vaccinated ?? true,
+          isNeutered: a.neutered ?? false,
+          temperament: ['Affectionate', 'Gentle'],
+        }));
+        const sessionAdoptions = adoptions.filter(item => !liveAdoptions.some(la => la.id === item.id));
+        adoptions.splice(0, adoptions.length, ...sessionAdoptions, ...liveAdoptions);
+      }
+    }).catch(err => console.warn('Live adoptions sync handled gracefully:', err));
+
+  } catch (syncErr) {
+    console.warn('Initial live backend synchronization error:', syncErr);
+  }
+}
+
 
 
 
