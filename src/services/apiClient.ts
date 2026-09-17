@@ -12,7 +12,24 @@ export interface ApiResponse<T = any> {
   meta?: Record<string, unknown>;
 }
 
-const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || '/api';
+function getBaseApiUrl(): string {
+  // 1. Explicit environment variable
+  const envUrl = (import.meta as any).env?.VITE_API_BASE_URL;
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim().length > 0 && envUrl !== '/api') {
+    return envUrl.replace(/\/+$/, '');
+  }
+
+  // 2. Production or hosted browser environment (e.g. *.vercel.app, *.netlify.app, etc.)
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host !== 'localhost' && host !== '127.0.0.1') {
+      return 'https://nuzzle-backend.vercel.app/api';
+    }
+  }
+
+  // 3. Local Vite dev environment (proxied via vite.config.ts to localhost:3000)
+  return '/api';
+}
 
 class ApiClient {
   private token: string | null = null;
@@ -43,7 +60,9 @@ class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
-    const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    const baseUrl = getBaseApiUrl();
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const primaryUrl = `${baseUrl}${cleanEndpoint}`;
     
     const headers: Record<string, string> = {
       Accept: 'application/json',
@@ -59,8 +78,8 @@ class ApiClient {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
 
-    try {
-      const response = await fetch(url, {
+    const performFetch = async (targetUrl: string) => {
+      const response = await fetch(targetUrl, {
         ...options,
         headers,
       });
@@ -76,15 +95,69 @@ class ApiClient {
 
       if (!response.ok) {
         return {
-          success: false,
-          error: data?.error || `HTTP ${response.status}: ${response.statusText}`,
-          errors: data?.errors,
+          ok: false,
+          status: response.status,
+          statusText: response.statusText,
+          data,
         };
       }
 
-      return data as ApiResponse<T>;
+      return {
+        ok: true,
+        status: response.status,
+        data: data as ApiResponse<T>,
+      };
+    };
+
+    try {
+      const result = await performFetch(primaryUrl);
+      if (result.ok) {
+        return result.data!;
+      }
+
+      // If primary request failed with gateway or not found error, attempt failover
+      const isRelative = primaryUrl.startsWith('/api');
+      const failoverUrl = isRelative
+        ? `https://nuzzle-backend.vercel.app/api${cleanEndpoint}`
+        : `/api${cleanEndpoint}`;
+
+      if (failoverUrl !== primaryUrl && (result.status >= 500 || result.status === 404 || result.status === 405)) {
+        console.warn(`[ApiClient] Request to ${primaryUrl} failed (${result.status}). Retrying via ${failoverUrl}...`);
+        try {
+          const failoverResult = await performFetch(failoverUrl);
+          if (failoverResult.ok) {
+            return failoverResult.data!;
+          }
+        } catch (failoverErr) {
+          console.warn('[ApiClient] Failover fetch failed:', failoverErr);
+        }
+      }
+
+      return {
+        success: false,
+        error: result.data?.error || `HTTP ${result.status}: ${result.statusText}`,
+        errors: result.data?.errors,
+      };
     } catch (err: any) {
-      console.warn(`[ApiClient] Network request failed for ${url}:`, err.message);
+      // Network error on primary — attempt failover
+      const isRelative = primaryUrl.startsWith('/api');
+      const failoverUrl = isRelative
+        ? `https://nuzzle-backend.vercel.app/api${cleanEndpoint}`
+        : `/api${cleanEndpoint}`;
+
+      if (failoverUrl !== primaryUrl) {
+        console.warn(`[ApiClient] Network request failed for ${primaryUrl}. Retrying via ${failoverUrl}...`);
+        try {
+          const failoverResult = await performFetch(failoverUrl);
+          if (failoverResult.ok) {
+            return failoverResult.data!;
+          }
+        } catch (fErr: any) {
+          console.warn('[ApiClient] Failover also encountered network error:', fErr.message);
+        }
+      }
+
+      console.warn(`[ApiClient] Network request failed for ${primaryUrl}:`, err.message);
       return {
         success: false,
         error: err.message || 'Network connection failed',
