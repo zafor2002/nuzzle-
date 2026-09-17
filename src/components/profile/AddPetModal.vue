@@ -97,9 +97,28 @@
           <!-- 3. Avatar Selection -->
           <div class="form-section">
             <label class="section-label">3. Passport Photo</label>
-            <span class="field-desc">Choose a portrait or enter your pet's photo link:</span>
+            <span class="field-desc">Choose a portrait or upload your pet's photo:</span>
             
-            <div class="avatar-presets-strip">
+            <div class="photo-upload-action-row">
+              <input 
+                type="file" 
+                ref="addPetFileInputRef" 
+                accept="image/png, image/jpeg, image/jpg, image/webp" 
+                class="hidden-file-input" 
+                @change="handleAddPetPhotoUpload" 
+              />
+              <button 
+                type="button" 
+                class="btn-outline upload-pet-btn"
+                :disabled="isUploadingAvatar"
+                @click="addPetFileInputRef?.click()"
+              >
+                <Upload :size="14" />
+                <span>{{ isUploadingAvatar ? 'Processing Photo...' : 'Upload Photo from Device' }}</span>
+              </button>
+            </div>
+
+            <div class="avatar-presets-strip mt-2">
               <div 
                 v-for="(img, idx) in currentPresetAvatars" 
                 :key="idx"
@@ -171,7 +190,8 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
-import { X } from 'lucide-vue-next';
+import { X, Upload } from 'lucide-vue-next';
+import { apiClient } from '../../services/apiClient';
 import { addNewPet, isAddPetModalOpen } from '../../stores/appStore';
 
 defineProps<{
@@ -184,7 +204,47 @@ const emit = defineEmits<{
 }>();
 
 const isSubmitting = ref(false);
+const isUploadingAvatar = ref(false);
 const errorMessage = ref<string | null>(null);
+const addPetFileInputRef = ref<HTMLInputElement | null>(null);
+
+function handleAddPetPhotoUpload(event: Event) {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    alert('Please select an image file (JPEG, PNG, WEBP).');
+    return;
+  }
+
+  isUploadingAvatar.value = true;
+
+  // Immediate local preview
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target?.result as string;
+    if (dataUrl) {
+      form.avatarUrl = dataUrl;
+    }
+    isUploadingAvatar.value = false;
+  };
+  reader.onerror = () => {
+    isUploadingAvatar.value = false;
+  };
+  reader.readAsDataURL(file);
+
+  // Background cloud upload
+  apiClient.uploadMedia(file).then(res => {
+    if (res.success && res.data?.url) {
+      form.avatarUrl = res.data.url;
+    }
+  }).catch(err => {
+    console.warn('[AddPet] Cloud upload notice:', err);
+  });
+
+  target.value = '';
+}
 
 const speciesOptions = [
   { value: 'Dog', label: 'Dog', emoji: '🐕' },
@@ -571,6 +631,38 @@ async function handleSubmit() {
   border-radius: var(--radius-md);
   font-size: 12px;
   font-weight: 600;
+}
+
+.hidden-file-input {
+  display: none !important;
+}
+
+.photo-upload-action-row {
+  margin-top: 6px;
+  display: flex;
+}
+
+.upload-pet-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-color);
+  background: var(--bg-card-subtle);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-pet-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(148, 125, 238, 0.08);
 }
 
 .modal-footer-row {

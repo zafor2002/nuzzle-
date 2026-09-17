@@ -423,7 +423,34 @@
       <!-- TAB 2: PET VISION & HEALTH SCANNER -->
       <div v-else-if="activeAiTab === 'scanner'" class="tab-pane">
         <div class="scanner-card card-item">
-          <div class="scanner-viewport">
+          <!-- Hidden file input for device photo upload -->
+          <input 
+            type="file" 
+            ref="scanFileInputRef" 
+            accept="image/png, image/jpeg, image/jpg, image/webp" 
+            class="hidden-file-input" 
+            @change="handleScanFileSelected" 
+          />
+          <!-- Hidden file input for direct camera capture on mobile -->
+          <input 
+            type="file" 
+            ref="cameraFileInputRef" 
+            accept="image/*" 
+            capture="environment" 
+            class="hidden-file-input" 
+            @change="handleScanFileSelected" 
+          />
+
+          <!-- Scanner Viewport with Click-to-Upload & Drag-Drop -->
+          <div 
+            class="scanner-viewport" 
+            :class="{ dragging: isDraggingOverViewport }"
+            @click="triggerScanFileInput"
+            @dragover.prevent="isDraggingOverViewport = true"
+            @dragleave.prevent="isDraggingOverViewport = false"
+            @drop.prevent="handleScanFileDrop"
+            title="Click or drop a photo to upload pet image"
+          >
             <img 
               :src="scanImage" 
               alt="Scan pet" 
@@ -438,20 +465,69 @@
               <span>AI Analyzing Biometrics & Coat...</span>
             </div>
 
-            <div v-else-if="!currentScanResult" class="scan-prompt-overlay">
-              <Camera :size="28" class="cam-icon" />
-              <span>Tap 'Analyze Pet' to run AI Vision</span>
+            <div v-else class="viewport-upload-overlay">
+              <div class="upload-badge-pill">
+                <Camera :size="15" />
+                <span>{{ isCustomUploaded ? 'Change Photo' : 'Tap to Upload Pet Photo' }}</span>
+              </div>
+            </div>
+
+            <!-- Uploading status overlay -->
+            <div v-if="isUploadingPhoto" class="uploading-overlay">
+              <div class="spinner-dot"></div>
+              <span>Uploading Pet Photo...</span>
             </div>
           </div>
 
+          <!-- Sample Pets Quick Switcher -->
+          <div class="sample-pets-row">
+            <span class="sample-label">Or test sample:</span>
+            <div class="sample-buttons">
+              <button 
+                v-for="sample in sampleScanPets" 
+                :key="sample.breed" 
+                type="button"
+                class="sample-pill-btn"
+                :class="{ active: scanImage === sample.url }"
+                @click.stop="selectSamplePet(sample)"
+              >
+                {{ sample.label }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Scanner Action Controls -->
           <div class="scanner-actions-bar">
+            <div class="upload-action-buttons">
+              <button 
+                type="button" 
+                class="btn-outline upload-action-btn"
+                :disabled="isAiScanning || isUploadingPhoto"
+                @click.stop="triggerScanFileInput"
+              >
+                <Upload :size="15" />
+                <span>Upload Photo</span>
+              </button>
+
+              <button 
+                type="button" 
+                class="btn-outline camera-action-btn"
+                :disabled="isAiScanning || isUploadingPhoto"
+                @click.stop="triggerCameraInput"
+              >
+                <Camera :size="15" />
+                <span>Camera</span>
+              </button>
+            </div>
+
             <button 
+              type="button"
               class="btn-solid scan-btn"
-              :disabled="isAiScanning"
-              @click="() => runAiPetScan()"
+              :disabled="isAiScanning || isUploadingPhoto"
+              @click.stop="handleRunScan"
             >
               <Sparkles :size="16" />
-              <span>{{ isAiScanning ? 'Processing Neural Scan...' : 'Analyze Pet with AI Vision' }}</span>
+              <span>{{ isAiScanning ? 'Processing Neural Scan...' : 'Analyze Pet with AI Vision ✨' }}</span>
             </button>
           </div>
 
@@ -694,8 +770,9 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { Sparkles, Camera, CheckCircle2, Send, Mic, Calendar, Wand2 } from 'lucide-vue-next';
+import { Sparkles, Camera, CheckCircle2, Send, Mic, Calendar, Wand2, Upload } from 'lucide-vue-next';
 import TopBar from '../components/layout/TopBar.vue';
+import { apiClient } from '../services/apiClient';
 import { 
   owner,
   pets, 
@@ -949,8 +1026,89 @@ function enrollClinicModal() {
   alert('🏥 Welcome to Nuzzle Pro Vet Network! Clinics receive #1 Priority Placement on PawAI Suggest Vet, zero booking fees, and direct client triage records.');
 }
 
-// Scanner
+// Scanner State & Upload Handlers
 const scanImage = ref('https://images.unsplash.com/photo-1552053831-71594a27632d?w=800&auto=format&fit=crop&q=80');
+const scanFileInputRef = ref<HTMLInputElement | null>(null);
+const cameraFileInputRef = ref<HTMLInputElement | null>(null);
+const isDraggingOverViewport = ref(false);
+const isUploadingPhoto = ref(false);
+const isCustomUploaded = ref(false);
+
+const sampleScanPets = [
+  { label: '🐕 Golden', url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=800&auto=format&fit=crop&q=80', breed: 'Golden Retriever', species: 'Dog' },
+  { label: '🐱 Bengal', url: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&auto=format&fit=crop&q=80', breed: 'Bengal Cat', species: 'Cat' },
+  { label: '🐶 Frenchie', url: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800&auto=format&fit=crop&q=80', breed: 'French Bulldog', species: 'Dog' },
+  { label: '🐰 Bunny', url: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=800&auto=format&fit=crop&q=80', breed: 'Holland Lop', species: 'Rabbit' },
+];
+
+function triggerScanFileInput() {
+  scanFileInputRef.value?.click();
+}
+
+function triggerCameraInput() {
+  cameraFileInputRef.value?.click();
+}
+
+function handleScanFileSelected(event: Event) {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
+  processUploadedPetPhoto(file);
+  target.value = '';
+}
+
+function handleScanFileDrop(event: DragEvent) {
+  isDraggingOverViewport.value = false;
+  const file = event.dataTransfer?.files?.[0];
+  if (!file) return;
+  processUploadedPetPhoto(file);
+}
+
+function processUploadedPetPhoto(file: File) {
+  if (!file.type.startsWith('image/')) {
+    alert('Please select a valid image file (JPEG, PNG, WEBP).');
+    return;
+  }
+
+  isUploadingPhoto.value = true;
+  isCustomUploaded.value = true;
+
+  // 1. Instant local preview
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target?.result as string;
+    if (dataUrl) {
+      scanImage.value = dataUrl;
+      const pet = activeTargetPet.value;
+      runAiPetScan(dataUrl, pet?.species, pet?.breed);
+    }
+    isUploadingPhoto.value = false;
+  };
+  reader.onerror = () => {
+    isUploadingPhoto.value = false;
+  };
+  reader.readAsDataURL(file);
+
+  // 2. Background cloud media upload to persistent storage
+  apiClient.uploadMedia(file).then(res => {
+    if (res.success && res.data?.url) {
+      console.log('[PetScan] Uploaded pet photo to cloud media:', res.data.url);
+    }
+  }).catch(err => {
+    console.warn('[PetScan] Media upload notice:', err);
+  });
+}
+
+function selectSamplePet(sample: typeof sampleScanPets[0]) {
+  scanImage.value = sample.url;
+  isCustomUploaded.value = false;
+  runAiPetScan(sample.url, sample.species, sample.breed);
+}
+
+function handleRunScan() {
+  const pet = activeTargetPet.value;
+  runAiPetScan(scanImage.value, pet?.species, pet?.breed);
+}
 
 // Triage
 const triageInput = ref('');
@@ -2010,6 +2168,10 @@ function generateMagicArt() {
   padding: 12px;
 }
 
+.hidden-file-input {
+  display: none !important;
+}
+
 .scanner-viewport {
   position: relative;
   width: 100%;
@@ -2017,78 +2179,149 @@ function generateMagicArt() {
   border-radius: 14px;
   overflow: hidden;
   background: var(--bg-card-subtle);
+  cursor: pointer;
+  border: 2px dashed transparent;
+  transition: all 0.25s ease;
 }
 
-.scan-preview-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: filter 0.3s ease;
+.scanner-viewport:hover {
+  border-color: rgba(168, 85, 247, 0.4);
 }
 
-.scan-preview-img.scanning {
-  filter: brightness(0.8) contrast(1.2);
+.scanner-viewport.dragging {
+  border-color: #A855F7;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.4);
+  transform: scale(1.01);
 }
 
-.scan-laser-line {
+.viewport-upload-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: #A855F7;
-  box-shadow: 0 0 14px #A855F7, 0 0 24px #A855F7;
-  animation: laserScan 1.6s ease-in-out infinite alternate;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 12px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, transparent 40%);
+  pointer-events: none;
 }
 
-@keyframes laserScan {
-  0% { top: 0%; }
-  100% { top: 96%; }
-}
-
-.scanning-badge {
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
+.upload-badge-pill {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(26, 18, 42, 0.85);
+  background: rgba(15, 12, 30, 0.82);
   color: #fff;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
-  padding: 5px 12px;
+  padding: 6px 14px;
   border-radius: var(--radius-full);
   backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
 }
 
-.spinner-dot {
-  width: 8px;
-  height: 8px;
-  border: 2px solid #fff;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+.scanner-viewport:hover .upload-badge-pill {
+  transform: translateY(-2px);
+  background: rgba(126, 34, 206, 0.85);
 }
 
-.scan-prompt-overlay {
+.uploading-overlay {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  background: rgba(0, 0, 0, 0.35);
+  gap: 8px;
+  background: rgba(15, 12, 30, 0.85);
   color: #fff;
   font-size: 12px;
   font-weight: 700;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(6px);
+  z-index: 10;
+}
+
+.sample-pets-row {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sample-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+
+.sample-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sample-pill-btn {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card-subtle);
+  color: var(--ink-secondary);
+  border: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sample-pill-btn:hover {
+  border-color: #A855F7;
+  color: #A855F7;
+}
+
+.sample-pill-btn.active {
+  background: #A855F7;
+  color: #ffffff;
+  border-color: #A855F7;
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.3);
 }
 
 .scanner-actions-bar {
-  margin-top: 10px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upload-action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.upload-action-btn,
+.camera-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background: var(--bg-card);
+  color: var(--ink-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-action-btn:hover,
+.camera-action-btn:hover {
+  background: var(--bg-card-subtle);
+  border-color: #A855F7;
+  color: #A855F7;
 }
 
 .scan-btn {
@@ -2097,10 +2330,26 @@ function generateMagicArt() {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 9px;
+  padding: 10px;
   border-radius: var(--radius-full);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 800;
+  background: linear-gradient(135deg, #7E22CE, #9333EA);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(126, 34, 206, 0.35);
+  transition: all 0.25s ease;
+}
+
+.scan-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(126, 34, 206, 0.45);
+}
+
+.scan-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .scan-results-box {

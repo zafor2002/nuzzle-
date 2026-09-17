@@ -577,26 +577,61 @@ export async function sendAiTriageQuery(query: string) {
 }
 
 
-export function runAiPetScan(_imageUrl?: string) {
+export function runAiPetScan(_imageUrl?: string, petSpecies?: string, petBreed?: string) {
   isAiScanning.value = true;
   currentScanResult.value = null;
 
+  const currentPet = activePet.value || pets[0];
+  const species = (petSpecies || currentPet?.species || 'Dog').toLowerCase();
+  const breed = petBreed || currentPet?.breed || (species === 'cat' ? 'Bengal / Tabby' : 'Golden Retriever');
+
   setTimeout(() => {
     isAiScanning.value = false;
-    currentScanResult.value = {
-      breedMatch: 'Golden Retriever (98.4% Purebred)',
-      confidence: 98.4,
-      detectedMood: 'Joyful & High Energy 🌟 (Relaxed ears, soft panting expression)',
-      healthObservations: [
-        'Coat density: Excellent sheen, zero matting detected',
-        'Body Condition Score: Ideal 5/9 (Athletic lean)',
-        'Eye clarity: Clear sclera, alert tracking',
-        'Estimated Dental Cleanliness: 92% healthy enamel'
-      ],
-      nutritionAdvice: 'Maintain current caloric intake of 1,350 kcal/day + glucosamine supplement for hips.',
-      funFact: 'Golden Retrievers have water-repellent double coats and webbed paws built for retrieving!'
-    };
-  }, 1600);
+
+    if (species.includes('cat') || species.includes('feline')) {
+      currentScanResult.value = {
+        breedMatch: `${breed} (97.6% Biometric Match)`,
+        confidence: 97.6,
+        detectedMood: 'Curious & Contented 😻 (Relaxed posture, soft rhythmic blinking)',
+        healthObservations: [
+          'Coat condition: Silky dense gloss, zero dander or matting detected',
+          'Eye & Pupillary Clarity: Clear sclera, symmetrical pupil reactivity',
+          'Ear Canal Biometrics: Clean pinnae, zero mite irritation detected',
+          'Dental Health Index: Grade 1 healthy enamel, pink gingival margin'
+        ],
+        nutritionAdvice: 'High-protein wet food rotation (min 34% protein) with taurine, omega-3, and fresh water fountain.',
+        funFact: 'Cats have 32 individual muscles in each ear, allowing 180-degree independent rotation!'
+      };
+    } else if (species.includes('rabbit') || species.includes('bunny')) {
+      currentScanResult.value = {
+        breedMatch: `${breed} (96.2% Biometric Match)`,
+        confidence: 96.2,
+        detectedMood: 'Gentle & Inquisitive 🥕 (Soft twitching nose, relaxed ear carriage)',
+        healthObservations: [
+          'Coat & Fur Density: Soft plush coat, clean dry hocks',
+          'Dental Incisor Occlusion: Proper chisel wear alignment detected',
+          'Respiratory Rhythm: Smooth, silent breathing with zero ocular discharge',
+          'Hydration & Gut Balance: High fiber digestive score'
+        ],
+        nutritionAdvice: '85% continuous fresh Timothy hay + small handful of dark leafy greens daily.',
+        funFact: 'A happy rabbit performs an acrobatic jump and twist in mid-air known as a "binky"!'
+      };
+    } else {
+      currentScanResult.value = {
+        breedMatch: `${breed} (98.4% Biometric Match)`,
+        confidence: 98.4,
+        detectedMood: 'Joyful & High Energy 🌟 (Relaxed ears, soft panting expression)',
+        healthObservations: [
+          'Coat density: Excellent sheen, zero matting or skin redness detected',
+          'Body Condition Score: Ideal 5/9 (Athletic lean musculature)',
+          'Eye clarity: Clear sclera, alert tracking and visual focus',
+          'Estimated Dental Cleanliness: 92% healthy enamel, zero plaque build-up'
+        ],
+        nutritionAdvice: 'Maintain balanced caloric intake with joint supplements (glucosamine/chondroitin).',
+        funFact: 'A dog’s sense of smell is so acute it can detect some scents in parts per trillion!'
+      };
+    }
+  }, 1400);
 }
 
 export function generateAiCaption(type: 'silly' | 'heartwarming' | 'dramatic' | 'poetic', _petName: string = 'Waffles'): { caption: string; tags: string[] } {
