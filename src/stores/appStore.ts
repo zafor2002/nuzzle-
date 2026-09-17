@@ -1024,7 +1024,7 @@ export function registerNewAccount(role: UserRole, data: {
 }
 
 // Real Authentication Functions (Supabase-backed)
-export async function loginWithCredentials(credentials: { email?: string; password?: string; role?: UserRole }) {
+export async function loginWithCredentials(credentials: { email?: string; username?: string; identifier?: string; password?: string; role?: UserRole }) {
   const res = await authService.login(credentials);
   if (!res.success) {
     return { success: false, error: res.error || 'Invalid login credentials' };
