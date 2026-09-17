@@ -9,6 +9,7 @@ export interface ApiResponse<T = any> {
   error?: string;
   message?: string;
   errors?: unknown;
+  meta?: Record<string, unknown>;
 }
 
 const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || '/api';
@@ -45,10 +46,14 @@ class ApiClient {
     const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
     
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
       Accept: 'application/json',
       ...(options.headers as Record<string, string>),
     };
+
+    // Only set Content-Type to JSON if not uploading FormData (browser sets boundary automatically)
+    if (!(options.body instanceof FormData) && !headers['Content-Type']) {
+      headers['Content-Type'] = 'application/json';
+    }
 
     if (this.token) {
       headers['Authorization'] = `Bearer ${this.token}`;
@@ -127,6 +132,35 @@ class ApiClient {
 
   public delete<T = any>(endpoint: string): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, { method: 'DELETE' });
+  }
+
+  /**
+   * Layer 5 Media Storage: Upload image file or base64 data to /api/upload
+   */
+  public async uploadMedia(file: File | string): Promise<ApiResponse<{ url: string; key: string; size: number }>> {
+    if (typeof file === 'string') {
+      return this.post('/upload', { image: file });
+    }
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.request('/upload', {
+      method: 'POST',
+      body: formData,
+    });
+  }
+
+  /**
+   * Layer 6 Monitoring: Check live backend health, uptime, and database latency
+   */
+  public getSystemHealth(): Promise<ApiResponse<any>> {
+    return this.get('/health');
+  }
+
+  /**
+   * External Services: Process marketplace order payment
+   */
+  public checkoutMarketplace(orderData: any): Promise<ApiResponse<any>> {
+    return this.post('/marketplace/checkout', orderData);
   }
 }
 

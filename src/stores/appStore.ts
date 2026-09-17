@@ -92,7 +92,26 @@ export const chats = reactive<ChatConversation[]>([...initialChats]);
 export const notifications = reactive<AppNotification[]>([...initialNotifications]);
 
 // AI Hub Reactive State
-export const aiTriageMessages = reactive<{ id: string; sender: 'user' | 'ai'; text: string; severity?: 'low' | 'medium' | 'urgent'; timestamp: string }[]>([
+export interface AiTriageMessageItem {
+  id: string;
+  sender: 'user' | 'ai';
+  text: string;
+  severity?: 'low' | 'medium' | 'urgent';
+  urgencyLabel?: string;
+  urgencyColor?: string;
+  actions?: string[];
+  redFlags?: string[];
+  clinic?: {
+    name: string;
+    clinicName: string;
+    phone: string;
+    location?: string;
+  };
+  provider?: string;
+  timestamp: string;
+}
+
+export const aiTriageMessages = reactive<AiTriageMessageItem[]>([
   {
     id: 'ai_1',
     sender: 'ai',
@@ -101,6 +120,8 @@ export const aiTriageMessages = reactive<{ id: string; sender: 'user' | 'ai'; te
     timestamp: 'Just now'
   }
 ]);
+
+export const isAiTriageLoading = ref(false);
 
 export const isAiScanning = ref(false);
 export const currentScanResult = ref<AiScanResult | null>(null);
@@ -436,49 +457,80 @@ export function sendMessageToActiveChat(body: string) {
 }
 
 // AI Specific Actions
-export function sendAiTriageQuery(query: string) {
+export async function sendAiTriageQuery(query: string) {
   if (!query.trim()) return;
 
+  const userMsgId = `u_${Date.now()}`;
   aiTriageMessages.push({
-    id: `u_${Date.now()}`,
+    id: userMsgId,
     sender: 'user',
     text: query,
     timestamp: 'Just now'
   });
 
+  isAiTriageLoading.value = true;
+
+  try {
+    const currentPet = activePet.value || pets[0];
+    const res = await pawAiService.submitTriage({
+      petName: currentPet?.name || 'Pet',
+      species: currentPet?.species || 'Dog',
+      breed: currentPet?.breed || undefined,
+      symptoms: query,
+      isProSubscriber: owner.isProMember,
+    });
+
+    if (res.success && res.data) {
+      const d = res.data;
+      const severityMap: Record<string, 'low' | 'medium' | 'urgent'> = {
+        low: 'low',
+        moderate: 'medium',
+        emergency: 'urgent',
+      };
+
+      aiTriageMessages.push({
+        id: `ai_${Date.now()}`,
+        sender: 'ai',
+        text: d.summary,
+        severity: severityMap[d.urgency] || 'low',
+        urgencyLabel: d.urgencyLabel,
+        urgencyColor: d.urgencyColor,
+        actions: d.recommendedActions,
+        redFlags: d.redFlags,
+        clinic: d.recommendedClinic,
+        provider: d.provider,
+        timestamp: 'Just now',
+      });
+      return;
+    }
+  } catch (err) {
+    console.warn('Backend triage error, using local fallback:', err);
+  } finally {
+    isAiTriageLoading.value = false;
+  }
+
+  // Fallback if network was unreachable
   const q = query.toLowerCase();
   let aiResponse = "I've analyzed your question. Ensure your pet has plenty of fresh water and rest. If symptoms persist over 24 hours, booking a quick checkup with Dr. Evelyn Martinez is advised.";
   let severity: 'low' | 'medium' | 'urgent' = 'low';
 
   if (q.includes('chocolate') || q.includes('poison') || q.includes('grape') || q.includes('onion') || q.includes('bleeding')) {
-    aiResponse = "🚨 CRITICAL TRIAGE ALERT: Ingesting this substance can be toxic to pets! Please contact your nearest emergency veterinary hospital immediately or call the ASPCA Animal Poison Control hotline.";
+    aiResponse = "🚨 CRITICAL TRIAGE ALERT: Ingesting this substance can be toxic to pets! Please contact your nearest emergency veterinary hospital immediately.";
     severity = 'urgent';
-  } else if (q.includes('vomit') || q.includes('diarrhea') || q.includes('limp') || q.includes('scratch')) {
-    aiResponse = "⚠️ MODERATE ATTENTION: Mild gastrointestinal or muscular issue detected. Withhold heavy meals for 4 hours, provide small sips of water. If vomiting occurs more than twice or lethargy sets in, schedule a clinic visit.";
+  } else if (q.includes('vomit') || q.includes('diarrhea') || q.includes('limp')) {
+    aiResponse = "⚠️ MODERATE ATTENTION: Mild gastrointestinal or muscular issue detected. Withhold heavy meals for 4 hours, provide small sips of water.";
     severity = 'medium';
-  } else if (q.includes('food') || q.includes('diet') || q.includes('weight') || q.includes('treat')) {
-    aiResponse = "🥑 NUTRITION AI INSIGHT: For a Golden Retriever of 29.5kg, aim for 1,350 kcal/day split across 2 meals with at least 26% high-quality protein and Omega-3 fatty acids for joint and coat vitality.";
-    severity = 'low';
   }
 
-  // Async sync to backend AI Triage endpoint
-  pawAiService.submitTriage({
-    petName: pets[0]?.name || 'Pet',
-    species: pets[0]?.species || 'Dog',
-    symptoms: query,
-    isProSubscriber: owner.isProMember
-  }).catch(() => {});
-
-  setTimeout(() => {
-    aiTriageMessages.push({
-      id: `ai_${Date.now()}`,
-      sender: 'ai',
-      text: aiResponse,
-      severity,
-      timestamp: 'Just now'
-    });
-  }, 900);
+  aiTriageMessages.push({
+    id: `ai_${Date.now()}`,
+    sender: 'ai',
+    text: aiResponse,
+    severity,
+    timestamp: 'Just now'
+  });
 }
+
 
 export function runAiPetScan(_imageUrl?: string) {
   isAiScanning.value = true;

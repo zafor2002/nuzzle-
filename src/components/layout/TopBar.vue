@@ -64,14 +64,31 @@
         <Bell :size="18" />
         <span v-if="unreadNotificationsCount > 0" class="unread-dot"></span>
       </button>
+
+      <!-- 🏛️ System Architecture Blueprint & Live API Console -->
+      <button 
+        class="header-action-btn architecture-btn" 
+        @click="showArchitectureModal = true" 
+        title="Nuzzle Backend System Architecture & Live Console"
+      >
+        <Layers :size="17" />
+        <span class="live-status-dot"></span>
+      </button>
     </div>
+
+    <!-- System Architecture Console Modal -->
+    <ArchitectureModal 
+      :is-open="showArchitectureModal" 
+      @close="showArchitectureModal = false" 
+    />
   </header>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { MessageCircle, Bell, AlertTriangle, ArrowLeft } from 'lucide-vue-next';
+import { ref, computed } from 'vue';
+import { MessageCircle, Bell, AlertTriangle, ArrowLeft, Layers } from 'lucide-vue-next';
 import NuzzleLogo from '../common/NuzzleLogo.vue';
+import ArchitectureModal from '../common/ArchitectureModal.vue';
 import { 
   currentTab, 
   setTab, 
@@ -81,6 +98,8 @@ import {
   unreadMessagesCount, 
   unreadNotificationsCount 
 } from '../../stores/appStore';
+
+const showArchitectureModal = ref(false);
 
 const props = defineProps<{
   title?: string;
@@ -313,5 +332,26 @@ function goBack() {
   background: var(--brand-primary);
   border-radius: 50%;
   border: 1px solid var(--bg-card);
+}
+
+.architecture-btn {
+  color: #7C3AED;
+}
+
+.architecture-btn:hover {
+  background: #EDE7F6;
+  color: #6D28D9;
+}
+
+.live-status-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 6.5px;
+  height: 6.5px;
+  background: #10B981;
+  border-radius: 50%;
+  border: 1.5px solid var(--bg-card);
+  box-shadow: 0 0 4px #10B981;
 }
 </style>

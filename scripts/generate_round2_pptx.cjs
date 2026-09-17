@@ -22,6 +22,9 @@ const ROOT_OUTPUT_FILE = path.resolve(__dirname, '../../Nuzzle_Round2_Backend_AP
 // Also keep the previous filenames updated so any open link continues to work
 const ALT_OUTPUT_FILE = path.resolve(OUTPUT_DIR, 'Nuzzle_REST_API_Architecture_v2.pptx');
 const ALT_ROOT_FILE = path.resolve(__dirname, '../../Nuzzle_REST_API_Architecture_v2.pptx');
+const LEGACY_OUTPUT_FILE = path.resolve(OUTPUT_DIR, 'Nuzzle_REST_API_Architecture.pptx');
+const LEGACY_V2_FILE = path.resolve(__dirname, '../Nuzzle_REST_API_Architecture.pptx');
+const LEGACY_ROOT_FILE = path.resolve(__dirname, '../../Nuzzle_REST_API_Architecture.pptx');
 
 if (!fs.existsSync(OUTPUT_DIR)) {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -50,6 +53,7 @@ const COLORS = {
 };
 
 const FONT_FAMILY = 'Times New Roman';
+const TOTAL_SLIDES = 11;
 
 function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
   const slide = pptx.addSlide();
@@ -67,7 +71,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
     fontSize: 13, fontFace: FONT_FAMILY, bold: true, color: COLORS.primaryDark
   });
 
-  slide.addText(`Slide ${slideNumber} / 10 • 5-Minute Presentation`, {
+  slide.addText(`Slide ${slideNumber} / ${TOTAL_SLIDES} • 5-Minute Presentation`, {
     x: 7.5, y: 0.12, w: 5.0, h: 0.4,
     fontSize: 11, fontFace: FONT_FAMILY, color: COLORS.textMuted, align: 'right'
   });
@@ -353,7 +357,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, speakerNotes) {
     slide.addText(r.desc, { x: 1.25, y: yPos + 0.38, w: 4.9, h: 0.45, fontSize: 10, fontFace: FONT_FAMILY, color: COLORS.textMuted, lineSpacing: 13 });
   });
 
-  // Right Side: Architecture Flow Diagram
+  // Right Side: REST Request-Response Lifecycle
   slide.addShape(pptx.ShapeType.roundRect, {
     x: 6.8, y: 1.7, w: 5.7, h: 4.8,
     fill: { color: COLORS.codeBg },
@@ -393,15 +397,92 @@ prisma.post.findMany({ where: { category: "barks" } })
   });
 }
 
-// ==========================================
-// SLIDE 4: DATABASE SCHEMA & SUPABASE CLOUD
-// ==========================================
+// =======================================================
+// SLIDE 4: DEDICATED FULL-SCALE ARCHITECTURE BLUEPRINT
+// =======================================================
 {
   const slide = createBaseSlide(
     4,
+    'PART 1 • BACKEND REST API ARCHITECTURE BLUEPRINT',
+    'Full-Stack 6-Layer Architecture, Security Gateway & Cloud Infrastructure',
+    'Slide 4 provides a dedicated high-resolution visual showcase of the full-stack 6-layer architecture from Vue 3 mobile ingress down to Supabase PostgreSQL, external AI/Maps services, and reliability monitoring.'
+  );
+
+  // Dedicated Left Card Housing the Architecture Photo in High Resolution
+  slide.addShape(pptx.ShapeType.roundRect, {
+    x: 0.8, y: 1.62, w: 8.6, h: 5.05,
+    fill: { color: COLORS.codeBg },
+    line: { color: COLORS.indigo, width: 1.5 },
+    radius: 0.15
+  });
+
+  const archImgCandidates = [
+    path.resolve(__dirname, '../../nuzzle_backend_architecture_16x9.jpg'),
+    path.resolve(__dirname, '../public/nuzzle_backend_architecture_16x9.jpg'),
+    path.resolve(__dirname, '../../nuzzle_backend_architecture_v2.jpg'),
+    path.resolve(__dirname, '../../nuzzle_backend_architecture.jpg'),
+  ];
+  const archImg = archImgCandidates.find(p => fs.existsSync(p));
+
+  if (archImg) {
+    // True 16:9 Aspect Ratio (1376 x 768) -> w: 8.40, h: 4.69
+    slide.addImage({
+      path: archImg,
+      x: 0.9, y: 1.80, w: 8.40, h: 4.69
+    });
+  }
+
+  // Right Side Technical Highlights Panel
+  slide.addShape(pptx.ShapeType.roundRect, {
+    x: 9.6, y: 1.62, w: 2.933, h: 5.05,
+    fill: { color: COLORS.bgCard },
+    line: { color: COLORS.border, width: 1.2 },
+    radius: 0.15
+  });
+
+  slide.addText('6-LAYER ARCHITECTURE BREAKDOWN', {
+    x: 9.45, y: 1.82, w: 2.9, h: 0.28,
+    fontSize: 9.5, fontFace: FONT_FAMILY, bold: true, color: COLORS.primaryDark
+  });
+
+  const layerItems = [
+    { n: '1', title: 'Ingress & Client', desc: 'Vue 3 SPA routing via Vercel Edge Proxy Network' },
+    { n: '2', title: 'Security Gateway', desc: 'Rate Limiting (120/m), CORS, JWT Auth & RBAC' },
+    { n: '3', title: 'REST Engine', desc: '8 Route Handlers, Global Handler & Swagger UI' },
+    { n: '4', title: 'Data Access', desc: 'Prisma 7 ORM + PgBouncer Pooler (Port 6543)' },
+    { n: '5', title: 'Supabase Cloud', desc: 'PostgreSQL + PostGIS Radar, OAuth & S3 Storage' },
+    { n: '6', title: 'Reliability', desc: 'Structured Logging, X-Response-Time & /api/health' }
+  ];
+
+  layerItems.forEach((item, idx) => {
+    const yPos = 2.15 + idx * 0.68;
+    slide.addShape(pptx.ShapeType.roundRect, {
+      x: 9.42, y: yPos, w: 2.94, h: 0.60,
+      fill: { color: COLORS.bgSubtle },
+      line: { color: COLORS.borderLight, width: 0.8 },
+      radius: 0.08
+    });
+
+    slide.addText(`Layer ${item.n}: ${item.title}`, {
+      x: 9.52, y: yPos + 0.06, w: 2.74, h: 0.24,
+      fontSize: 9, fontFace: FONT_FAMILY, bold: true, color: COLORS.primaryDark
+    });
+    slide.addText(item.desc, {
+      x: 9.52, y: yPos + 0.28, w: 2.74, h: 0.28,
+      fontSize: 7.8, fontFace: FONT_FAMILY, color: COLORS.textMuted
+    });
+  });
+}
+
+// ==========================================
+// SLIDE 5: DATABASE SCHEMA & SUPABASE CLOUD
+// ==========================================
+{
+  const slide = createBaseSlide(
+    5,
     'PART 1 • DATABASE SCHEMA & PERSISTENCE',
     '18 Relational Models on Supabase Cloud PostgreSQL',
-    'Slide 4 breaks down the 18 PostgreSQL tables, Prisma ORM schema mapping, and dual connection pooler architecture.'
+    'Slide 5 breaks down the 18 PostgreSQL tables, Prisma ORM schema mapping, and dual connection pooler architecture.'
   );
 
   // 3 Schema Clusters
@@ -484,14 +565,14 @@ prisma.post.findMany({ where: { category: "barks" } })
 }
 
 // ==========================================
-// SLIDE 5: SECURITY & GOOGLE OAUTH 2.0
+// SLIDE 6: SECURITY & GOOGLE OAUTH 2.0
 // ==========================================
 {
   const slide = createBaseSlide(
-    5,
+    6,
     'PART 1 • SECURITY & AUTHENTICATION',
     'Multi-Role Authorization & Google OAuth 2.0 Integration',
-    'Slide 5 presents the authentication architecture, Supabase JWT tokens, and 1-click Google sign-in.'
+    'Slide 6 presents the authentication architecture, Supabase JWT tokens, and 1-click Google sign-in.'
   );
 
   // Left Card: 3 Roles
@@ -566,14 +647,14 @@ prisma.post.findMany({ where: { category: "barks" } })
 }
 
 // ==========================================
-// SLIDE 6: CONNECTING VUE.JS TO REST BACKEND
+// SLIDE 7: CONNECTING VUE.JS TO REST BACKEND
 // ==========================================
 {
   const slide = createBaseSlide(
-    6,
+    7,
     'PART 2 • API INTEGRATION DEMO',
     'Connecting the Vue.js Frontend to REST APIs',
-    'Slide 6 presents the decoupled client architecture, apiClient.ts, and domain-driven service modules.'
+    'Slide 7 presents the decoupled client architecture, apiClient.ts, and domain-driven service modules.'
   );
 
   // 4 Client Connection Cards
@@ -638,14 +719,14 @@ prisma.post.findMany({ where: { category: "barks" } })
 }
 
 // ==========================================
-// SLIDE 7: LIVE API INTEGRATION DEMOS
+// SLIDE 8: LIVE API INTEGRATION DEMOS
 // ==========================================
 {
   const slide = createBaseSlide(
-    7,
+    8,
     'PART 2 • API INTEGRATION DEMO',
     'Live REST Endpoint Demonstrations & UI Workflows',
-    'Slide 7 walks through 4 production endpoint workflows demonstrating Vue.js reactive communication.'
+    'Slide 8 walks through 4 production endpoint workflows demonstrating Vue.js reactive communication.'
   );
 
   const workflows = [
@@ -723,14 +804,14 @@ prisma.post.findMany({ where: { category: "barks" } })
 }
 
 // ==========================================
-// SLIDE 8: STATE SYNC & OPTIMISTIC UI
+// SLIDE 9: STATE SYNC & OPTIMISTIC UI
 // ==========================================
 {
   const slide = createBaseSlide(
-    8,
+    9,
     'PART 2 • DATA SYNCHRONIZATION',
     'Optimistic UI Updates & Error Rollback Mechanisms',
-    'Slide 8 explains how Vue.js Pinia/appStore delivers zero perceived latency while guaranteeing server consistency.'
+    'Slide 9 explains how Vue.js Pinia/appStore delivers zero perceived latency while guaranteeing server consistency.'
   );
 
   // Left Column: Optimistic Pattern
@@ -816,14 +897,14 @@ export async function togglePostReaction(postId, type) {
 }
 
 // ==========================================
-// SLIDE 9: LESSONS LEARNED
+// SLIDE 10: LESSONS LEARNED
 // ==========================================
 {
   const slide = createBaseSlide(
-    9,
+    10,
     'PART 3 • LESSONS LEARNED & CHALLENGES',
     'Key Technical Hurdles & Architectural Solutions',
-    'Slide 9 details 3 significant real-world engineering hurdles encountered during API integration and how they were solved.'
+    'Slide 10 details 3 significant real-world engineering hurdles encountered during API integration and how they were solved.'
   );
 
   const lessons = [
@@ -904,14 +985,14 @@ export async function togglePostReaction(postId, type) {
 }
 
 // ==========================================
-// SLIDE 10: IMPROVEMENTS MADE & FRESH RELEASE
+// SLIDE 11: IMPROVEMENTS MADE & FRESH RELEASE
 // ==========================================
 {
   const slide = createBaseSlide(
-    10,
+    11,
     'PART 3 • IMPROVEMENTS & RELEASE READINESS',
     'Production Improvements & Fresh Account Lifecycle Engineering',
-    'Slide 10 highlights the key improvements made, fresh account release lifecycle, and deployment readiness.'
+    'Slide 11 highlights the key improvements made, fresh account release lifecycle, and deployment readiness.'
   );
 
   // Left Column: Major Improvements
@@ -1012,7 +1093,10 @@ async function build() {
     V2_OUTPUT_FILE,
     ROOT_OUTPUT_FILE,
     ALT_OUTPUT_FILE,
-    ALT_ROOT_FILE
+    ALT_ROOT_FILE,
+    LEGACY_OUTPUT_FILE,
+    LEGACY_V2_FILE,
+    LEGACY_ROOT_FILE
   ];
 
   for (const file of filesToSave) {

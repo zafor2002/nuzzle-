@@ -3,6 +3,7 @@ import { apiClient } from './apiClient';
 export interface TriagePayload {
   petName: string;
   species: string;
+  breed?: string;
   age?: string;
   symptoms: string;
   duration?: string;
@@ -29,10 +30,40 @@ export interface TriageResult {
   };
   disclaimer: string;
   createdAt: string;
+  provider?: string;
+}
+
+export interface ChatMessageItem {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
+export interface ChatPayload {
+  messages: ChatMessageItem[];
+  petContext?: {
+    petName?: string;
+    species?: string;
+    breed?: string;
+    age?: string;
+    weight?: string;
+    isProSubscriber?: boolean;
+  };
+}
+
+export interface ChatResult {
+  reply: string;
+  suggestedQuestions?: string[];
+  urgency?: 'low' | 'moderate' | 'emergency';
+  provider: string;
+  timestamp: string;
 }
 
 export const pawAiService = {
   async submitTriage(payload: TriagePayload) {
     return apiClient.post<TriageResult>('/pawai/triage', payload);
+  },
+
+  async sendChat(payload: ChatPayload) {
+    return apiClient.post<ChatResult>('/pawai/chat', payload);
   },
 };

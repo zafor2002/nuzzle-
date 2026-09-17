@@ -504,8 +504,36 @@
             >
               <div v-if="msg.sender === 'ai'" class="ai-avatar-tiny">🩺</div>
               <div class="msg-bubble" :class="msg.severity || 'low'">
+                <div v-if="msg.urgencyLabel" class="msg-urgency-pill" :style="{ backgroundColor: msg.urgencyColor || '#10B981' }">
+                  {{ msg.urgencyLabel }}
+                </div>
                 <p class="msg-text">{{ msg.text }}</p>
-                <span class="msg-time">{{ msg.timestamp }}</span>
+                <div v-if="msg.actions && msg.actions.length" class="msg-actions-box">
+                  <div class="msg-actions-title">📋 Immediate Actions:</div>
+                  <ul class="msg-actions-list">
+                    <li v-for="(act, idx) in msg.actions" :key="idx">{{ act }}</li>
+                  </ul>
+                </div>
+                <div v-if="msg.clinic" class="msg-clinic-box">
+                  🏥 <strong>{{ msg.clinic.clinicName }}</strong> · Call: <a :href="'tel:' + msg.clinic.phone" class="clinic-phone-link">{{ msg.clinic.phone }}</a>
+                </div>
+                <div class="msg-meta-row">
+                  <span v-if="msg.provider" class="msg-provider-tag">⚡ {{ msg.provider }}</span>
+                  <span class="msg-time">{{ msg.timestamp }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Typing / Processing Bubble -->
+            <div v-if="isAiTriageLoading" class="triage-msg-row ai">
+              <div class="ai-avatar-tiny">🩺</div>
+              <div class="msg-bubble low typing-bubble">
+                <span class="typing-text">PawDoctor AI is analyzing symptoms...</span>
+                <div class="typing-dots">
+                  <span class="t-dot"></span>
+                  <span class="t-dot"></span>
+                  <span class="t-dot"></span>
+                </div>
               </div>
             </div>
           </div>
@@ -674,6 +702,7 @@ import {
   vets,
   aiTriageMessages, 
   sendAiTriageQuery, 
+  isAiTriageLoading,
   isAiScanning, 
   currentScanResult, 
   runAiPetScan,
@@ -2201,6 +2230,105 @@ function generateMagicArt() {
   background: #FFF1F2;
   border-color: #FDA4AF;
   color: #9F1239;
+}
+
+.msg-urgency-pill {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+
+.msg-actions-box {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+  border-left: 3px solid var(--brand-primary);
+}
+
+.msg-actions-title {
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--ink-primary);
+}
+
+.msg-actions-list {
+  margin: 0;
+  padding-left: 14px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--ink-secondary);
+}
+
+.msg-clinic-box {
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.clinic-phone-link {
+  color: #059669;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.msg-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  font-size: 9px;
+  opacity: 0.75;
+}
+
+.msg-provider-tag {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--brand-primary);
+}
+
+.typing-bubble {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.typing-text {
+  font-size: 11.5px;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.typing-dots {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.t-dot {
+  width: 5px;
+  height: 5px;
+  background: var(--brand-primary);
+  border-radius: 50%;
+  animation: typingBounce 1.2s infinite ease-in-out;
+}
+
+.t-dot:nth-child(2) { animation-delay: 0.2s; }
+.t-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1.1); opacity: 1; }
 }
 
 .msg-time {
