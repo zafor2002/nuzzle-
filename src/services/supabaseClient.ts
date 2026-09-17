@@ -8,27 +8,11 @@ const supabaseAnonKey =
   (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || 
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtueWtlbHl3ZWl1c2xnZmxqaWlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNzQwMjIsImV4cCI6MjEwMzg1MDAyMn0.QSfOVwU8eZ6C6GmzuyHL0TITogokSxl29pZqICHUxhc';
 
-// Clean up stale Supabase session tokens from localStorage to prevent background auto-refresh network loops
-if (typeof window !== 'undefined') {
-  try {
-    const keysToRemove: string[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && (key.startsWith('sb-') || key.includes('supabase.auth.token'))) {
-        keysToRemove.push(key);
-      }
-    }
-    keysToRemove.forEach(k => localStorage.removeItem(k));
-  } catch (e) {
-    // Ignore storage access errors in restricted contexts
-  }
-}
-
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    persistSession: false,
-    autoRefreshToken: false,
-    detectSessionInUrl: false,
+    persistSession: true,
+    autoRefreshToken: false, // Disabled background loop to prevent network spam when Supabase pauses
+    detectSessionInUrl: true, // Crucial for OAuth callback detection from Google redirect
   },
 });
 
@@ -50,9 +34,19 @@ export async function signInWithGoogle() {
       },
     });
 
-    return { data, error };
+    if (error) {
+      console.warn('[SupabaseClient] Google OAuth request error:', error.message);
+      return { data: null, error };
+    }
+
+    // Crucial: Explicitly navigate the browser to Google's authentication consent screen
+    if (data?.url && typeof window !== 'undefined') {
+      window.location.href = data.url;
+    }
+
+    return { data, error: null };
   } catch (err: any) {
-    console.warn('[SupabaseClient] Google sign-in network error:', err?.message);
+    console.warn('[SupabaseClient] Google OAuth network error:', err?.message);
     return { data: null, error: err };
   }
 }

@@ -1191,14 +1191,47 @@ export async function performLogout() {
  * Listen for Supabase OAuth returns (e.g. Google Sign-In redirect)
  */
 export function initSupabaseAuthListener() {
-  // Check initial session
+  if (typeof window !== 'undefined') {
+    // 1. Direct PKCE code exchange if redirected with ?code=...
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    if (code) {
+      supabase.auth.exchangeCodeForSession(code).then(({ data, error }) => {
+        if (!error && data?.session) {
+          applySupabaseSession(data.session);
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      }).catch(err => console.warn('[OAuth] Code exchange error:', err));
+    }
+
+    // 2. Direct hash fragment session capture if redirected with #access_token=...
+    const hash = window.location.hash;
+    if (hash && hash.includes('access_token=')) {
+      const hashParams = new URLSearchParams(hash.replace(/^#/, ''));
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
+      if (accessToken) {
+        supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken || '',
+        }).then(({ data, error }) => {
+          if (!error && data?.session) {
+            applySupabaseSession(data.session);
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        }).catch(err => console.warn('[OAuth] SetSession error:', err));
+      }
+    }
+  }
+
+  // 3. Check existing active session
   supabase.auth.getSession().then(({ data: { session } }) => {
     if (session?.user) {
       applySupabaseSession(session);
     }
-  });
+  }).catch(() => {});
 
-  // Listen for auth state changes
+  // 4. Listen for auth state changes
   supabase.auth.onAuthStateChange(async (event, session) => {
     if (session?.user && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED')) {
       applySupabaseSession(session);
