@@ -418,22 +418,67 @@ export function closeChat() {
   activeChat.value = null;
 }
 
-export function sendMessageToActiveChat(body: string) {
+export async function sendMessageToActiveChat(body: string) {
   if (!activeChat.value || !body.trim()) return;
+
+  const currentChat = activeChat.value;
+  const userText = body.trim();
 
   const newMsg = {
     id: `msg_${Date.now()}`,
     senderId: 'owner_me',
     isSelf: true,
-    body: body.trim(),
+    body: userText,
     timestamp: 'Just now'
   };
 
-  activeChat.value.messages.push(newMsg);
-  activeChat.value.lastMessage = body.trim();
-  activeChat.value.lastMessageTime = 'Just now';
+  currentChat.messages.push(newMsg);
+  currentChat.lastMessage = userText;
+  currentChat.lastMessageTime = 'Just now';
 
-  const currentChat = activeChat.value;
+  const isAiChat = 
+    currentChat.participantId.includes('ai') || 
+    currentChat.participantName.toLowerCase().includes('pawdoctor') ||
+    currentChat.participantName.toLowerCase().includes('ai') ||
+    currentChat.participantName.toLowerCase().includes('dr.') ||
+    currentChat.participantName.toLowerCase().includes('vet');
+
+  if (isAiChat) {
+    try {
+      const currentPet = activePet.value || pets[0];
+      const chatHistory = currentChat.messages.slice(-8).map(m => ({
+        role: (m.isSelf ? 'user' : 'assistant') as 'user' | 'assistant',
+        content: m.body
+      }));
+
+      const res = await pawAiService.sendChat({
+        messages: chatHistory,
+        petContext: {
+          petName: currentPet?.name || 'Waffles',
+          species: currentPet?.species || 'Dog',
+          breed: currentPet?.breed || 'Golden Retriever',
+          isProSubscriber: owner.isProMember,
+        }
+      });
+
+      if (res.success && res.data?.reply) {
+        currentChat.messages.push({
+          id: `msg_ai_${Date.now()}`,
+          senderId: currentChat.participantId,
+          isSelf: false,
+          body: res.data.reply,
+          timestamp: 'Just now'
+        });
+        currentChat.lastMessage = res.data.reply;
+        currentChat.lastMessageTime = 'Just now';
+        return;
+      }
+    } catch (err) {
+      console.warn('AI chat error, using local fallback:', err);
+    }
+  }
+
+  // Standard peer conversation reply
   setTimeout(() => {
     if (currentChat) {
       const replies = [

@@ -723,6 +723,26 @@ export const initialMarketplace: MarketplaceListing[] = [
 
 export const initialChats: ChatConversation[] = [
   {
+    id: 'chat_pawdoctor_ai',
+    participantId: 'pawdoctor_ai',
+    participantName: 'PawDoctor AI (Clinical Assistant)',
+    participantAvatar: 'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=150&auto=format&fit=crop&q=80',
+    petName: 'PawDoctor 24/7',
+    lastMessage: 'Hello! I am PawDoctor AI. How can I help your pet today?',
+    lastMessageTime: 'Just now',
+    unreadCount: 0,
+    isOnline: true,
+    messages: [
+      {
+        id: 'm_ai_welcome',
+        senderId: 'pawdoctor_ai',
+        isSelf: false,
+        body: 'Hello! 🐾 I am your 24/7 clinical triage AI assistant powered by veterinary taxonomies. Ask me anything about your pet\'s health, diet, vaccines, or symptoms!',
+        timestamp: 'Just now'
+      }
+    ]
+  },
+  {
     id: 'chat_1',
     participantId: 'user_sophia',
     participantName: 'Sophia Chen',

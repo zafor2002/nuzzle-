@@ -593,8 +593,8 @@
 
           <div class="match-vs-row">
             <div class="pet-pick-box">
-              <img :src="pets[0].avatarUrl" alt="Waffles" class="m-avatar" />
-              <span class="m-name">{{ pets[0].name }}</span>
+              <img :src="activeTargetPet?.avatarUrl || pets[0]?.avatarUrl || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&auto=format&fit=crop&q=80'" :alt="activeTargetPet?.name || 'Waffles'" class="m-avatar" />
+              <span class="m-name">{{ activeTargetPet?.name || 'Waffles' }}</span>
               <span class="m-stat">⚡ High Zoomies</span>
             </div>
 
