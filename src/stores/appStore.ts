@@ -554,17 +554,38 @@ export async function sendAiTriageQuery(query: string) {
     isAiTriageLoading.value = false;
   }
 
-  // Fallback if network was unreachable
+  // Dynamic fallback if network was unreachable
   const q = query.toLowerCase();
-  let aiResponse = "I've analyzed your question. Ensure your pet has plenty of fresh water and rest. If symptoms persist over 24 hours, booking a quick checkup with Dr. Evelyn Martinez is advised.";
+  const currentPet = activePet.value || pets[0];
+  const petName = currentPet?.name || 'your pet';
+  const species = (currentPet?.species || 'pet').toLowerCase();
+  let aiResponse = '';
   let severity: 'low' | 'medium' | 'urgent' = 'low';
 
-  if (q.includes('chocolate') || q.includes('poison') || q.includes('grape') || q.includes('onion') || q.includes('bleeding')) {
-    aiResponse = "🚨 CRITICAL TRIAGE ALERT: Ingesting this substance can be toxic to pets! Please contact your nearest emergency veterinary hospital immediately.";
+  if (q.includes('chocolate') || q.includes('poison') || q.includes('grape') || q.includes('onion') || q.includes('lily') || q.includes('bleeding')) {
+    aiResponse = `🚨 CRITICAL TRIAGE ALERT for ${petName}: Ingesting toxic substances or active bleeding is a critical veterinary emergency! Please contact Cascade 24/7 Emergency Hospital (+880 1711-998877) or your local emergency vet immediately.`;
     severity = 'urgent';
-  } else if (q.includes('vomit') || q.includes('diarrhea') || q.includes('limp')) {
-    aiResponse = "⚠️ MODERATE ATTENTION: Mild gastrointestinal or muscular issue detected. Withhold heavy meals for 4 hours, provide small sips of water.";
+  } else if (q.includes('water') || q.includes('drink') || q.includes('thirsty') || q.includes('thirst') || q.includes('urin') || q.includes('pee')) {
+    aiResponse = `💧 Polydipsia / Hydration Insight for ${petName}: Excessive thirst in ${species}s is a significant clinical symptom commonly associated with early kidney changes, diabetes mellitus, or urinary tract infections. CRITICAL: Never restrict water access. Track daily intake and schedule a urinalysis and blood chemistry checkup within 24–48 hours.`;
     severity = 'medium';
+  } else if (q.includes('vomit') || q.includes('diarrhea') || q.includes('not eating') || q.includes('stomach') || q.includes('appetite')) {
+    aiResponse = `⚠️ Gastroenterology Care for ${petName}: Gastrointestinal upset detected. Withhold heavy meals and offer a bland diet (boiled skinless chicken breast with plain white rice in small portions). Check gums for moisture; if dry, pale, or if vomiting persists more than twice, consult Dr. Evelyn Martinez promptly.`;
+    severity = 'medium';
+  } else if (q.includes('limp') || q.includes('paw') || q.includes('leg') || q.includes('walk') || q.includes('stiff')) {
+    aiResponse = `🐾 Musculoskeletal Guidance for ${petName}: Limping indicates joint, muscular, or paw pad discomfort. Enforce strict rest (no running or stairs), check pads for burrs or broken claws, and NEVER administer human painkillers like paracetamol or ibuprofen as they are toxic to pets.`;
+    severity = 'medium';
+  } else if (q.includes('cough') || q.includes('breath') || q.includes('wheez') || q.includes('sneeze')) {
+    aiResponse = `🌬️ Respiratory Care for ${petName}: Airway irritation or coughing detected. Switch from neck collars to a chest harness to avoid tracheal pressure, provide a gentle steamy room session for 10 minutes, and count resting breaths per minute (normal is under 30 breaths/min).`;
+    severity = 'medium';
+  } else if (q.includes('scratch') || q.includes('ear') || q.includes('skin') || q.includes('itch')) {
+    aiResponse = `🩺 Dermatology & Ear Care for ${petName}: Frequent scratching or head shaking typically indicates allergic dermatitis, yeast, or ear mites. Inspect inner ear pinnae for redness or dark discharge, prevent self-scratching with a cone, and schedule an otoscopic check.`;
+    severity = 'medium';
+  } else if (q.includes('food') || q.includes('diet') || q.includes('nutrition') || q.includes('calori')) {
+    aiResponse = `🥑 Dietary Strategy for ${petName}: For optimal metabolic vitality, ensure high-quality animal protein, controlled healthy fats, and avoid toxic human foods (onions, garlic, grapes, xylitol). Adjust daily portions based on age and activity level.`;
+    severity = 'low';
+  } else {
+    aiResponse = `🐾 Clinical Wellness Assessment for ${petName}: For "${query}", ensure consistent hydration, balanced meals, and a calm environment. Keep a 24-hour log of energy and appetite. If symptoms do not improve within 36 hours, booking a checkup with a licensed veterinarian is recommended.`;
+    severity = 'low';
   }
 
   aiTriageMessages.push({
