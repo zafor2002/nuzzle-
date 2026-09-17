@@ -444,6 +444,7 @@
           <!-- Scanner Viewport with Click-to-Upload & Drag-Drop -->
           <div 
             class="scanner-viewport" 
+            :style="viewportAspectRatioStyle"
             :class="{ dragging: isDraggingOverViewport }"
             @click="triggerScanFileInput"
             @dragover.prevent="isDraggingOverViewport = true"
@@ -451,11 +452,19 @@
             @drop.prevent="handleScanFileDrop"
             title="Click or drop a photo to upload pet image"
           >
+            <!-- Background blurred backdrop when 'contain' mode is active -->
+            <div 
+              v-if="scanFitMode === 'contain'" 
+              class="scanner-blurred-bg" 
+              :style="{ backgroundImage: `url(${scanImage})` }"
+            ></div>
+
             <img 
               :src="scanImage" 
               alt="Scan pet" 
               class="scan-preview-img"
-              :class="{ scanning: isAiScanning }"
+              :class="{ scanning: isAiScanning, 'fit-contain': scanFitMode === 'contain' }"
+              :style="scanImageStyle"
             />
 
             <div v-if="isAiScanning" class="scan-laser-line"></div>
@@ -475,7 +484,113 @@
             <!-- Uploading status overlay -->
             <div v-if="isUploadingPhoto" class="uploading-overlay">
               <div class="spinner-dot"></div>
-              <span>Uploading Pet Photo...</span>
+              <span>Uploading & Optimizing Pet Photo...</span>
+            </div>
+          </div>
+
+          <!-- Photo Size & Framing Adjuster Toolbar -->
+          <div class="photo-adjust-toolbar">
+            <div class="adjust-toolbar-header">
+              <div class="adjust-title-chip">
+                <Sliders :size="13" />
+                <span>Photo Size & Framing</span>
+              </div>
+              <div class="adjust-quick-actions">
+                <!-- Fit Mode Toggle -->
+                <button 
+                  type="button" 
+                  class="adjust-action-btn"
+                  :class="{ active: scanFitMode === 'contain' }"
+                  @click.stop="toggleFitMode"
+                  :title="scanFitMode === 'contain' ? 'Switch to Fill Crop' : 'Switch to Fit Whole Pet'"
+                >
+                  <Maximize2 :size="12" />
+                  <span>{{ scanFitMode === 'contain' ? 'Fit Whole Pet' : 'Fill Crop' }}</span>
+                </button>
+
+                <!-- Aspect Ratio Switcher -->
+                <div class="ratio-pill-group">
+                  <button 
+                    type="button" 
+                    class="ratio-btn" 
+                    :class="{ active: scanAspectRatio === '4/3' }" 
+                    @click.stop="scanAspectRatio = '4/3'"
+                  >4:3</button>
+                  <button 
+                    type="button" 
+                    class="ratio-btn" 
+                    :class="{ active: scanAspectRatio === '1/1' }" 
+                    @click.stop="scanAspectRatio = '1/1'"
+                  >1:1</button>
+                  <button 
+                    type="button" 
+                    class="ratio-btn" 
+                    :class="{ active: scanAspectRatio === '16/9' }" 
+                    @click.stop="scanAspectRatio = '16/9'"
+                  >16:9</button>
+                </div>
+
+                <!-- Reset -->
+                <button 
+                  type="button" 
+                  class="adjust-reset-btn" 
+                  @click.stop="resetPhotoAdjustments"
+                  title="Reset zoom & framing"
+                >
+                  <RotateCcw :size="12" />
+                </button>
+              </div>
+            </div>
+
+            <!-- Zoom & Position Range Sliders -->
+            <div class="adjust-controls-grid">
+              <!-- Zoom / Size -->
+              <div class="adjust-control-item">
+                <div class="control-label-row">
+                  <span class="control-label">
+                    <ZoomIn :size="12" /> Zoom / Size
+                  </span>
+                  <span class="control-value">{{ scanZoom }}%</span>
+                </div>
+                <div class="slider-row">
+                  <button type="button" class="zoom-step-btn" @click.stop="zoomOut" :disabled="scanZoom <= 50" title="Zoom out">
+                    <ZoomOut :size="11" />
+                  </button>
+                  <input 
+                    type="range" 
+                    min="50" 
+                    max="200" 
+                    step="5" 
+                    v-model.number="scanZoom" 
+                    class="adjust-range-slider" 
+                  />
+                  <button type="button" class="zoom-step-btn" @click.stop="zoomIn" :disabled="scanZoom >= 200" title="Zoom in">
+                    <ZoomIn :size="11" />
+                  </button>
+                </div>
+              </div>
+
+              <!-- Vertical Pan / Framing Position -->
+              <div class="adjust-control-item">
+                <div class="control-label-row">
+                  <span class="control-label">
+                    <Move :size="12" /> Vertical Framing
+                  </span>
+                  <span class="control-value">{{ scanPosition <= 35 ? 'Top Focus' : scanPosition >= 65 ? 'Bottom Focus' : 'Centered' }}</span>
+                </div>
+                <div class="slider-row">
+                  <span class="range-hint">Top</span>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="100" 
+                    step="5" 
+                    v-model.number="scanPosition" 
+                    class="adjust-range-slider" 
+                  />
+                  <span class="range-hint">Bottom</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -770,7 +885,22 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { Sparkles, Camera, CheckCircle2, Send, Mic, Calendar, Wand2, Upload } from 'lucide-vue-next';
+import { 
+  Sparkles, 
+  Camera, 
+  CheckCircle2, 
+  Send, 
+  Mic, 
+  Calendar, 
+  Wand2, 
+  Upload,
+  Sliders,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  RotateCcw,
+  Move
+} from 'lucide-vue-next';
 import TopBar from '../components/layout/TopBar.vue';
 import { apiClient } from '../services/apiClient';
 import { 
@@ -1034,6 +1164,83 @@ const isDraggingOverViewport = ref(false);
 const isUploadingPhoto = ref(false);
 const isCustomUploaded = ref(false);
 
+// Photo Size & Framing Adjustments for PetScan
+const scanFitMode = ref<'cover' | 'contain'>('cover');
+const scanZoom = ref(100); // 50% to 200%
+const scanPosition = ref(65); // 0% (top) to 100% (bottom), default 65% for standard pet face centering
+const scanAspectRatio = ref<'4/3' | '1/1' | '16/9'>('4/3');
+
+const viewportAspectRatioStyle = computed(() => ({
+  aspectRatio: scanAspectRatio.value.replace('/', ' / ')
+}));
+
+const scanImageStyle = computed(() => ({
+  objectFit: scanFitMode.value,
+  objectPosition: `center ${scanPosition.value}%`,
+  transform: `scale(${scanZoom.value / 100})`,
+  transformOrigin: `center ${scanPosition.value}%`
+}));
+
+function setZoom(val: number) {
+  scanZoom.value = Math.min(200, Math.max(50, Math.round(val)));
+}
+
+function zoomIn() {
+  setZoom(scanZoom.value + 15);
+}
+
+function zoomOut() {
+  setZoom(scanZoom.value - 15);
+}
+
+function toggleFitMode() {
+  scanFitMode.value = scanFitMode.value === 'cover' ? 'contain' : 'cover';
+}
+
+function resetPhotoAdjustments() {
+  scanFitMode.value = 'cover';
+  scanZoom.value = 100;
+  scanPosition.value = 65;
+  scanAspectRatio.value = '4/3';
+}
+
+// Client-side image resizing and optimization for ultra-fast, smooth photo upload
+function resizeAndOptimizeImage(file: File, maxDim = 1400): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(e.target?.result as string);
+          return;
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+        const optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+        resolve(optimizedDataUrl);
+      };
+      img.onerror = reject;
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 const sampleScanPets = [
   { label: '🐕 Golden', url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=800&auto=format&fit=crop&q=80', breed: 'Golden Retriever', species: 'Dog' },
   { label: '🐱 Bengal', url: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&auto=format&fit=crop&q=80', breed: 'Bengal Cat', species: 'Cat' },
@@ -1064,7 +1271,7 @@ function handleScanFileDrop(event: DragEvent) {
   processUploadedPetPhoto(file);
 }
 
-function processUploadedPetPhoto(file: File) {
+async function processUploadedPetPhoto(file: File) {
   if (!file.type.startsWith('image/')) {
     alert('Please select a valid image file (JPEG, PNG, WEBP).');
     return;
@@ -1073,35 +1280,50 @@ function processUploadedPetPhoto(file: File) {
   isUploadingPhoto.value = true;
   isCustomUploaded.value = true;
 
-  // 1. Instant local preview
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const dataUrl = e.target?.result as string;
-    if (dataUrl) {
-      scanImage.value = dataUrl;
-      const pet = activeTargetPet.value;
-      runAiPetScan(dataUrl, pet?.species, pet?.breed);
-    }
-    isUploadingPhoto.value = false;
-  };
-  reader.onerror = () => {
-    isUploadingPhoto.value = false;
-  };
-  reader.readAsDataURL(file);
+  try {
+    // 1. Client-side canvas normalization & downscale for instantaneous preview and crisp display
+    const optimizedDataUrl = await resizeAndOptimizeImage(file, 1400);
+    scanImage.value = optimizedDataUrl;
 
-  // 2. Background cloud media upload to persistent storage
-  apiClient.uploadMedia(file).then(res => {
-    if (res.success && res.data?.url) {
-      console.log('[PetScan] Uploaded pet photo to cloud media:', res.data.url);
-    }
-  }).catch(err => {
-    console.warn('[PetScan] Media upload notice:', err);
-  });
+    // Reset zoom and center framing for user's newly uploaded photo
+    scanZoom.value = 100;
+    scanPosition.value = 50;
+
+    const pet = activeTargetPet.value;
+    runAiPetScan(optimizedDataUrl, pet?.species, pet?.breed);
+
+    // 2. Background cloud media upload
+    apiClient.uploadMedia(file).then(res => {
+      if (res.success && res.data?.url) {
+        console.log('[PetScan] Uploaded pet photo to cloud media:', res.data.url);
+      }
+    }).catch(err => {
+      console.warn('[PetScan] Media upload notice:', err);
+    });
+  } catch (err) {
+    console.error('[PetScan] Failed to resize/optimize photo:', err);
+    // Fallback to direct read
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      if (dataUrl) {
+        scanImage.value = dataUrl;
+        const pet = activeTargetPet.value;
+        runAiPetScan(dataUrl, pet?.species, pet?.breed);
+      }
+    };
+    reader.readAsDataURL(file);
+  } finally {
+    isUploadingPhoto.value = false;
+  }
 }
 
 function selectSamplePet(sample: typeof sampleScanPets[0]) {
   scanImage.value = sample.url;
   isCustomUploaded.value = false;
+  scanPosition.value = sample.breed.includes('Golden') ? 65 : 50;
+  scanZoom.value = 100;
+  scanFitMode.value = 'cover';
   runAiPetScan(sample.url, sample.species, sample.breed);
 }
 
@@ -2176,22 +2398,260 @@ function generateMagicArt() {
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
+  max-height: 380px;
   border-radius: 14px;
   overflow: hidden;
-  background: var(--bg-card-subtle);
+  background: #0f0c1e;
   cursor: pointer;
-  border: 2px dashed transparent;
+  border: 2px dashed rgba(168, 85, 247, 0.35);
   transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .scanner-viewport:hover {
-  border-color: rgba(168, 85, 247, 0.4);
+  border-color: #A855F7;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.25);
 }
 
 .scanner-viewport.dragging {
   border-color: #A855F7;
-  box-shadow: 0 0 16px rgba(168, 85, 247, 0.4);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.45);
   transform: scale(1.01);
+}
+
+.scanner-blurred-bg {
+  position: absolute;
+  inset: -20px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(22px) brightness(0.4);
+  opacity: 0.85;
+  transform: scale(1.1);
+  pointer-events: none;
+}
+
+.scan-preview-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.15s ease-out, object-position 0.15s ease-out;
+  user-select: none;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.scan-preview-img.fit-contain {
+  object-fit: contain;
+}
+
+/* Photo Adjustment Toolbar */
+.photo-adjust-toolbar {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.adjust-toolbar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.adjust-title-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-secondary);
+}
+
+.adjust-quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.adjust-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border-radius: var(--radius-full);
+  font-size: 10.5px;
+  font-weight: 700;
+  background: var(--bg-card);
+  color: var(--ink-secondary);
+  border: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.adjust-action-btn:hover,
+.adjust-action-btn.active {
+  background: rgba(168, 85, 247, 0.15);
+  border-color: #A855F7;
+  color: #A855F7;
+}
+
+.ratio-pill-group {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  padding: 2px;
+}
+
+.ratio-btn {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  border: none;
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ratio-btn.active {
+  background: #A855F7;
+  color: #fff;
+}
+
+.adjust-reset-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.adjust-reset-btn:hover {
+  color: #A855F7;
+  border-color: #A855F7;
+  transform: rotate(-45deg);
+}
+
+.adjust-controls-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .adjust-controls-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+.adjust-control-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.control-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.control-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+
+.control-value {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #A855F7;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.zoom-step-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  color: var(--ink-secondary);
+  cursor: pointer;
+}
+
+.zoom-step-btn:hover:not(:disabled) {
+  border-color: #A855F7;
+  color: #A855F7;
+}
+
+.zoom-step-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.range-hint {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.adjust-range-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--border-light);
+  outline: none;
+  cursor: pointer;
+}
+
+.adjust-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #A855F7;
+  box-shadow: 0 1px 4px rgba(168, 85, 247, 0.4);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.adjust-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
 }
 
 .viewport-upload-overlay {
