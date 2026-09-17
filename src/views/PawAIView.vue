@@ -675,6 +675,15 @@
               <p class="nut-text">{{ currentScanResult.nutritionAdvice }}</p>
             </div>
 
+            <div v-if="currentScanResult.funFact" class="funfact-box">
+              <span class="fact-lbl">💡 Clinical Breed Fact:</span>
+              <p class="fact-text">{{ currentScanResult.funFact }}</p>
+            </div>
+
+            <div v-if="currentScanResult.provider" class="scan-provider-pill">
+              <span>⚡ {{ currentScanResult.provider }}</span>
+            </div>
+
             <!-- Quick Shortcut to Suggest Vet -->
             <button class="btn-solid suggest-vet-quick-btn" @click="activeAiTab = 'suggest_vet'">
               <span>🏥 Suggest Nearest Pro Vet for this Condition →</span>
@@ -2848,6 +2857,20 @@ function generateMagicArt() {
   background: var(--bg-card-subtle);
   padding: 8px 10px;
   border-radius: 8px;
+}
+
+.scan-provider-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 700;
+  color: #7C3AED;
+  background: rgba(124, 58, 237, 0.08);
+  padding: 3px 8px;
+  border-radius: 9999px;
+  border: 1px solid rgba(124, 58, 237, 0.2);
 }
 
 .observations-list ul {

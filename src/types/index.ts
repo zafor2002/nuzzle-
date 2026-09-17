@@ -302,4 +302,5 @@ export interface AiScanResult {
   healthObservations: string[];
   nutritionAdvice: string;
   funFact: string;
+  provider?: string;
 }

@@ -58,6 +58,24 @@ export interface ChatResult {
   timestamp: string;
 }
 
+export interface PetScanPayload {
+  image: string;
+  species?: string;
+  petType?: string;
+  breed?: string;
+  petName?: string;
+}
+
+export interface PetScanResult {
+  breedMatch: string;
+  confidence: number;
+  detectedMood: string;
+  healthObservations: string[];
+  nutritionAdvice: string;
+  funFact: string;
+  provider?: string;
+}
+
 export const pawAiService = {
   async submitTriage(payload: TriagePayload) {
     return apiClient.post<TriageResult>('/pawai/triage', payload);
@@ -65,5 +83,9 @@ export const pawAiService = {
 
   async sendChat(payload: ChatPayload) {
     return apiClient.post<ChatResult>('/pawai/chat', payload);
+  },
+
+  async scanPet(payload: PetScanPayload) {
+    return apiClient.post<PetScanResult>('/pawai/scan', payload);
   },
 };
