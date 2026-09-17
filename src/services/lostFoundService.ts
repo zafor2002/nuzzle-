@@ -13,4 +13,8 @@ export const lostFoundService = {
   async claimRescue(reportId: string, volunteerName?: string) {
     return apiClient.post(`/lost-found/${reportId}/claim`, { volunteerName });
   },
+
+  async matchLostFoundAi(data: { description?: string; location?: string; photoUrl?: string; petType?: string; breed?: string }) {
+    return apiClient.post<{ matchFound: boolean; topMatch?: any; candidateCount?: number; aiRecommendation?: string }>('/lost-found/ai-match', data);
+  },
 };
