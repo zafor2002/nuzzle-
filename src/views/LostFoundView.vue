@@ -34,44 +34,43 @@
           @change="onSightingPhotoSelected"
         />
 
+        <!-- PROMINENT PHOTO UPLOAD ZONE -->
+        <div class="radar-upload-dropzone" @click="triggerPhotoInput">
+          <div v-if="!aiMatchImage" class="dropzone-empty">
+            <div class="camera-pulse-btn">
+              <Camera :size="20" />
+            </div>
+            <div class="dropzone-text">
+              <span class="dropzone-title">📸 Tap to Upload or Snap Sighting Photo</span>
+              <span class="dropzone-hint">JPG, PNG, or camera snapshot for multimodal AI visual matching</span>
+            </div>
+          </div>
+          <div v-else class="dropzone-filled">
+            <img :src="aiMatchImage" alt="Sighting photo" class="dropzone-thumb" />
+            <div class="dropzone-details">
+              <span class="dropzone-tag">✅ Sighting Photo Attached</span>
+              <span class="dropzone-sub">Tap to change photo • Ready for AI comparison</span>
+            </div>
+            <button type="button" class="btn-remove-dropzone" @click.stop="removePhoto" title="Remove photo">
+              <X :size="16" />
+            </button>
+          </div>
+        </div>
+
         <div class="radar-input-row">
           <input
             v-model="aiMatchQuery"
             class="radar-input"
-            placeholder="Describe sighting notes (optional if photo attached)..."
+            placeholder="Additional notes (e.g. Near Banani Rd 11, collar)..."
             @keydown.enter.prevent="runAiRadarMatch"
           />
-          <button
-            type="button"
-            class="radar-photo-btn"
-            :class="{ 'has-photo': !!aiMatchImage }"
-            @click="triggerPhotoInput"
-            title="Snap or upload sighting photo"
-          >
-            <Camera :size="16" />
-            <span>{{ aiMatchImage ? 'Change Photo' : 'Photo' }}</span>
-          </button>
           <button
             class="btn-solid radar-match-btn"
             :disabled="isAiMatching || (!aiMatchQuery.trim() && !aiMatchImage)"
             @click="runAiRadarMatch"
           >
             <span v-if="isAiMatching">⏳ Scanning...</span>
-            <span v-else>🔍 Match</span>
-          </button>
-        </div>
-
-        <!-- Attached Photo Preview -->
-        <div v-if="aiMatchImage" class="radar-photo-preview-tray">
-          <div class="preview-thumb-wrap">
-            <img :src="aiMatchImage" alt="Sighting photo preview" class="preview-thumb" />
-          </div>
-          <div class="preview-details">
-            <span class="preview-tag">📸 Sighting Photo Attached</span>
-            <span class="preview-sub">Ready for multimodal visual biometric comparison</span>
-          </div>
-          <button type="button" class="btn-remove-preview" @click="removePhoto" title="Remove photo">
-            <X :size="14" />
+            <span v-else>🔍 Run Match</span>
           </button>
         </div>
 
@@ -1112,72 +1111,124 @@ function showToast(msg: string) {
   display: none !important;
 }
 
-.radar-photo-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+/* Prominent Photo Upload Zone */
+.radar-upload-dropzone {
+  margin-bottom: 10px;
   background: var(--bg-card);
-  border: 1px dashed var(--border-medium);
-  border-radius: 10px;
-  padding: 8px 12px;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--brand-primary);
+  border: 1.5px dashed rgba(99, 102, 241, 0.4);
+  border-radius: 12px;
+  padding: 10px 14px;
   cursor: pointer;
-  white-space: nowrap;
   transition: all 0.2s ease;
 }
 
-.radar-photo-btn:hover {
+.radar-upload-dropzone:hover {
   border-color: var(--brand-primary);
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(99, 102, 241, 0.06);
+  transform: translateY(-1px);
 }
 
-.radar-photo-btn.has-photo {
-  border-style: solid;
-  border-color: #10B981;
+.dropzone-empty {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.camera-pulse-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--brand-primary), #8B5CF6);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.dropzone-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dropzone-title {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--ink-primary);
+}
+
+.dropzone-hint {
+  font-size: 10.5px;
+  color: var(--ink-muted);
+}
+
+.dropzone-filled {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dropzone-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1.5px solid #10B981;
+  flex-shrink: 0;
+}
+
+.dropzone-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.dropzone-tag {
+  font-size: 12px;
+  font-weight: 800;
   color: #059669;
-  background: rgba(16, 185, 129, 0.1);
+}
+
+.dropzone-sub {
+  font-size: 10.5px;
+  color: var(--ink-muted);
+}
+
+.btn-remove-dropzone {
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.btn-remove-dropzone:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: scale(1.05);
 }
 
 .radar-match-btn {
   flex-shrink: 0;
   font-size: 12px;
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 10px;
   white-space: nowrap;
+  font-weight: 700;
 }
 
 .radar-match-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-/* Attached Photo Preview Tray */
-.radar-photo-preview-tray {
-  margin-top: 8px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  border-radius: 10px;
-  padding: 6px 10px;
-}
-
-.preview-thumb-wrap {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  overflow: hidden;
-  flex-shrink: 0;
-  border: 1px solid var(--border-light);
-}
-
-.preview-thumb {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .preview-details {
