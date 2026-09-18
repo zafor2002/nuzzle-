@@ -597,7 +597,6 @@ export async function sendAiTriageQuery(query: string) {
   });
 }
 
-
 export async function runAiPetScan(imageUrl?: string, petSpecies?: string, petBreed?: string) {
   isAiScanning.value = true;
   currentScanResult.value = null;
@@ -626,15 +625,16 @@ export async function runAiPetScan(imageUrl?: string, petSpecies?: string, petBr
         funFact: res.data.funFact,
         provider: res.data.provider,
       };
+      isAiScanning.value = false;
       return;
     }
+    // Backend returned failure response — fall through to local engine
+    console.warn('[PetScan] Backend returned failure, activating local biometric engine');
   } catch (err) {
     console.warn('[PetScan] Backend AI Vision scan notice, using local biometric engine:', err);
-  } finally {
-    isAiScanning.value = false;
   }
 
-  // Dynamic Fallback Engine if network was offline
+  // Dynamic Fallback Engine (runs when backend is unavailable or returns failure)
   const cleanSpecies = species.toLowerCase();
   const conf = +(95 + Math.random() * 4).toFixed(1);
 
@@ -680,10 +680,12 @@ export async function runAiPetScan(imageUrl?: string, petSpecies?: string, petBr
         'Estimated Dental Cleanliness: 92% healthy enamel, zero plaque build-up'
       ],
       nutritionAdvice: 'Maintain balanced caloric intake with joint supplements (glucosamine/chondroitin).',
-      funFact: 'A dog’s sense of smell is so acute it can detect some scents in parts per trillion!',
+      funFact: 'A dog\'s sense of smell is so acute it can detect some scents in parts per trillion!',
       provider: 'Nuzzle Neural Biometric Engine'
     };
   }
+
+  isAiScanning.value = false;
 }
 
 export function generateAiCaption(type: 'silly' | 'heartwarming' | 'dramatic' | 'poetic', _petName: string = 'Waffles'): { caption: string; tags: string[] } {

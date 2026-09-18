@@ -1214,7 +1214,7 @@ function resetPhotoAdjustments() {
 }
 
 // Client-side image resizing and optimization for ultra-fast, smooth photo upload
-function resizeAndOptimizeImage(file: File, maxDim = 1400): Promise<string> {
+function resizeAndOptimizeImage(file: File, maxDim = 1400, quality = 0.88): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -1239,7 +1239,7 @@ function resizeAndOptimizeImage(file: File, maxDim = 1400): Promise<string> {
           return;
         }
         ctx.drawImage(img, 0, 0, width, height);
-        const optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+        const optimizedDataUrl = canvas.toDataURL('image/jpeg', quality);
         resolve(optimizedDataUrl);
       };
       img.onerror = reject;
@@ -1247,6 +1247,34 @@ function resizeAndOptimizeImage(file: File, maxDim = 1400): Promise<string> {
     };
     reader.onerror = reject;
     reader.readAsDataURL(file);
+  });
+}
+
+// Compress an existing data URL down to a small size for AI API submission
+function resizeDataUrlForAi(dataUrl: string, maxDim = 512, quality = 0.72): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) { resolve(dataUrl); return; }
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
   });
 }
 
@@ -1290,18 +1318,20 @@ async function processUploadedPetPhoto(file: File) {
   isCustomUploaded.value = true;
 
   try {
-    // 1. Client-side canvas normalization & downscale for instantaneous preview and crisp display
-    const optimizedDataUrl = await resizeAndOptimizeImage(file, 1400);
-    scanImage.value = optimizedDataUrl;
+    // 1. High-quality preview image (1400px, 88%) for crisp display
+    const previewDataUrl = await resizeAndOptimizeImage(file, 1400, 0.88);
+    scanImage.value = previewDataUrl;
 
     // Reset zoom and center framing for user's newly uploaded photo
     scanZoom.value = 100;
     scanPosition.value = 50;
 
+    // 2. Small compressed image for AI API (512px, 72% quality ~60-90KB) to avoid Vercel body size limits
+    const aiDataUrl = await resizeDataUrlForAi(previewDataUrl, 512, 0.72);
     const pet = activeTargetPet.value;
-    runAiPetScan(optimizedDataUrl, pet?.species, pet?.breed);
+    runAiPetScan(aiDataUrl, pet?.species, pet?.breed);
 
-    // 2. Background cloud media upload
+    // 3. Background cloud media upload (non-blocking)
     apiClient.uploadMedia(file).then(res => {
       if (res.success && res.data?.url) {
         console.log('[PetScan] Uploaded pet photo to cloud media:', res.data.url);
@@ -1313,12 +1343,14 @@ async function processUploadedPetPhoto(file: File) {
     console.error('[PetScan] Failed to resize/optimize photo:', err);
     // Fallback to direct read
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const dataUrl = e.target?.result as string;
       if (dataUrl) {
         scanImage.value = dataUrl;
+        // Still compress for AI even in fallback path
+        const aiDataUrl = await resizeDataUrlForAi(dataUrl, 512, 0.72).catch(() => dataUrl);
         const pet = activeTargetPet.value;
-        runAiPetScan(dataUrl, pet?.species, pet?.breed);
+        runAiPetScan(aiDataUrl, pet?.species, pet?.breed);
       }
     };
     reader.readAsDataURL(file);
