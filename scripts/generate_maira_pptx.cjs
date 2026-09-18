@@ -39,6 +39,16 @@ const SCREENSHOT_PATHS = [
 ];
 const SCREENSHOT_PATH = SCREENSHOT_PATHS.find(p => fs.existsSync(p)) || null;
 
+// Architecture Diagram paths
+const AI_DIAGRAM_PATHS = [
+  path.resolve(__dirname, '../presentation/nuzzle_ai_integration_architecture.jpg'),
+  path.resolve(__dirname, '../../presentation/nuzzle_ai_integration_architecture.jpg'),
+  path.resolve(__dirname, '../public/nuzzle_ai_integration_architecture.jpg'),
+  path.resolve(__dirname, '../../public/nuzzle_ai_integration_architecture.jpg'),
+];
+const AI_DIAGRAM_PATH = AI_DIAGRAM_PATHS.find(p => fs.existsSync(p)) || null;
+
+
 // Curated High-Contrast Design Palette
 const COLORS = {
   bgSlide: 'F8FAFC',
@@ -72,7 +82,7 @@ const COLORS = {
 };
 
 const FONT_FAMILY = 'Arial';
-const TOTAL_SLIDES = 14;
+const TOTAL_SLIDES = 15;
 
 /**
  * Creates a clean base slide with zero text-box overlap.
@@ -518,11 +528,112 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, subtitleText, spea
 }
 
 // ==============================================================================
-// SLIDE 5: PILLAR 1 - PAWDOCTOR CLINICAL TRIAGE
+// SLIDE 6: ENTERPRISE AI INTEGRATION ARCHITECTURE DIAGRAM (NEW!)
 // ==============================================================================
 {
   const slide = createBaseSlide(
-    5,
+    6,
+    'Enterprise AI Architecture',
+    'Multi-Model Intelligence Pipeline & Managed RAG Flow',
+    'Pre-Inference Guardrails (<2ms) ➔ Hugging Face Vision Biometrics (~800ms) ➔ Gigalogy MAIRA Managed RAG (~450ms).',
+    'Walk through the end-to-end AI integration pipeline: deterministic safety guardrails, multimodal vision biometrics with Qwen2.5-VL-72B, 4 MAIRA vector profiles, and resilient fallback engine.'
+  );
+
+  // Left Column: Visual Architecture Diagram Image Frame
+  const imgLeft = 0.8;
+  const imgTop = 1.95;
+  const imgWidth = 8.4;
+  const imgHeight = 4.85;
+
+  slide.addShape(pptx.ShapeType.roundRect, {
+    x: imgLeft, y: imgTop, w: imgWidth, h: imgHeight,
+    fill: { color: COLORS.bgCard },
+    line: { color: COLORS.primaryDark, width: 1.5 },
+    radius: 0.12
+  });
+
+  if (AI_DIAGRAM_PATH) {
+    slide.addImage({
+      path: AI_DIAGRAM_PATH,
+      x: imgLeft + 0.08, y: imgTop + 0.08, w: imgWidth - 0.16, h: imgHeight - 0.16
+    });
+  } else {
+    slide.addText('🤖 ENTERPRISE AI INTEGRATION ARCHITECTURE DIAGRAM', {
+      x: imgLeft + 0.5, y: 4.0, w: imgWidth - 1.0, h: 0.6,
+      fontSize: 14, bold: true, color: COLORS.primaryDark, align: 'center'
+    });
+  }
+
+  // Right Column: 3 Explanatory Pipeline Pillar Cards (Zero-overlap layout)
+  const aiCards = [
+    {
+      badge: '🚨 PRE-INFERENCE GUARDRAIL (<2ms)',
+      badgeBg: COLORS.roseBg,
+      badgeColor: COLORS.rose,
+      title: 'Deterministic Toxin Guard',
+      desc: 'Sub-2ms regex & heuristic calculator for theobromine, lilies, and acetaminophen with immediate emergency intercept.'
+    },
+    {
+      badge: '👁️ VISION BIOMETRICS (~800ms)',
+      badgeBg: COLORS.indigoBg,
+      badgeColor: COLORS.indigo,
+      title: 'Qwen2.5-VL-72B Router',
+      desc: 'Hugging Face serverless vision router extracting anatomical facial masks, coat patterns, and ear geometry with 0–100% confidence.'
+    },
+    {
+      badge: '☁️ MANAGED VECTOR RAG (~450ms)',
+      badgeBg: COLORS.emeraldBg,
+      badgeColor: COLORS.emerald,
+      title: 'Gigalogy MAIRA Profiles',
+      desc: '4 UUID-bound high-dimensional vector profiles with sub-500ms retrieval and triple-tier failover (GPT-4o & deterministic cache).'
+    }
+  ];
+
+  aiCards.forEach((c, idx) => {
+    const cardY = 1.95 + idx * 1.65;
+    const cardW = 3.18;
+    const cardX = 9.35;
+
+    slide.addShape(pptx.ShapeType.roundRect, {
+      x: cardX, y: cardY, w: cardW, h: 1.55,
+      fill: { color: COLORS.bgCard },
+      line: { color: COLORS.border, width: 1 },
+      radius: 0.1
+    });
+
+    // Badge
+    slide.addShape(pptx.ShapeType.roundRect, {
+      x: cardX + 0.12, y: cardY + 0.12, w: cardW - 0.24, h: 0.26,
+      fill: { color: c.badgeBg },
+      line: { color: c.badgeColor, width: 0.8 },
+      radius: 0.06
+    });
+
+    slide.addText(c.badge, {
+      x: cardX + 0.16, y: cardY + 0.14, w: cardW - 0.32, h: 0.22,
+      fontSize: 7.5, fontFace: FONT_FAMILY, bold: true, color: c.badgeColor
+    });
+
+    // Title
+    slide.addText(c.title, {
+      x: cardX + 0.15, y: cardY + 0.44, w: cardW - 0.3, h: 0.24,
+      fontSize: 10.5, fontFace: FONT_FAMILY, bold: true, color: COLORS.textMain
+    });
+
+    // Description
+    slide.addText(c.desc, {
+      x: cardX + 0.15, y: cardY + 0.72, w: cardW - 0.3, h: 0.72,
+      fontSize: 8.5, fontFace: FONT_FAMILY, color: COLORS.textDim, lineSpacing: 11
+    });
+  });
+}
+
+// ==============================================================================
+// SLIDE 6: PILLAR 1 - PAWDOCTOR CLINICAL TRIAGE
+// ==============================================================================
+{
+  const slide = createBaseSlide(
+    6,
     'Pillar 1: Veterinary Medicine',
     'PawDoctor AI: 24/7 Clinical Triage & Poison Fast-Path',
     'Profile ID: 0a8fd1e8-45ac-4870-8f5f-cfbc7ccf58a6 • Endpoints: /api/pawai/triage & /api/pawai/chat',
@@ -619,11 +730,11 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, subtitleText, spea
 }
 
 // ==============================================================================
-// SLIDE 6: PILLAR 2 - MULTIMODAL LOST & FOUND RADAR
+// SLIDE 7: PILLAR 2 - MULTIMODAL LOST & FOUND RADAR
 // ==============================================================================
 {
   const slide = createBaseSlide(
-    6,
+    7,
     'Pillar 2: Multimodal Pet Safety Radar',
     'Lost & Found Radar: Multimodal Vision & Semantic Biometric Matching',
     'Profile ID: a10e6172-abe5-4fed-965f-dcdf22148524 • Dataset: 50-Pet Radar Benchmark + Supabase pgvector',
@@ -728,11 +839,11 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, subtitleText, spea
 }
 
 // ==============================================================================
-// SLIDE 7: LIVE APPLICATION DEMO (NEW DIRECT INTEGRATION!)
+// SLIDE 8: LIVE APPLICATION DEMO (NEW DIRECT INTEGRATION!)
 // ==============================================================================
 {
   const slide = createBaseSlide(
-    7,
+    8,
     'Pillar 2 • Live Application Demo',
     'Multimodal Visual Biometric Sighting Scanner',
     'Live UI Workflow: Instant Photo Upload, Side-by-Side Biometric Comparison & Real-Time Rescue Dispatch',
@@ -848,11 +959,11 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, subtitleText, spea
 }
 
 // ==============================================================================
-// SLIDE 8: PILLAR 3 - VET CLINIC & TELEMEDICINE NAVIGATOR
+// SLIDE 9: PILLAR 3 - VET CLINIC & TELEMEDICINE NAVIGATOR
 // ==============================================================================
 {
   const slide = createBaseSlide(
-    8,
+    9,
     'Pillar 3: Clinical Routing',
     'Vet Clinic & Telemedicine Specialist Navigator',
     'Profile ID: 9884416a-abd3-4e9c-a893-b2b0cab2bc60 • Dataset ID: 9dfc7c57-c072-441c-b653-1cf98247f990',
@@ -931,11 +1042,11 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, subtitleText, spea
 }
 
 // ==============================================================================
-// SLIDE 9: PILLAR 4 - MARKETPLACE NUTRITION & COMMERCE
+// SLIDE 10: PILLAR 4 - MARKETPLACE NUTRITION & COMMERCE
 // ==============================================================================
 {
   const slide = createBaseSlide(
-    9,
+    10,
     'Pillar 4: Pet Wellness & Commerce',
     'Marketplace AI Nutrition & Dietary Formulation',
     'Profile ID: 66e15325-9d32-4691-af65-d436fd727674 • Dataset ID: 1fbd9ddf-ee42-4ee6-ba50-ffaae169ffc1',
@@ -1016,11 +1127,11 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, subtitleText, spea
 }
 
 // ==============================================================================
-// SLIDE 10: DATASET ENGINEERING & VECTOR INDEXING
+// SLIDE 11: DATASET ENGINEERING & VECTOR INDEXING
 // ==============================================================================
 {
   const slide = createBaseSlide(
-    10,
+    11,
     'Dataset Engineering',
     'Curating & Training MAIRA Vector Knowledge Datasets',
     'How Nuzzle engineered, formatted, and indexed 3 high-dimensional datasets on Gigalogy cloud.',
@@ -1084,11 +1195,11 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, subtitleText, spea
 }
 
 // ==============================================================================
-// SLIDE 11: TECHNICAL IMPLEMENTATION & SECURITY
+// SLIDE 12: TECHNICAL IMPLEMENTATION & SECURITY
 // ==============================================================================
 {
   const slide = createBaseSlide(
-    11,
+    12,
     'Technical Implementation',
     'API Protocols, Header Security & Deployment Architecture',
     'Overcoming Gigalogy authentication gotchas: Hyphenated headers, Next.js route handlers & Supabase database.',
@@ -1190,11 +1301,11 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, subtitleText, spea
 }
 
 // ==============================================================================
-// SLIDE 12: RESILIENCE & ZERO DOWNTIME ENGINE
+// SLIDE 13: RESILIENCE & ZERO DOWNTIME ENGINE
 // ==============================================================================
 {
   const slide = createBaseSlide(
-    12,
+    13,
     'Resilience & Security',
     'Zero-Downtime Resilience Engine & Access Controls',
     'Safeguarding user sessions against cloud outages, latency spikes, and unauthorized API tampering.',
@@ -1271,11 +1382,11 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, subtitleText, spea
 }
 
 // ==============================================================================
-// SLIDE 13: PRODUCTION BENCHMARKS & VERIFICATION
+// SLIDE 14: PRODUCTION BENCHMARKS & VERIFICATION
 // ==============================================================================
 {
   const slide = createBaseSlide(
-    13,
+    14,
     'Verification & Telemetry',
     'Production Benchmarks & Live Verification Telemetry',
     'Comprehensive automated and browser-based verification proving zero regression and sub-second latency.',
@@ -1351,11 +1462,11 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, subtitleText, spea
 }
 
 // ==============================================================================
-// SLIDE 14: ROADMAP, CONCLUSION & Q&A
+// SLIDE 15: ROADMAP, CONCLUSION & Q&A
 // ==============================================================================
 {
   const slide = createBaseSlide(
-    14,
+    15,
     'Looking Forward',
     'Future Roadmap & Production Conclusion',
     'Scaling multimodal AI across South Asia: Automated ingest, streaming responses, and voice triage.',
@@ -1421,8 +1532,12 @@ async function generate() {
   console.log('Generating Nuzzle Gigalogy MAIRA Presentation with Architecture Diagram and Zero Overlaps...');
   
   for (const outPath of OUTPUT_FILES) {
-    await pptx.writeFile({ fileName: outPath });
-    console.log(`✅ Saved: ${outPath}`);
+    try {
+      await pptx.writeFile({ fileName: outPath });
+      console.log(`✅ Saved: ${outPath}`);
+    } catch (e) {
+      console.warn(`⚠️ Warning: Could not write ${outPath} (${e.message}). Skipping.`);
+    }
   }
   
   console.log('🎉 Presentation generation complete!');
