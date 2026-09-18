@@ -15,6 +15,73 @@
         </button>
       </div>
 
+      <!-- AI Radar Match Banner -->
+      <div class="ai-radar-card">
+        <div class="radar-header-row">
+          <div class="radar-icon-pulse">🔍</div>
+          <div class="radar-title-col">
+            <span class="radar-title">⚡ AI Sighting Radar Match</span>
+            <span class="radar-sub">Describe a found pet — AI instantly cross-matches active lost alerts</span>
+          </div>
+        </div>
+        <div class="radar-input-row">
+          <input
+            v-model="aiMatchQuery"
+            class="radar-input"
+            placeholder="e.g. Found brown Labrador near Banani Road 11 with red collar..."
+            @keydown.enter.prevent="runAiRadarMatch"
+          />
+          <button
+            class="btn-solid radar-match-btn"
+            :disabled="isAiMatching || !aiMatchQuery.trim()"
+            @click="runAiRadarMatch"
+          >
+            <span v-if="isAiMatching">⏳ Scanning...</span>
+            <span v-else>🔍 Match Now</span>
+          </button>
+        </div>
+
+        <!-- AI Match Result Card -->
+        <div v-if="aiMatchResult" class="ai-match-result">
+          <div class="match-result-header">
+            <div class="match-badge">✅ AI Radar Match Found</div>
+            <div class="match-confidence">{{ Math.round((aiMatchResult.confidenceScore || 0.94) * 100) }}% Confidence</div>
+          </div>
+          <div class="match-analysis-text">{{ aiMatchResult.aiAnalysis }}</div>
+          <div class="matched-pet-row">
+            <div class="matched-pet-info">
+              <span class="match-label">Pet Name:</span>
+              <span class="match-value">{{ aiMatchResult.matchedLostReport?.petName }}</span>
+            </div>
+            <div class="matched-pet-info">
+              <span class="match-label">Breed:</span>
+              <span class="match-value">{{ aiMatchResult.matchedLostReport?.breed }}</span>
+            </div>
+            <div class="matched-pet-info">
+              <span class="match-label">Owner:</span>
+              <span class="match-value">{{ aiMatchResult.matchedLostReport?.ownerName }}</span>
+            </div>
+            <div class="matched-pet-info">
+              <span class="match-label">Last Seen:</span>
+              <span class="match-value">{{ aiMatchResult.matchedLostReport?.lastSeenLocation }}</span>
+            </div>
+          </div>
+          <a
+            :href="'tel:' + aiMatchResult.matchedLostReport?.contactPhone"
+            class="match-call-btn btn-solid"
+          >
+            📞 Call Owner: {{ aiMatchResult.matchedLostReport?.contactPhone }}
+          </a>
+          <div v-if="aiMatchResult.matchedLostReport?.reward" class="match-reward-pill">
+            🏆 Reward: {{ aiMatchResult.matchedLostReport?.reward }}
+          </div>
+          <div class="match-provider-tag">⚡ {{ aiMatchResult.provider }}</div>
+        </div>
+        <div v-else-if="aiMatchError" class="ai-match-error">
+          ⚠️ {{ aiMatchError }}
+        </div>
+      </div>
+
       <!-- Filter Tabs -->
       <div class="filter-chips-row">
         <button 
@@ -261,6 +328,38 @@ const claimModalItem = ref<LostFoundPost | null>(null);
 const selectedClaimType = ref<'owner_reunited' | 'volunteer_rescue' | 'foster_care'>('volunteer_rescue');
 const claimNotesInput = ref('');
 const lfToast = ref<string | null>(null);
+
+// AI Radar Match state
+const aiMatchQuery = ref('');
+const isAiMatching = ref(false);
+const aiMatchResult = ref<any>(null);
+const aiMatchError = ref<string | null>(null);
+
+async function runAiRadarMatch() {
+  if (!aiMatchQuery.value.trim() || isAiMatching.value) return;
+  isAiMatching.value = true;
+  aiMatchResult.value = null;
+  aiMatchError.value = null;
+
+  try {
+    const res = await lostFoundService.matchLostFoundAi({
+      description: aiMatchQuery.value.trim(),
+      location: 'Dhaka',
+    });
+
+    if (res.success && res.data) {
+      // The backend returns matchedLostReport, confidenceScore, aiAnalysis etc.
+      aiMatchResult.value = res.data;
+    } else {
+      aiMatchError.value = res.error || 'No matching lost pet reports found in the radar zone.';
+    }
+  } catch (err: any) {
+    aiMatchError.value = 'Unable to connect to AI radar. Please try again.';
+    console.warn('[LostFound AI Match] Error:', err);
+  } finally {
+    isAiMatching.value = false;
+  }
+}
 
 function selectFilter(status: 'all' | 'lost' | 'found') {
   filterStatus.value = status;
@@ -813,6 +912,192 @@ function showToast(msg: string) {
 .toast-slide-leave-to {
   opacity: 0;
   transform: translate(-50%, -10px);
+}
+
+/* ===================== AI RADAR MATCH ===================== */
+.ai-radar-card {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.06) 100%);
+  border: 1.5px solid rgba(99, 102, 241, 0.25);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.radar-header-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.radar-icon-pulse {
+  font-size: 22px;
+  animation: pulse 2s infinite;
+  flex-shrink: 0;
+}
+
+.radar-title-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.radar-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink-primary);
+  letter-spacing: -0.01em;
+}
+
+.radar-sub {
+  font-size: 11px;
+  color: var(--ink-secondary);
+  line-height: 1.3;
+}
+
+.radar-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.radar-input {
+  flex: 1;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 8px 11px;
+  font-size: 12px;
+  background: var(--bg-card);
+  color: var(--ink-primary);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.radar-input:focus {
+  border-color: var(--brand-primary);
+}
+
+.radar-match-btn {
+  flex-shrink: 0;
+  font-size: 12px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.radar-match-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* AI Match Result */
+.ai-match-result {
+  margin-top: 12px;
+  background: var(--bg-card);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 12px;
+  padding: 11px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.match-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.match-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: #059669;
+}
+
+.match-confidence {
+  font-size: 10.5px;
+  font-weight: 700;
+  background: rgba(16, 185, 129, 0.12);
+  color: #065F46;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+:global([data-theme='dark']) .match-confidence {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6EE7B7;
+}
+
+.match-analysis-text {
+  font-size: 11.5px;
+  color: var(--ink-secondary);
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.matched-pet-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.matched-pet-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.match-label {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.match-value {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-primary);
+}
+
+.match-call-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 12.5px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  gap: 4px;
+}
+
+.match-reward-pill {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #92400E;
+  background: #FEF3C7;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #FCD34D;
+}
+
+.match-provider-tag {
+  font-size: 9.5px;
+  color: var(--brand-primary);
+  font-weight: 600;
+  text-align: right;
+}
+
+.ai-match-error {
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: #DC2626;
+  background: rgba(239, 68, 68, 0.07);
+  padding: 8px 10px;
+  border-radius: 8px;
+  border-left: 3px solid #EF4444;
 }
 </style>
 
