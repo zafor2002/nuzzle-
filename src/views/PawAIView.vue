@@ -707,11 +707,23 @@
                 <div v-if="msg.urgencyLabel" class="msg-urgency-pill" :style="{ backgroundColor: msg.urgencyColor || '#10B981' }">
                   {{ msg.urgencyLabel }}
                 </div>
-                <p class="msg-text">{{ msg.text }}</p>
+                <!-- AI messages: render with markdown-to-HTML parser -->
+                <div
+                  v-if="msg.sender === 'ai'"
+                  class="msg-text msg-text-html"
+                  v-html="renderMsgText(msg.text)"
+                ></div>
+                <p v-else class="msg-text">{{ msg.text }}</p>
                 <div v-if="msg.actions && msg.actions.length" class="msg-actions-box">
-                  <div class="msg-actions-title">📋 Immediate Actions:</div>
+                  <div class="msg-actions-title">📋 Recommended Actions:</div>
                   <ul class="msg-actions-list">
-                    <li v-for="(act, idx) in msg.actions" :key="idx">{{ act }}</li>
+                    <li v-for="(act, idx) in msg.actions" :key="idx">✓ {{ act }}</li>
+                  </ul>
+                </div>
+                <div v-if="msg.redFlags && msg.redFlags.length" class="msg-redflags-box">
+                  <div class="msg-redflags-title">🚨 Red Flags — Seek Vet Immediately If:</div>
+                  <ul class="msg-redflags-list">
+                    <li v-for="(flag, idx) in msg.redFlags" :key="idx">⚠️ {{ flag }}</li>
                   </ul>
                 </div>
                 <div v-if="msg.clinic" class="msg-clinic-box">
@@ -1390,6 +1402,45 @@ function handleSendTriage() {
 
 function handleTriagePrompt(p: string) {
   sendAiTriageQuery(p);
+}
+
+/**
+ * Lightweight markdown-to-HTML converter for AI chat message rendering.
+ * Converts ###/##/# headers, **bold**, `code`, bullet lists, numbered lists, and newlines.
+ */
+function renderMsgText(text: string): string {
+  if (!text) return '';
+
+  let html = text
+    // Escape HTML special chars first (prevent XSS from AI output)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    // Headers: ### h3, ## h2, # h1
+    .replace(/^### (.+)$/gm, '<p class="md-h3">$1</p>')
+    .replace(/^## (.+)$/gm, '<p class="md-h2">$1</p>')
+    .replace(/^# (.+)$/gm, '<p class="md-h1">$1</p>')
+    // Bold **text** or __text__
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.+?)__/g, '<strong>$1</strong>')
+    // Inline code `text`
+    .replace(/`(.+?)`/g, '<code class="md-code">$1</code>')
+    // Bullet lists: lines starting with - or * or •
+    .replace(/^[-*•] (.+)$/gm, '<li class="md-li">$1</li>')
+    // Numbered lists: 1. 2. etc.
+    .replace(/^\d+\. (.+)$/gm, '<li class="md-li md-li-num">$1</li>')
+    // Wrap consecutive <li> items in <ul>
+    .replace(/(<li[^>]*>.*<\/li>\n?)+/g, (match) => `<ul class="md-ul">${match}</ul>`)
+    // Line breaks to <br> (double newline = paragraph break)
+    .replace(/\n\n/g, '</p><p class="md-p">')
+    .replace(/\n/g, '<br>');
+
+  // Wrap in a paragraph if not already wrapped
+  if (!html.startsWith('<p') && !html.startsWith('<ul')) {
+    html = `<p class="md-p">${html}</p>`;
+  }
+
+  return html;
 }
 
 // Translator
@@ -3038,6 +3089,101 @@ function generateMagicArt() {
   border: 1px solid rgba(16, 185, 129, 0.3);
   border-radius: 6px;
   font-size: 11px;
+}
+
+/* Red Flags section */
+.msg-redflags-box {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: rgba(239, 68, 68, 0.07);
+  border-radius: 6px;
+  border-left: 3px solid #EF4444;
+}
+
+.msg-redflags-title {
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #DC2626;
+}
+
+.msg-redflags-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #7F1D1D;
+}
+
+:global([data-theme='dark']) .msg-redflags-list {
+  color: #FCA5A5;
+}
+
+:global([data-theme='dark']) .msg-redflags-title {
+  color: #FCA5A5;
+}
+
+:global([data-theme='dark']) .msg-redflags-box {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+/* Markdown-rendered AI message text */
+.msg-text-html {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--ink-primary);
+}
+
+.msg-text-html .md-h1,
+.msg-text-html .md-h2,
+.msg-text-html .md-h3 {
+  font-weight: 700;
+  margin: 6px 0 2px;
+  color: var(--ink-primary);
+}
+
+.msg-text-html .md-h1 { font-size: 13.5px; }
+.msg-text-html .md-h2 { font-size: 13px; }
+.msg-text-html .md-h3 { font-size: 12.5px; color: var(--brand-primary); }
+
+.msg-text-html .md-p {
+  margin: 4px 0;
+}
+
+.msg-text-html .md-ul {
+  margin: 4px 0 4px 6px;
+  padding: 0;
+  list-style: none;
+}
+
+.msg-text-html .md-li {
+  padding: 1px 0;
+  padding-left: 4px;
+  line-height: 1.4;
+}
+
+.msg-text-html .md-li::before {
+  content: '• ';
+  color: var(--brand-primary);
+  font-weight: 700;
+}
+
+.msg-text-html .md-li-num::before {
+  content: '→ ';
+  color: var(--brand-primary);
+}
+
+.msg-text-html .md-code {
+  background: rgba(0, 0, 0, 0.08);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 11px;
+}
+
+:global([data-theme='dark']) .msg-text-html .md-code {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .clinic-phone-link {
