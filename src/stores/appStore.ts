@@ -111,15 +111,54 @@ export interface AiTriageMessageItem {
   timestamp: string;
 }
 
-export const aiTriageMessages = reactive<AiTriageMessageItem[]>([
-  {
-    id: 'ai_1',
+const CHAT_STORAGE_KEY = 'nuzzle_pawai_chat_history_v1';
+
+function loadSavedChatHistory(): AiTriageMessageItem[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(CHAT_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.warn('[PawAI] Error loading saved chat history:', err);
+  }
+  return [
+    {
+      id: 'ai_1',
+      sender: 'ai',
+      text: "Hello Alex! I am PawAI 🩺, your 24/7 Pet Care & Triage Assistant. Describe any symptom or dietary question about Waffles or Mochi, and I'll provide immediate triage guidance.",
+      severity: 'low',
+      timestamp: 'Just now'
+    }
+  ];
+}
+
+export function saveChatHistory() {
+  if (typeof window === 'undefined') return;
+  try {
+    const slice = aiTriageMessages.slice(-50);
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(slice));
+  } catch (err) {
+    console.warn('[PawAI] Error saving chat history:', err);
+  }
+}
+
+export function clearChatHistory() {
+  aiTriageMessages.splice(0, aiTriageMessages.length, {
+    id: `ai_${Date.now()}`,
     sender: 'ai',
-    text: "Hello Alex! I am PawAI 🩺, your 24/7 Pet Care & Triage Assistant. Describe any symptom or dietary question about Waffles or Mochi, and I'll provide immediate triage guidance.",
+    text: "Started a fresh consultation 🐾! What symptoms, questions, or dietary topics can I help with today?",
     severity: 'low',
     timestamp: 'Just now'
-  }
-]);
+  });
+  saveChatHistory();
+}
+
+export const aiTriageMessages = reactive<AiTriageMessageItem[]>(loadSavedChatHistory());
 
 export const isAiTriageLoading = ref(false);
 
@@ -512,21 +551,66 @@ export async function sendAiTriageQuery(query: string) {
     text: query,
     timestamp: 'Just now'
   });
+  saveChatHistory();
 
   isAiTriageLoading.value = true;
 
   try {
     const currentPet = activePet.value || pets[0];
-    const res = await pawAiService.submitTriage({
+    const petContext = {
       petName: currentPet?.name || 'Pet',
       species: currentPet?.species || 'Dog',
       breed: currentPet?.breed || undefined,
-      symptoms: query,
+      age: currentPet?.birthDate ? 'Adult' : undefined,
+      weight: undefined,
       isProSubscriber: owner.isProMember,
+    };
+
+    // 1. Send multi-turn conversation context to PawDoctor Chat API
+    const historyPayload = aiTriageMessages
+      .slice(-10)
+      .map(m => ({
+        role: m.sender === 'user' ? ('user' as const) : ('assistant' as const),
+        content: m.text
+      }));
+
+    const chatRes = await pawAiService.sendChat({
+      messages: historyPayload,
+      petContext,
     });
 
-    if (res.success && res.data) {
-      const d = res.data;
+    if (chatRes.success && chatRes.data && chatRes.data.reply) {
+      const reply = chatRes.data.reply;
+      const lower = reply.toLowerCase();
+      const isUrgent = lower.includes('emergency') || lower.includes('immediate') || lower.includes('critical') || lower.includes('toxic');
+      const isMedium = lower.includes('schedule') || lower.includes('vet visit') || lower.includes('monitor closely') || lower.includes('moderate');
+      const severity: 'low' | 'medium' | 'urgent' = isUrgent ? 'urgent' : isMedium ? 'medium' : 'low';
+
+      aiTriageMessages.push({
+        id: `ai_${Date.now()}`,
+        sender: 'ai',
+        text: reply,
+        severity,
+        urgencyLabel: isUrgent ? 'Emergency Attention' : isMedium ? 'Veterinary Evaluation Recommended' : 'Clinical Guidance',
+        urgencyColor: isUrgent ? '#EF4444' : isMedium ? '#F59E0B' : '#10B981',
+        provider: chatRes.data.provider,
+        timestamp: 'Just now',
+      });
+      saveChatHistory();
+      return;
+    }
+
+    // 2. Fallback to Triage endpoint if chat endpoint did not return reply
+    const triageRes = await pawAiService.submitTriage({
+      petName: petContext.petName,
+      species: petContext.species,
+      breed: petContext.breed,
+      symptoms: query,
+      isProSubscriber: petContext.isProSubscriber,
+    });
+
+    if (triageRes.success && triageRes.data) {
+      const d = triageRes.data;
       const severityMap: Record<string, 'low' | 'medium' | 'urgent'> = {
         low: 'low',
         moderate: 'medium',
@@ -546,15 +630,16 @@ export async function sendAiTriageQuery(query: string) {
         provider: d.provider,
         timestamp: 'Just now',
       });
+      saveChatHistory();
       return;
     }
   } catch (err) {
-    console.warn('Backend triage error, using local fallback:', err);
+    console.warn('Backend AI chat error, using local clinical fallback:', err);
   } finally {
     isAiTriageLoading.value = false;
   }
 
-  // Dynamic fallback if network was unreachable
+  // 3. Dynamic local clinical heuristic fallback if network was unreachable
   const q = query.toLowerCase();
   const currentPet = activePet.value || pets[0];
   const petName = currentPet?.name || 'your pet';
@@ -595,6 +680,7 @@ export async function sendAiTriageQuery(query: string) {
     severity,
     timestamp: 'Just now'
   });
+  saveChatHistory();
 }
 
 export async function runAiPetScan(imageUrl?: string, petSpecies?: string, petBreed?: string) {

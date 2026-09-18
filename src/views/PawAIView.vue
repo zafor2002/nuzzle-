@@ -695,7 +695,25 @@
       <!-- TAB 3: 24/7 SYMPTOM TRIAGE CHAT -->
       <div v-else-if="activeAiTab === 'triage'" class="tab-pane">
         <div class="triage-card card-item">
-          <div class="triage-messages-container">
+          <!-- Chat Session & Context Memory Header -->
+          <div class="chat-memory-header">
+            <div class="memory-status-badge" title="Conversation turns are retained in active AI context memory">
+              <span class="memory-dot"></span>
+              <span class="memory-title">🧠 Context Memory Active</span>
+              <span class="memory-count">({{ aiTriageMessages.length }} saved)</span>
+            </div>
+            <button 
+              type="button" 
+              class="btn-clear-chat" 
+              @click="handleClearChat"
+              title="Clear conversation history and start fresh consultation"
+            >
+              <RotateCcw :size="12" />
+              <span>New Consultation</span>
+            </button>
+          </div>
+
+          <div ref="triageMessagesContainer" class="triage-messages-container">
             <div 
               v-for="msg in aiTriageMessages" 
               :key="msg.id"
@@ -905,7 +923,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import { 
   Sparkles, 
   Camera, 
@@ -930,6 +948,7 @@ import {
   vets,
   aiTriageMessages, 
   sendAiTriageQuery, 
+  clearChatHistory,
   isAiTriageLoading,
   isAiScanning, 
   currentScanResult, 
@@ -1386,6 +1405,7 @@ function handleRunScan() {
 }
 
 // Triage
+const triageMessagesContainer = ref<HTMLElement | null>(null);
 const triageInput = ref('');
 const triagePrompts = [
   '🐶 Dog ate dark chocolate',
@@ -1394,14 +1414,34 @@ const triagePrompts = [
   '🥑 Daily calorie plan for Golden'
 ];
 
+function scrollToBottom() {
+  nextTick(() => {
+    if (triageMessagesContainer.value) {
+      triageMessagesContainer.value.scrollTop = triageMessagesContainer.value.scrollHeight;
+    }
+  });
+}
+
+watch(() => aiTriageMessages.length, () => {
+  scrollToBottom();
+});
+
 function handleSendTriage() {
   if (!triageInput.value.trim()) return;
   sendAiTriageQuery(triageInput.value);
   triageInput.value = '';
+  scrollToBottom();
 }
 
 function handleTriagePrompt(p: string) {
   sendAiTriageQuery(p);
+  scrollToBottom();
+}
+
+function handleClearChat() {
+  if (confirm('Start a new consultation? This will clear current session history and reset context memory.')) {
+    clearChatHistory();
+  }
 }
 
 /**
@@ -2989,6 +3029,70 @@ function generateMagicArt() {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.chat-memory-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: var(--radius-md, 10px);
+  font-size: 11px;
+}
+
+.memory-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #4F46E5;
+  font-weight: 600;
+}
+
+.memory-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+  animation: pulse-memory 2s infinite ease-in-out;
+}
+
+@keyframes pulse-memory {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+}
+
+.memory-title {
+  font-weight: 700;
+}
+
+.memory-count {
+  font-size: 10px;
+  opacity: 0.75;
+  font-weight: 500;
+}
+
+.btn-clear-chat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: var(--text-secondary, #475569);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-clear-chat:hover {
+  background: #FEE2E2;
+  border-color: #FCA5A5;
+  color: #DC2626;
 }
 
 .triage-messages-container {
