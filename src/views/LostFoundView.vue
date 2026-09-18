@@ -15,39 +15,134 @@
         </button>
       </div>
 
-      <!-- AI Radar Match Banner -->
+      <!-- AI Visual & Semantic Radar Match Banner -->
       <div class="ai-radar-card">
         <div class="radar-header-row">
-          <div class="radar-icon-pulse">🔍</div>
+          <div class="radar-icon-pulse">📸</div>
           <div class="radar-title-col">
-            <span class="radar-title">⚡ AI Sighting Radar Match</span>
-            <span class="radar-sub">Describe a found pet — AI instantly cross-matches active lost alerts</span>
+            <span class="radar-title">⚡ AI Visual Biometric & Radar Match</span>
+            <span class="radar-sub">Snap or upload a spotted pet photo — Multimodal Vision AI visually cross-matches active lost pet alerts</span>
           </div>
         </div>
+
+        <!-- Hidden file input for photo upload -->
+        <input
+          ref="sightingPhotoInput"
+          type="file"
+          accept="image/*"
+          class="hidden-file-input"
+          @change="onSightingPhotoSelected"
+        />
+
         <div class="radar-input-row">
           <input
             v-model="aiMatchQuery"
             class="radar-input"
-            placeholder="e.g. Found brown Labrador near Banani Road 11 with red collar..."
+            placeholder="Describe sighting notes (optional if photo attached)..."
             @keydown.enter.prevent="runAiRadarMatch"
           />
           <button
+            type="button"
+            class="radar-photo-btn"
+            :class="{ 'has-photo': !!aiMatchImage }"
+            @click="triggerPhotoInput"
+            title="Snap or upload sighting photo"
+          >
+            <Camera :size="16" />
+            <span>{{ aiMatchImage ? 'Change Photo' : 'Photo' }}</span>
+          </button>
+          <button
             class="btn-solid radar-match-btn"
-            :disabled="isAiMatching || !aiMatchQuery.trim()"
+            :disabled="isAiMatching || (!aiMatchQuery.trim() && !aiMatchImage)"
             @click="runAiRadarMatch"
           >
             <span v-if="isAiMatching">⏳ Scanning...</span>
-            <span v-else>🔍 Match Now</span>
+            <span v-else>🔍 Match</span>
+          </button>
+        </div>
+
+        <!-- Attached Photo Preview -->
+        <div v-if="aiMatchImage" class="radar-photo-preview-tray">
+          <div class="preview-thumb-wrap">
+            <img :src="aiMatchImage" alt="Sighting photo preview" class="preview-thumb" />
+          </div>
+          <div class="preview-details">
+            <span class="preview-tag">📸 Sighting Photo Attached</span>
+            <span class="preview-sub">Ready for multimodal visual biometric comparison</span>
+          </div>
+          <button type="button" class="btn-remove-preview" @click="removePhoto" title="Remove photo">
+            <X :size="14" />
           </button>
         </div>
 
         <!-- AI Match Result Card -->
         <div v-if="aiMatchResult" class="ai-match-result">
           <div class="match-result-header">
-            <div class="match-badge">✅ AI Radar Match Found</div>
-            <div class="match-confidence">{{ Math.round((aiMatchResult.confidenceScore || 0.94) * 100) }}% Confidence</div>
+            <div class="match-badge">
+              <Sparkles :size="14" class="sparkle-icon" />
+              <span>{{ aiMatchResult.visualComparison ? 'Visual Biometric Match Found' : 'AI Radar Match Found' }}</span>
+            </div>
+            <div class="match-confidence">{{ Math.round((aiMatchResult.confidenceScore || 0.94) * 100) }}% Similarity</div>
           </div>
+
+          <!-- Side-by-Side Visual Comparison (When sighting photo or registered photo available) -->
+          <div v-if="aiMatchImage || aiMatchResult.matchedLostReport?.imageUrl" class="visual-comparison-grid">
+            <div class="comparison-col sighting-col">
+              <span class="col-title">📍 Your Sighting</span>
+              <div class="comparison-img-wrap">
+                <img
+                  :src="aiMatchImage || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400&auto=format&fit=crop&q=80'"
+                  alt="Sighted Pet"
+                  class="comparison-img"
+                />
+                <span class="img-badge sighting-badge">Observed</span>
+              </div>
+            </div>
+
+            <div class="comparison-divider">
+              <div class="vs-circle">VS</div>
+            </div>
+
+            <div class="comparison-col matched-col">
+              <span class="col-title">🚨 Registered Report</span>
+              <div class="comparison-img-wrap">
+                <img
+                  :src="aiMatchResult.matchedLostReport?.imageUrl || 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=400&auto=format&fit=crop&q=80'"
+                  alt="Registered Lost Pet"
+                  class="comparison-img"
+                />
+                <span class="img-badge matched-badge">{{ aiMatchResult.matchedLostReport?.petName }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Visual Biometric Criteria Badges -->
+          <div v-if="aiMatchResult.visualComparison" class="visual-criteria-box">
+            <div v-if="aiMatchResult.visualComparison.coatMatch" class="criterion-item">
+              <span class="crit-icon">🎨</span>
+              <div class="crit-text">
+                <span class="crit-label">Coat & Markings:</span>
+                <span class="crit-val">{{ aiMatchResult.visualComparison.coatMatch }}</span>
+              </div>
+            </div>
+            <div v-if="aiMatchResult.visualComparison.facialAndEars" class="criterion-item">
+              <span class="crit-icon">🐾</span>
+              <div class="crit-text">
+                <span class="crit-label">Facial & Ears:</span>
+                <span class="crit-val">{{ aiMatchResult.visualComparison.facialAndEars }}</span>
+              </div>
+            </div>
+            <div v-if="aiMatchResult.visualComparison.collarObserved || aiMatchResult.visualComparison.distinctiveFeatures" class="criterion-item">
+              <span class="crit-icon">🏷️</span>
+              <div class="crit-text">
+                <span class="crit-label">Collar & Features:</span>
+                <span class="crit-val">{{ aiMatchResult.visualComparison.collarObserved || aiMatchResult.visualComparison.distinctiveFeatures }}</span>
+              </div>
+            </div>
+          </div>
+
           <div class="match-analysis-text">{{ aiMatchResult.aiAnalysis }}</div>
+
           <div class="matched-pet-row">
             <div class="matched-pet-info">
               <span class="match-label">Pet Name:</span>
@@ -66,12 +161,17 @@
               <span class="match-value">{{ aiMatchResult.matchedLostReport?.lastSeenLocation }}</span>
             </div>
           </div>
-          <a
-            :href="'tel:' + aiMatchResult.matchedLostReport?.contactPhone"
-            class="match-call-btn btn-solid"
-          >
-            📞 Call Owner: {{ aiMatchResult.matchedLostReport?.contactPhone }}
-          </a>
+
+          <div class="match-actions-row">
+            <a
+              :href="'tel:' + aiMatchResult.matchedLostReport?.contactPhone"
+              class="match-call-btn btn-solid"
+            >
+              <Phone :size="14" />
+              <span>Call Owner: {{ aiMatchResult.matchedLostReport?.contactPhone }}</span>
+            </a>
+          </div>
+
           <div v-if="aiMatchResult.matchedLostReport?.reward" class="match-reward-pill">
             🏆 Reward: {{ aiMatchResult.matchedLostReport?.reward }}
           </div>
@@ -310,7 +410,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { MapPin, Phone, MessageCircle, ShieldCheck, X } from 'lucide-vue-next';
+import { MapPin, Phone, MessageCircle, ShieldCheck, X, Camera, Sparkles } from 'lucide-vue-next';
 import TopBar from '../components/layout/TopBar.vue';
 import { 
   lostFoundList, 
@@ -329,26 +429,57 @@ const selectedClaimType = ref<'owner_reunited' | 'volunteer_rescue' | 'foster_ca
 const claimNotesInput = ref('');
 const lfToast = ref<string | null>(null);
 
-// AI Radar Match state
+// AI Visual Biometric & Radar Match state
 const aiMatchQuery = ref('');
+const aiMatchImage = ref<string | null>(null);
+const sightingPhotoInput = ref<HTMLInputElement | null>(null);
 const isAiMatching = ref(false);
 const aiMatchResult = ref<any>(null);
 const aiMatchError = ref<string | null>(null);
 
+function triggerPhotoInput() {
+  sightingPhotoInput.value?.click();
+}
+
+function onSightingPhotoSelected(event: Event) {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
+
+  if (file.size > 10 * 1024 * 1024) {
+    showToast('⚠️ Image file must be under 10MB');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    aiMatchImage.value = e.target?.result as string;
+    showToast('📸 Sighting photo attached! Tap Match to compare.');
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePhoto() {
+  aiMatchImage.value = null;
+  if (sightingPhotoInput.value) {
+    sightingPhotoInput.value.value = '';
+  }
+}
+
 async function runAiRadarMatch() {
-  if (!aiMatchQuery.value.trim() || isAiMatching.value) return;
+  if ((!aiMatchQuery.value.trim() && !aiMatchImage.value) || isAiMatching.value) return;
   isAiMatching.value = true;
   aiMatchResult.value = null;
   aiMatchError.value = null;
 
   try {
     const res = await lostFoundService.matchLostFoundAi({
-      description: aiMatchQuery.value.trim(),
+      sightingDescription: aiMatchQuery.value.trim() || 'Visual sighting photo match',
+      imageUrl: aiMatchImage.value || undefined,
       location: 'Dhaka',
     });
 
     if (res.success && res.data) {
-      // The backend returns matchedLostReport, confidenceScore, aiAnalysis etc.
       aiMatchResult.value = res.data;
     } else {
       aiMatchError.value = res.error || 'No matching lost pet reports found in the radar zone.';
@@ -977,10 +1108,42 @@ function showToast(msg: string) {
   border-color: var(--brand-primary);
 }
 
+.hidden-file-input {
+  display: none !important;
+}
+
+.radar-photo-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg-card);
+  border: 1px dashed var(--border-medium);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--brand-primary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.radar-photo-btn:hover {
+  border-color: var(--brand-primary);
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.radar-photo-btn.has-photo {
+  border-style: solid;
+  border-color: #10B981;
+  color: #059669;
+  background: rgba(16, 185, 129, 0.1);
+}
+
 .radar-match-btn {
   flex-shrink: 0;
   font-size: 12px;
-  padding: 7px 14px;
+  padding: 8px 14px;
   border-radius: 10px;
   white-space: nowrap;
 }
@@ -990,16 +1153,80 @@ function showToast(msg: string) {
   cursor: not-allowed;
 }
 
+/* Attached Photo Preview Tray */
+.radar-photo-preview-tray {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+
+.preview-thumb-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--border-light);
+}
+
+.preview-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 1px;
+}
+
+.preview-tag {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-primary);
+}
+
+.preview-sub {
+  font-size: 10px;
+  color: var(--ink-muted);
+}
+
+.btn-remove-preview {
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-remove-preview:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
 /* AI Match Result */
 .ai-match-result {
   margin-top: 12px;
   background: var(--bg-card);
   border: 1px solid rgba(16, 185, 129, 0.3);
-  border-radius: 12px;
-  padding: 11px 13px;
+  border-radius: 14px;
+  padding: 13px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .match-result-header {
@@ -1009,23 +1236,153 @@ function showToast(msg: string) {
 }
 
 .match-badge {
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 800;
   color: #059669;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sparkle-icon {
+  color: #10B981;
 }
 
 .match-confidence {
-  font-size: 10.5px;
-  font-weight: 700;
-  background: rgba(16, 185, 129, 0.12);
+  font-size: 11px;
+  font-weight: 800;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.2));
   color: #065F46;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 20px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 :global([data-theme='dark']) .match-confidence {
-  background: rgba(16, 185, 129, 0.2);
+  background: rgba(16, 185, 129, 0.25);
   color: #6EE7B7;
+}
+
+/* Side-by-Side Visual Comparison Grid */
+.visual-comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  background: rgba(99, 102, 241, 0.04);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: 12px;
+  padding: 8px 10px;
+}
+
+.comparison-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.col-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+.comparison-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 90px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid var(--border-light);
+}
+
+.comparison-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.img-badge {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+}
+
+.sighting-badge {
+  background: rgba(99, 102, 241, 0.85);
+  color: #fff;
+}
+
+.matched-badge {
+  background: rgba(239, 68, 68, 0.88);
+  color: #fff;
+}
+
+.comparison-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vs-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand-primary), #8B5CF6);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+}
+
+/* Visual Biometric Criteria Box */
+.visual-criteria-box {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: var(--bg-hover);
+  border-radius: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-light);
+}
+
+.criterion-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.crit-icon {
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-top: -1px;
+}
+
+.crit-text {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  line-height: 1.35;
+}
+
+.crit-label {
+  font-weight: 700;
+  color: var(--ink-primary);
+}
+
+.crit-val {
+  color: var(--ink-secondary);
 }
 
 .match-analysis-text {
@@ -1033,12 +1390,17 @@ function showToast(msg: string) {
   color: var(--ink-secondary);
   line-height: 1.4;
   font-style: italic;
+  border-left: 2.5px solid #10B981;
+  padding-left: 8px;
 }
 
 .matched-pet-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 5px;
+  gap: 6px;
+  background: var(--bg-hover);
+  padding: 8px 10px;
+  border-radius: 8px;
 }
 
 .matched-pet-info {
@@ -1061,15 +1423,24 @@ function showToast(msg: string) {
   color: var(--ink-primary);
 }
 
+.match-actions-row {
+  display: flex;
+  gap: 8px;
+}
+
 .match-call-btn {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  font-size: 12.5px;
-  padding: 9px 14px;
+  font-size: 12px;
+  padding: 9px 12px;
   border-radius: 10px;
-  gap: 4px;
+  gap: 6px;
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #fff;
+  font-weight: 700;
 }
 
 .match-reward-pill {
@@ -1100,4 +1471,5 @@ function showToast(msg: string) {
   border-left: 3px solid #EF4444;
 }
 </style>
+
 
