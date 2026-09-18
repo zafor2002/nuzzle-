@@ -74,8 +74,47 @@
           </button>
         </div>
 
-        <!-- AI Match Result Card -->
-        <div v-if="aiMatchResult" class="ai-match-result">
+        <!-- 1. Non-Pet Warning Card -->
+        <div v-if="aiMatchResult && (aiMatchResult.matchStatus === 'NOT_A_PET' || aiMatchResult.isPet === false)" class="ai-match-result not-pet-result">
+          <div class="match-result-header">
+            <div class="match-badge not-pet-badge">
+              <span>⚠️ No Pet Detected in Sighting Photo</span>
+            </div>
+            <div class="match-confidence not-pet-confidence">0% Match</div>
+          </div>
+          <div class="not-pet-body">
+            <div class="match-analysis-text">
+              {{ aiMatchResult.aiAnalysis || 'The uploaded photo does not appear to contain a pet (detected human or non-pet subject). Please upload a clear photo of the animal.' }}
+            </div>
+            <div class="not-pet-tip">
+              💡 <strong>Biometric Radar Tip:</strong> Ensure the sighted pet's face, coat, and ears are clearly visible with adequate lighting.
+            </div>
+            <button class="match-retry-btn" @click="triggerPhotoInput">📸 Upload Different Photo</button>
+          </div>
+          <div class="match-provider-tag">⚡ {{ aiMatchResult.provider }}</div>
+        </div>
+
+        <!-- 2. No Match Found Card -->
+        <div v-else-if="aiMatchResult && (aiMatchResult.matchStatus === 'NO_MATCH' || !aiMatchResult.matchedLostReport)" class="ai-match-result no-match-result">
+          <div class="match-result-header">
+            <div class="match-badge no-match-badge">
+              <span>🔍 No Matching Lost Pets Found</span>
+            </div>
+            <div class="match-confidence no-match-confidence">No Correlation</div>
+          </div>
+          <div class="no-match-body">
+            <div class="match-analysis-text">
+              {{ aiMatchResult.aiAnalysis || 'We scanned all active lost pet alerts in Dhaka, but found no visual correlation for this sighting.' }}
+            </div>
+            <div class="no-match-subtext">
+              A sighting bulletin has been saved to the community radar so nearby pet owners can be alerted if a report is filed.
+            </div>
+          </div>
+          <div class="match-provider-tag">⚡ {{ aiMatchResult.provider }}</div>
+        </div>
+
+        <!-- 3. Genuine Biometric Match Card -->
+        <div v-else-if="aiMatchResult && aiMatchResult.matchedLostReport" class="ai-match-result">
           <div class="match-result-header">
             <div class="match-badge">
               <Sparkles :size="14" class="sparkle-icon" />
@@ -1520,6 +1559,97 @@ function showToast(msg: string) {
   padding: 8px 10px;
   border-radius: 8px;
   border-left: 3px solid #EF4444;
+}
+
+/* Non-Pet Alert Card Styles */
+.not-pet-result {
+  border-color: rgba(245, 158, 11, 0.45);
+  background: rgba(245, 158, 11, 0.04);
+}
+
+.not-pet-badge {
+  color: #D97706;
+}
+
+.not-pet-confidence {
+  background: rgba(245, 158, 11, 0.15);
+  color: #B45309;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.not-pet-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.not-pet-body .match-analysis-text {
+  border-left-color: #F59E0B;
+  color: var(--ink-primary);
+  font-style: normal;
+  font-weight: 500;
+}
+
+.not-pet-tip {
+  font-size: 11px;
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px dashed rgba(99, 102, 241, 0.25);
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--ink-secondary);
+  line-height: 1.4;
+}
+
+.match-retry-btn {
+  align-self: flex-start;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: var(--brand-primary);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  margin-top: 2px;
+  transition: opacity 0.2s;
+}
+
+.match-retry-btn:hover {
+  opacity: 0.9;
+}
+
+/* No Match Found Card Styles */
+.no-match-result {
+  border-color: rgba(99, 102, 241, 0.3);
+  background: rgba(99, 102, 241, 0.03);
+}
+
+.no-match-badge {
+  color: var(--brand-primary);
+}
+
+.no-match-confidence {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--brand-primary);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.no-match-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.no-match-body .match-analysis-text {
+  border-left-color: var(--brand-primary);
+  color: var(--ink-primary);
+  font-style: normal;
+}
+
+.no-match-subtext {
+  font-size: 11px;
+  color: var(--ink-muted);
+  line-height: 1.35;
 }
 </style>
 
