@@ -581,18 +581,12 @@ export async function sendAiTriageQuery(query: string) {
 
     if (chatRes.success && chatRes.data && chatRes.data.reply) {
       const reply = chatRes.data.reply;
-      const lower = reply.toLowerCase();
-      const isUrgent = lower.includes('emergency') || lower.includes('immediate') || lower.includes('critical') || lower.includes('toxic');
-      const isMedium = lower.includes('schedule') || lower.includes('vet visit') || lower.includes('monitor closely') || lower.includes('moderate');
-      const severity: 'low' | 'medium' | 'urgent' = isUrgent ? 'urgent' : isMedium ? 'medium' : 'low';
 
       aiTriageMessages.push({
         id: `ai_${Date.now()}`,
         sender: 'ai',
         text: reply,
-        severity,
-        urgencyLabel: isUrgent ? 'Emergency Attention' : isMedium ? 'Veterinary Evaluation Recommended' : 'Clinical Guidance',
-        urgencyColor: isUrgent ? '#EF4444' : isMedium ? '#F59E0B' : '#10B981',
+        severity: 'low',
         provider: chatRes.data.provider,
         timestamp: 'Just now',
       });
@@ -611,22 +605,12 @@ export async function sendAiTriageQuery(query: string) {
 
     if (triageRes.success && triageRes.data) {
       const d = triageRes.data;
-      const severityMap: Record<string, 'low' | 'medium' | 'urgent'> = {
-        low: 'low',
-        moderate: 'medium',
-        emergency: 'urgent',
-      };
 
       aiTriageMessages.push({
         id: `ai_${Date.now()}`,
         sender: 'ai',
         text: d.summary,
-        severity: severityMap[d.urgency] || 'low',
-        urgencyLabel: d.urgencyLabel,
-        urgencyColor: d.urgencyColor,
-        actions: d.recommendedActions,
-        redFlags: d.redFlags,
-        clinic: d.recommendedClinic,
+        severity: 'low',
         provider: d.provider,
         timestamp: 'Just now',
       });
