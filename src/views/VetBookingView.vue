@@ -3,6 +3,20 @@
     <TopBar title="🏥 Vet Clinic & Slot Booking" />
 
     <div class="vet-scroll-body">
+      <!-- 🏥 Clinic Prescription Portal Launcher Banner -->
+      <div class="clinic-portal-banner" @click="setTab('clinic-rx')">
+        <div class="cpb-icon">🩺</div>
+        <div class="cpb-info">
+          <div class="cpb-title-row">
+            <span class="cpb-badge">FOR VET CLINICS & DOCTORS</span>
+            <span class="cpb-live-dot">● Synced</span>
+          </div>
+          <h4 class="cpb-headline">Nuzzle VetRx™ Prescription Suite</h4>
+          <p class="cpb-desc">Generate official prescriptions with auto-dosage calculator, print A4 & sync directly to Pet's Health Vault.</p>
+        </div>
+        <button class="cpb-action-arrow">Launch →</button>
+      </div>
+
       <!-- Confirmed Appointments Card if any -->
       <div v-if="appointments.length > 0" class="active-appointments-box">
         <h4 class="box-title">📋 Your Upcoming Pet Appointments</h4>
@@ -116,7 +130,7 @@
 import { reactive } from 'vue';
 import { Star, MapPin, Clock } from 'lucide-vue-next';
 import TopBar from '../components/layout/TopBar.vue';
-import { vets, appointments, pets, bookVetSlot } from '../stores/appStore';
+import { vets, appointments, pets, bookVetSlot, setTab } from '../stores/appStore';
 
 const selectedDay = reactive<{ [vetId: string]: string }>({
   vet_1: 'Today',
@@ -159,6 +173,92 @@ function confirmBooking(vetId: string) {
   flex: 1;
   overflow-y: auto;
   padding: 12px 16px 28px;
+}
+
+.clinic-portal-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #2D1B69 0%, #4C1D95 100%);
+  color: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(76, 29, 149, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.clinic-portal-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(76, 29, 149, 0.35);
+}
+
+.cpb-icon {
+  font-size: 28px;
+  background: rgba(255, 255, 255, 0.12);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cpb-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cpb-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.cpb-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #DDD6FE;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.cpb-live-dot {
+  font-size: 10px;
+  font-weight: 700;
+  color: #34D399;
+}
+
+.cpb-headline {
+  font-size: 14px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.cpb-desc {
+  font-size: 11px;
+  color: #E9D5FF;
+  margin: 2px 0 0;
+  line-height: 1.3;
+}
+
+.cpb-action-arrow {
+  background: #FFFFFF;
+  color: #5B21B6;
+  border: none;
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 .active-appointments-box {

@@ -1,5 +1,5 @@
 import { apiClient } from './apiClient';
-import type { Vet, Appointment } from '../types';
+import type { Vet, Appointment, PrescriptionRecord } from '../types';
 
 export const vetService = {
   async getDirectory(params?: { species?: string; emergency?: boolean }) {
@@ -21,5 +21,16 @@ export const vetService = {
     reason: string;
   }) {
     return apiClient.post<Appointment>('/vet/appointments', payload);
+  },
+
+  async getPrescriptions(params?: { petId?: string; ownerPhone?: string; rxNumber?: string }) {
+    return apiClient.get<{ prescriptions: PrescriptionRecord[]; totalCount: number }>('/vet/prescriptions', params);
+  },
+
+  async createPrescription(payload: Partial<PrescriptionRecord>) {
+    return apiClient.post<{ prescription: PrescriptionRecord; message: string; notificationDispatched: boolean }>(
+      '/vet/prescriptions',
+      payload
+    );
   },
 };

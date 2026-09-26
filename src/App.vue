@@ -1,9 +1,9 @@
 <template>
   <div class="mobile-app-root">
-    <!-- Main App Container (True Mobile Shell) -->
-    <div class="mobile-container">
+    <!-- Main App Container (True Mobile Shell / Clinic Portal Expandable) -->
+    <div class="mobile-container" :class="{ 'clinic-rx-expanded': currentTab === 'clinic-rx' }">
       <!-- Status Bar for real mobile look -->
-      <div class="mobile-statusbar">
+      <div v-if="currentTab !== 'clinic-rx'" class="mobile-statusbar">
         <span class="status-time">9:41</span>
         <div class="notch-island"></div>
         <div class="status-indicators">
@@ -24,6 +24,7 @@
         <MarketplaceView v-else-if="currentTab === 'market'" />
         <VetBookingView v-else-if="currentTab === 'vets'" />
         <HealthLogsView v-else-if="currentTab === 'health'" />
+        <ClinicRxView v-else-if="currentTab === 'clinic-rx'" />
         <MessagesView v-else-if="currentTab === 'messages'" />
         <NotificationsView v-else-if="currentTab === 'activity'" />
         <ProfileView v-else-if="currentTab === 'profile'" />
@@ -31,7 +32,7 @@
       </div>
 
       <!-- Bottom Navigation -->
-      <BottomNav v-if="currentTab !== 'reels' && currentTab !== 'auth'" />
+      <BottomNav v-if="currentTab !== 'reels' && currentTab !== 'auth' && currentTab !== 'clinic-rx'" />
 
       <!-- Overlays & Modals -->
       <StoryViewerModal />
@@ -62,6 +63,7 @@ import AdoptionView from './views/AdoptionView.vue';
 import MarketplaceView from './views/MarketplaceView.vue';
 import VetBookingView from './views/VetBookingView.vue';
 import HealthLogsView from './views/HealthLogsView.vue';
+import ClinicRxView from './views/ClinicRxView.vue';
 import MessagesView from './views/MessagesView.vue';
 import NotificationsView from './views/NotificationsView.vue';
 import ProfileView from './views/ProfileView.vue';
@@ -114,6 +116,12 @@ onMounted(() => {
     box-shadow: 
       0 30px 70px rgba(45, 25, 80, 0.3),
       0 0 0 2px #EDE4FA;
+  }
+
+  .mobile-container.clinic-rx-expanded {
+    max-width: 1240px;
+    border-radius: 24px;
+    border: 3px solid #C4B5FD;
   }
 }
 

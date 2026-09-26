@@ -1,4 +1,4 @@
-export type TabType = 'feed' | 'explore' | 'ai' | 'reels' | 'activity' | 'profile' | 'health' | 'vets' | 'adoption' | 'market' | 'lostfound' | 'messages' | 'settings' | 'auth';
+export type TabType = 'feed' | 'explore' | 'ai' | 'reels' | 'activity' | 'profile' | 'health' | 'vets' | 'adoption' | 'market' | 'lostfound' | 'messages' | 'settings' | 'auth' | 'clinic-rx';
 
 export type UserRole = 'parent' | 'store' | 'vet';
 
@@ -303,4 +303,45 @@ export interface AiScanResult {
   nutritionAdvice: string;
   funFact: string;
   provider?: string;
+}
+
+export interface PrescriptionMedication {
+  id?: string;
+  name: string;
+  type: string; // 'Tablet' | 'Syrup' | 'Injection' | 'Drops' | 'Topical' | 'Capsule'
+  strength: string;
+  dosage: string;
+  frequency: string;
+  duration: string;
+  instructions: string;
+}
+
+export interface PrescriptionRecord {
+  id: string;
+  rxNumber: string;
+  createdAt: string;
+  petId: string;
+  petName: string;
+  petSpecies: string;
+  petBreed: string;
+  petAge: string;
+  petWeightKg: number;
+  ownerName: string;
+  ownerPhone: string;
+  clinicId?: string;
+  clinicName: string;
+  clinicAddress: string;
+  clinicPhone: string;
+  doctorName: string;
+  doctorDegrees: string;
+  doctorRegNo: string;
+  diagnosis: string;
+  clinicalNotes?: string;
+  temperature?: string;
+  pulseRate?: string;
+  medications: PrescriptionMedication[];
+  dietaryAdvice?: string;
+  followUpDate?: string;
+  status: 'active' | 'completed' | 'cancelled';
+  verificationUrl: string;
 }

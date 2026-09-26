@@ -53,6 +53,16 @@
         </div>
       </div>
 
+      <!-- Official VetRx Prescriptions Hub -->
+      <div class="vetrx-health-banner" @click="setTab('clinic-rx')">
+        <div class="vrx-icon">💊</div>
+        <div class="vrx-text">
+          <span class="vrx-title">Verified Veterinary Prescriptions (VetRx™)</span>
+          <span class="vrx-sub">Access tamper-proof clinical prescriptions & dosage schedules</span>
+        </div>
+        <span class="vrx-arrow">Open Portal →</span>
+      </div>
+
       <!-- Add New Health Record Button -->
       <button class="btn-solid add-health-btn" @click="isCreateSheetOpen = true">
         + Record Vaccination / Vet Visit
@@ -229,6 +239,65 @@ const petLogs = computed(() => {
 
 .ai-health-banner:active {
   transform: scale(0.98);
+}
+
+.vetrx-health-banner {
+  background: linear-gradient(135deg, #FAF5FF 0%, #F5F3FF 100%);
+  border: 1.5px solid #DDD6FE;
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.06);
+  transition: transform 0.15s ease;
+}
+
+.vetrx-health-banner:hover {
+  transform: translateY(-1px);
+  border-color: #A78BFA;
+}
+
+.vrx-icon {
+  font-size: 22px;
+  width: 36px;
+  height: 36px;
+  background: #EDE9FE;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vrx-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.vrx-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #6D28D9;
+}
+
+.vrx-sub {
+  font-size: 10.5px;
+  color: #7C3AED;
+}
+
+.vrx-arrow {
+  font-size: 11px;
+  font-weight: 800;
+  color: #6D28D9;
+  background: #FFFFFF;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #DDD6FE;
+  white-space: nowrap;
 }
 
 .ai-hb-icon {
