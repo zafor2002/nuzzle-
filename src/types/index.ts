@@ -60,6 +60,12 @@ export interface Pet {
   aiPersonality?: string;
   energyLevel?: 'Low & Chill' | 'Moderate' | 'High Zoomies';
   isProMember?: boolean;
+  lastScannedGps?: {
+    lat: number;
+    lng: number;
+    address: string;
+    scannedAt: string;
+  };
 }
 
 export interface PostComment {
@@ -109,6 +115,7 @@ export interface Post {
   petMood?: string;
   petSoundBite?: string;
   petDialogue?: string;
+  sharesCount?: number;
 }
 
 export interface StorySegment {
@@ -131,10 +138,12 @@ export interface Story {
 
 export interface Reel {
   id: string;
+  creatorId?: string;
   creatorName: string;
   creatorAvatar: string;
   petName?: string;
   caption: string;
+  videoUrl?: string;
   videoGradient: string;
   videoTitle: string;
   audioTrack: string;
@@ -143,7 +152,7 @@ export interface Reel {
   sharesCount: number;
   isLiked: boolean;
   isSaved: boolean;
-  tags: string[];
+  tags?: string[];
 }
 
 export interface HealthLog {
@@ -178,6 +187,12 @@ export interface LostFoundPost {
   claimedAt?: string;
   claimType?: 'owner_reunited' | 'volunteer_rescue' | 'foster_care';
   claimNotes?: string;
+  lat?: number;
+  lng?: number;
+  areaName?: string;
+  geoBlastActive?: boolean;
+  geoBlastRadiusKm?: number;
+  geoBlastRespondersCount?: number;
 }
 
 export interface AdoptionListing {
@@ -224,6 +239,11 @@ export interface Vet {
   distanceMiles?: number;
   acceptedSpecies?: string[];
   emergencyCare?: boolean;
+  isOpenNow?: boolean;
+  hasIcu?: boolean;
+  hasSurgery?: boolean;
+  lat?: number;
+  lng?: number;
   phone?: string;
   priceRange?: string;
   slots: { [date: string]: VetSlot[] };

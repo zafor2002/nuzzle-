@@ -3,49 +3,54 @@
     <nav class="floating-island-nav">
       <!-- 🏡 Den (Pet Feed) -->
       <button 
+        id="nav-tab-feed"
         class="nav-capsule-btn" 
         :class="{ active: currentTab === 'feed' }" 
         @click="setTab('feed')"
       >
         <div class="icon-bubble">
-          <Home :size="20" />
+          <Home :size="19" />
         </div>
         <span class="nav-label">Den</span>
       </button>
 
-      <!-- 🧭 Park (Explore & Clubs) -->
+      <!-- 🎬 Reels (Pet Video Clips) -->
       <button 
+        id="nav-tab-reels"
         class="nav-capsule-btn" 
-        :class="{ active: currentTab === 'explore' }" 
-        @click="setTab('explore')"
+        :class="{ active: currentTab === 'reels' }" 
+        @click="setTab('reels')"
       >
         <div class="icon-bubble">
-          <Compass :size="20" />
+          <Film :size="19" />
         </div>
-        <span class="nav-label">Park</span>
+        <span class="nav-label">Reels</span>
       </button>
 
       <!-- 🐾 Center Bark FAB -->
       <div class="center-fab-anchor">
-        <button class="glowing-bark-fab" @click="isCreateSheetOpen = true" title="Bark a Moment">
+        <button id="nav-bark-fab" class="glowing-bark-fab" @click="isCreateSheetOpen = true" title="Bark a Moment">
           <span class="fab-paw-icon">🐾</span>
         </button>
       </div>
 
+
       <!-- ✨ PawAI Intelligence -->
       <button 
+        id="nav-tab-ai"
         class="nav-capsule-btn ai-tab" 
         :class="{ active: currentTab === 'ai' }" 
         @click="setTab('ai')"
       >
         <div class="icon-bubble ai-bubble">
-          <Sparkles :size="20" class="ai-sparkle" />
+          <Sparkles :size="19" class="ai-sparkle" />
         </div>
         <span class="nav-label ai-label">PawAI</span>
       </button>
 
       <!-- 🛂 Passport (Pet Bio ID) -->
       <button 
+        id="nav-tab-profile"
         class="nav-capsule-btn" 
         :class="{ active: currentTab === 'profile' }" 
         @click="setTab('profile')"
@@ -60,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { Home, Compass, Sparkles } from 'lucide-vue-next';
+import { Home, Film, Sparkles } from 'lucide-vue-next';
 import { currentTab, setTab, isCreateSheetOpen, owner } from '../../stores/appStore';
 </script>
 
@@ -77,15 +82,15 @@ import { currentTab, setTab, isCreateSheetOpen, owner } from '../../stores/appSt
 
 .floating-island-nav {
   pointer-events: auto;
-  height: 64px;
+  height: 62px;
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(24px) saturate(200%);
   -webkit-backdrop-filter: blur(24px) saturate(200%);
   border: 1.5px solid rgba(148, 125, 238, 0.2);
   border-radius: 32px;
   box-shadow: 
-    0 12px 32px -4px rgba(45, 25, 80, 0.18),
-    0 4px 12px rgba(148, 125, 238, 0.15);
+    0 12px 32px -4px rgba(45, 25, 80, 0.16),
+    0 4px 12px rgba(148, 125, 238, 0.12);
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -108,6 +113,13 @@ import { currentTab, setTab, isCreateSheetOpen, owner } from '../../stores/appSt
   color: var(--ink-muted);
   transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-capsule-btn:hover {
+  color: var(--ink-primary);
 }
 
 .icon-bubble {
@@ -145,30 +157,31 @@ import { currentTab, setTab, isCreateSheetOpen, owner } from '../../stores/appSt
 /* Center Glowing Bark FAB */
 .center-fab-anchor {
   position: relative;
-  width: 52px;
+  width: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .glowing-bark-fab {
-  width: 48px;
-  height: 48px;
-  border-radius: 20px;
+  width: 46px;
+  height: 46px;
+  border-radius: 18px;
   background: linear-gradient(135deg, #947DEE 0%, #7C3AED 100%);
   color: #ffffff;
   display: grid;
   place-items: center;
-  box-shadow: 0 8px 22px rgba(124, 58, 237, 0.45);
-  margin-top: -24px;
-  border: 3.5px solid var(--bg-card);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+  margin-top: -16px;
+  border: 3px solid var(--bg-card);
   position: relative;
+  cursor: pointer;
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
 }
 
 .glowing-bark-fab:hover {
   transform: scale(1.08) translateY(-2px);
-  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.6);
+  box-shadow: 0 10px 26px rgba(124, 58, 237, 0.55);
 }
 
 .glowing-bark-fab:active {

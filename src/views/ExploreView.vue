@@ -31,21 +31,36 @@
         </button>
       </div>
 
-      <!-- Pet Marketplace Shortcut Banner -->
-      <div class="marketplace-shortcut-card" @click="setTab('market')">
-        <div class="mkt-shortcut-left">
-          <span class="mkt-shortcut-emoji">🛍️</span>
-          <div>
-            <div class="mkt-title-line">
-              <h4 class="mkt-shortcut-title">Pet Supplies & Food Bazaar</h4>
-              <span class="mkt-shop-badge">Verified Shops</span>
-            </div>
-            <p class="mkt-shortcut-sub">Organic food, GPS collars, beds & pre-loved pet gear</p>
+      <!-- Minimal Ecosystem Quick Hub -->
+      <div class="quick-hub-row">
+        <button class="hub-pill" id="explore-market-btn" @click="setTab('market')">
+          <div class="hub-icon-box hub-market">
+            <ShoppingBag :size="16" />
           </div>
-        </div>
-        <button class="mkt-explore-btn">
-          <span>Shop Market</span>
-          <ShoppingBag :size="13" />
+          <div class="hub-info">
+            <span class="hub-title">Market</span>
+            <span class="hub-caption">Supplies</span>
+          </div>
+        </button>
+
+        <button class="hub-pill" id="explore-adoption-btn" @click="setTab('adoption')">
+          <div class="hub-icon-box hub-adoption">
+            <HeartHandshake :size="16" />
+          </div>
+          <div class="hub-info">
+            <span class="hub-title">Adoption</span>
+            <span class="hub-caption">Rescues</span>
+          </div>
+        </button>
+
+        <button class="hub-pill" id="explore-reels-btn" @click="setTab('reels')">
+          <div class="hub-icon-box hub-reels">
+            <Film :size="16" />
+          </div>
+          <div class="hub-info">
+            <span class="hub-title">Reels</span>
+            <span class="hub-caption">Clips</span>
+          </div>
         </button>
       </div>
 
@@ -84,7 +99,6 @@
             v-for="comm in speciesCommunities" 
             :key="comm.id" 
             class="community-card"
-            :style="{ borderColor: comm.color }"
           >
             <div class="comm-avatar" :style="{ backgroundColor: comm.color }">
               {{ comm.avatar }}
@@ -130,7 +144,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Search, X, Heart, ShoppingBag } from 'lucide-vue-next';
+import { Search, X, Heart, ShoppingBag, HeartHandshake, Film } from 'lucide-vue-next';
 import TopBar from '../components/layout/TopBar.vue';
 import { exploreTrendingTags, speciesCommunities } from '../data/mockData';
 import { searchQuery, activeHashtag, setTab } from '../stores/appStore';
@@ -142,6 +156,10 @@ const categories = ['All', '🐕 Dogs', '🐱 Cats', '🐰 Bunnies', '🦜 Birds
 
 function selectCategory(cat: string) {
   selectedCategory.value = cat;
+  if (cat === '🐾 Adoption') {
+    setTab('adoption');
+    return;
+  }
   const clean = cat === 'All' ? undefined : cat.replace(/[^a-zA-Z]/g, '').toLowerCase();
   postService.getFeed({ species: clean }).catch(() => {});
 }
@@ -187,92 +205,107 @@ const exploreImages = [
   padding-bottom: 84px;
 }
 
-/* Marketplace Shortcut Card */
-.marketplace-shortcut-card {
-  margin: 6px 14px 10px;
-  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
-  border: 1.5px solid #FCD34D;
-  border-radius: 14px;
-  padding: 10px 12px;
+/* Minimal Ecosystem Quick Hub */
+.quick-hub-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 4px 16px 12px;
+}
+
+.hub-pill {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md, 12px);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.12);
+  text-align: left;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.hub-pill:hover {
+  transform: translateY(-1px);
+  border-color: var(--brand-primary);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.hub-pill:active {
+  transform: translateY(0);
+}
+
+.hub-icon-box {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
   transition: transform 0.15s ease;
 }
 
-:global([data-theme='dark']) .marketplace-shortcut-card {
-  background: rgba(45, 30, 10, 0.6);
-  border-color: rgba(245, 158, 11, 0.4);
+.hub-pill:hover .hub-icon-box {
+  transform: scale(1.06);
 }
 
-.marketplace-shortcut-card:hover {
-  transform: translateY(-1px);
+.hub-market {
+  background: rgba(245, 158, 11, 0.12);
+  color: #D97706;
 }
 
-.mkt-shortcut-left {
+:global([data-theme='dark']) .hub-market {
+  background: rgba(245, 158, 11, 0.2);
+  color: #FBBF24;
+}
+
+.hub-adoption {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+:global([data-theme='dark']) .hub-adoption {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34D399;
+}
+
+.hub-reels {
+  background: rgba(236, 72, 153, 0.12);
+  color: #DB2777;
+}
+
+:global([data-theme='dark']) .hub-reels {
+  background: rgba(236, 72, 153, 0.2);
+  color: #F472B6;
+}
+
+.hub-info {
   display: flex;
-  align-items: center;
-  gap: 9px;
+  flex-direction: column;
+  min-width: 0;
 }
 
-.mkt-shortcut-emoji {
-  font-size: 24px;
-}
-
-.mkt-title-line {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.mkt-shortcut-title {
-  font-size: 12.5px;
-  font-weight: 800;
-  color: #92400E;
-}
-
-:global([data-theme='dark']) .mkt-shortcut-title {
-  color: #FCD34D;
-}
-
-.mkt-shop-badge {
-  font-size: 9px;
-  font-weight: 900;
-  color: #fff;
-  background: #D97706;
-  padding: 1px 5px;
-  border-radius: var(--radius-full);
-}
-
-.mkt-shortcut-sub {
-  font-size: 10.5px;
-  color: #B45309;
+.hub-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-primary);
   line-height: 1.25;
-}
-
-:global([data-theme='dark']) .mkt-shortcut-sub {
-  color: #FDE68A;
-}
-
-.mkt-explore-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  font-weight: 800;
-  color: #92400E;
-  background: #fff;
-  padding: 6px 10px;
-  border-radius: var(--radius-full);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-:global([data-theme='dark']) .mkt-explore-btn {
-  background: #78350F;
-  color: #FDE68A;
+.hub-caption {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 
@@ -391,7 +424,7 @@ const exploreImages = [
   flex-shrink: 0;
   width: 145px;
   background: var(--bg-card);
-  border: 1.5px solid var(--border-light);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   padding: 12px;
   display: flex;
@@ -399,6 +432,12 @@ const exploreImages = [
   align-items: center;
   text-align: center;
   box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.community-card:hover {
+  border-color: var(--brand-primary);
+  transform: translateY(-2px);
 }
 
 .comm-avatar {
@@ -494,4 +533,5 @@ const exploreImages = [
 .grid-tile:hover .tile-overlay {
   opacity: 1;
 }
+
 </style>

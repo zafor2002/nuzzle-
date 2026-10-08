@@ -131,6 +131,26 @@
               </div>
             </div>
 
+            <!-- Smart QR Collar Realtime GPS Location Strip -->
+            <div v-if="selectedPet.lastScannedGps" class="passport-gps-strip">
+              <div class="gps-strip-left">
+                <div class="gps-pin-pulse">
+                  <MapPin :size="16" class="pin-ico" />
+                </div>
+                <div class="gps-strip-text">
+                  <div class="gps-strip-title-row">
+                    <span class="gps-strip-title">SMART QR COLLAR — LIVE GPS PIN</span>
+                    <span class="gps-live-dot">LIVE</span>
+                  </div>
+                  <span class="gps-strip-addr">{{ selectedPet.lastScannedGps.address }}</span>
+                  <span class="gps-strip-time">Scanned: {{ selectedPet.lastScannedGps.scannedAt }} • Lat {{ selectedPet.lastScannedGps.lat }}, Lng {{ selectedPet.lastScannedGps.lng }}</span>
+                </div>
+              </div>
+              <button type="button" class="btn-radar-jump" @click="jumpToRadarFromPassport">
+                <span>View on Radar 🧭</span>
+              </button>
+            </div>
+
             <!-- Security Watermark Strip -->
             <div class="security-footer-strip">
               <span>SECURITY HASH: 8f4a-9b1c-77e2-nuzzle-auth</span>
@@ -278,8 +298,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { X, Sparkles, ShieldCheck, QrCode, Syringe, Plane, Download, Share2, CheckCircle2 } from 'lucide-vue-next';
-import { pets, owner, activeProfileId } from '../../stores/appStore';
+import { X, Sparkles, ShieldCheck, QrCode, Syringe, Plane, Download, Share2, CheckCircle2, MapPin } from 'lucide-vue-next';
+import { pets, owner, activeProfileId, setTab, radarMapCenter } from '../../stores/appStore';
 import type { Pet } from '../../types';
 
 defineProps<{
@@ -297,6 +317,14 @@ const selectedPetId = ref(
 const activePage = ref<'identity' | 'vaccines' | 'travel'>('identity');
 const showFullscreenQr = ref(false);
 const toastMessage = ref<string | null>(null);
+
+function jumpToRadarFromPassport() {
+  if (selectedPet.value.lastScannedGps) {
+    radarMapCenter.value = [selectedPet.value.lastScannedGps.lat, selectedPet.value.lastScannedGps.lng];
+  }
+  emit('close');
+  setTab('lostfound');
+}
 
 const pages = [
   { id: 'identity', label: 'Identity & Chip', icon: '🐾' },
@@ -1052,5 +1080,97 @@ function sharePassport() {
 .toast-fade-leave-to {
   opacity: 0;
   transform: translate(-50%, -10px);
+}
+
+/* Smart QR Collar GPS Strip in Passport */
+.passport-gps-strip {
+  margin-top: 14px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.gps-strip-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.gps-pin-pulse {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(16, 185, 129, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.gps-strip-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.gps-strip-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gps-strip-title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #10b981;
+}
+
+.gps-live-dot {
+  background: #10b981;
+  color: #064e3b;
+  font-size: 0.55rem;
+  font-weight: 900;
+  padding: 1px 4px;
+  border-radius: 9999px;
+}
+
+.gps-strip-addr {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #e5e7eb;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gps-strip-time {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+}
+
+.btn-radar-jump {
+  background: #10b981;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.btn-radar-jump:hover {
+  background: #059669;
 }
 </style>

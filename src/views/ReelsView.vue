@@ -2,8 +2,13 @@
   <div class="reels-view">
     <!-- Top Floating Header -->
     <div class="reels-top-bar">
-      <span class="reels-title">Reels</span>
-      <button class="cam-btn" @click="isCreateSheetOpen = true">
+      <div class="top-brand-row">
+        <button class="back-feed-btn" @click="setTab('feed')" title="Back to Feed">
+          <ArrowLeft :size="20" />
+        </button>
+        <span class="reels-title">Reels & Clips</span>
+      </div>
+      <button class="cam-btn" @click="isCreateSheetOpen = true" title="Create Reel">
         <Camera :size="22" />
       </button>
     </div>
@@ -73,6 +78,9 @@
           </div>
         </div>
 
+        <!-- Gradient Scrim for Readability -->
+        <div class="reel-bottom-scrim"></div>
+
         <!-- Bottom Creator Info & Caption -->
         <div class="reel-bottom-info">
           <div class="creator-badge-row">
@@ -100,8 +108,17 @@
 </template>
 
 <script setup lang="ts">
-import { Camera, Heart, MessageCircle, Bookmark, Share2, Music, Play } from 'lucide-vue-next';
-import { reels, toggleReelLike, toggleReelSave, isCreateSheetOpen, setTab } from '../stores/appStore';
+import { Camera, Heart, MessageCircle, Bookmark, Share2, Music, Play, ArrowLeft } from 'lucide-vue-next';
+import { 
+  reels, 
+  posts,
+  toggleReelLike, 
+  toggleReelSave, 
+  isCreateSheetOpen, 
+  setTab,
+  isCommentsModalOpen,
+  activePostForComments 
+} from '../stores/appStore';
 import type { Reel } from '../types';
 
 function formatCount(num: number): string {
@@ -111,8 +128,50 @@ function formatCount(num: number): string {
   return num.toString();
 }
 
-function openReelComments(_reel: Reel) {
-  setTab('feed');
+function openReelComments(reel: Reel) {
+  const existingPost = posts.find(p => p.id === reel.id);
+  if (existingPost) {
+    activePostForComments.value = existingPost;
+  } else {
+    activePostForComments.value = {
+      id: reel.id,
+      ownerId: reel.creatorId || 'owner_me',
+      ownerName: reel.creatorName,
+      ownerAvatar: reel.creatorAvatar,
+      petName: reel.petName,
+      caption: reel.caption,
+      mediaUrls: [reel.videoUrl || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=800&auto=format&fit=crop&q=80'],
+      likesCount: reel.likesCount,
+      commentsCount: reel.commentsCount,
+      createdAt: 'Recently',
+      isAnonymous: false,
+      hashtags: ['reels', 'pets'],
+      isLiked: reel.isLiked,
+      isSaved: reel.isSaved,
+      reactions: { paw: 24, nuzzle: 18, treat: 12, ball: 9, purr: 6 },
+      comments: [
+        {
+          id: 'rc_1',
+          authorName: 'Alex Rivers',
+          authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+          isPet: false,
+          body: 'The energy on this clip is unmatched! Pure Dhaka park happiness 🐾',
+          createdAt: '5m ago',
+          likesCount: 8,
+        },
+        {
+          id: 'rc_2',
+          authorName: 'Waffles 🎾',
+          authorAvatar: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=100&auto=format&fit=crop&q=80',
+          isPet: true,
+          body: '10/10 zoomie technique! Need to schedule a park meetup soon! 🐕',
+          createdAt: '12m ago',
+          likesCount: 15,
+        }
+      ]
+    };
+  }
+  isCommentsModalOpen.value = true;
 }
 
 function shareReel(reel: Reel) {
@@ -149,9 +208,35 @@ function shareReel(reel: Reel) {
   z-index: 30;
 }
 
+.top-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.back-feed-btn {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-feed-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
 .reels-title {
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
@@ -179,7 +264,7 @@ function shareReel(reel: Reel) {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 60px 16px 20px;
+  padding: 56px 16px 104px;
   overflow: hidden;
 }
 
@@ -230,14 +315,25 @@ function shareReel(reel: Reel) {
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
+.reel-bottom-scrim {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 250px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.3) 60%, transparent 100%);
+  pointer-events: none;
+  z-index: 15;
+}
+
 .reel-action-rail {
   position: absolute;
   right: 12px;
-  bottom: 80px;
+  bottom: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   z-index: 20;
 }
 
@@ -295,7 +391,7 @@ function shareReel(reel: Reel) {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-width: 82%;
+  max-width: calc(100% - 68px);
   z-index: 20;
 }
 
@@ -343,17 +439,29 @@ function shareReel(reel: Reel) {
   font-size: 13.5px;
   line-height: 1.4;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .audio-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.45);
   padding: 4px 10px;
   border-radius: var(--radius-full);
   font-size: 11px;
   backdrop-filter: blur(8px);
   width: fit-content;
+  max-width: 100%;
+}
+
+.audio-track-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

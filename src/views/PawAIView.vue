@@ -4,15 +4,14 @@
 
     <div class="ai-scroll-body">
       <!-- Hero Banner -->
+      <!-- Slim Modern Hero Header -->
       <div class="ai-hero-card">
-        <div class="ai-glow-bg"></div>
         <div class="hero-left">
-          <div class="ai-chip">
-            <Sparkles :size="12" class="sparkle-icon" />
-            <span>Next-Gen Pet AI</span>
+          <div class="ai-hero-title-row">
+            <Sparkles :size="14" class="sparkle-icon" />
+            <h2 class="ai-hero-title">PawAI Intelligence</h2>
           </div>
-          <h2 class="ai-hero-title">PawAI Intelligence Suite</h2>
-          <p class="ai-hero-sub">AI Vision scanner, Suggest Vet Pro Matcher & 24/7 triage.</p>
+          <p class="ai-hero-sub">AI clinical triage & verified vet matching</p>
         </div>
         <div class="hero-robot-badge">🐾⚡</div>
       </div>
@@ -37,52 +36,45 @@
         <div class="condition-intake-card card-item">
           <div class="intake-header">
             <div class="ai-pulse-pill">
-              <Sparkles :size="13" class="spin-icon" />
+              <Sparkles :size="12" class="spin-icon" />
               <span>AI Clinical Matcher</span>
             </div>
-            <span class="pro-ranking-indicator">⭐ Pro Partner Vets Ranked #1</span>
           </div>
 
-          <h3 class="intake-title">Find the Best-Fit Vet for Your Pet</h3>
-          <p class="intake-sub">
-            Tell PawAI about your pet's current condition or medical need. Our AI will analyze your pet's species, symptoms, and urgency to find qualified clinics, prioritizing <strong>Verified Pro Partner Clinics</strong> at the top.
-          </p>
+          <h3 class="intake-title">Find Best-Fit Vet</h3>
 
           <!-- Step A: Select Pet -->
           <div class="form-row pet-selection-row">
-            <label class="row-label">1. Select Pet</label>
+            <label class="row-label">Patient</label>
             <div class="pets-picker-strip">
-              <div 
+              <button 
                 v-for="p in pets" 
                 :key="p.id"
+                type="button"
                 class="pet-chip-option"
                 :class="{ active: selectedPetId === p.id }"
                 @click="selectedPetId = p.id"
               >
                 <img :src="p.avatarUrl" :alt="p.name" class="p-chip-avatar" />
-                <div class="p-chip-info">
-                  <span class="p-chip-name">{{ p.name }}</span>
-                  <span class="p-chip-species">{{ p.species }} • {{ p.breed || 'Companion' }}</span>
-                </div>
-              </div>
-              <div v-if="pets.length === 0" class="pet-chip-option active">
+                <span class="p-chip-name">{{ p.name }}</span>
+                <span class="p-chip-species">({{ p.species }})</span>
+              </button>
+              <button v-if="pets.length === 0" type="button" class="pet-chip-option active">
                 <img :src="activeTargetPet.avatarUrl" alt="Companion" class="p-chip-avatar" />
-                <div class="p-chip-info">
-                  <span class="p-chip-name">{{ activeTargetPet.name }}</span>
-                  <span class="p-chip-species">{{ activeTargetPet.species }} • {{ activeTargetPet.breed || 'Companion' }}</span>
-                </div>
-              </div>
+                <span class="p-chip-name">{{ activeTargetPet.name }}</span>
+                <span class="p-chip-species">({{ activeTargetPet.species }})</span>
+              </button>
             </div>
           </div>
 
           <!-- Step B: Add Pet Condition & Symptoms -->
           <div class="form-row condition-input-row">
-            <label class="row-label">2. Pet Condition & Symptoms</label>
+            <label class="row-label">Symptoms & Condition</label>
             <div class="condition-input-wrapper">
               <input 
                 v-model="customConditionText" 
                 type="text" 
-                placeholder="Describe condition e.g., Limping on front paw, severe ear scratching..." 
+                placeholder="Describe symptoms (e.g., Limping on front paw)..." 
                 class="condition-text-field"
               />
               <button 
@@ -95,9 +87,6 @@
             </div>
 
             <!-- Quick Preset Condition Chips -->
-            <div class="presets-label-row">
-              <span class="presets-hint">Or tap common conditions:</span>
-            </div>
             <div class="condition-presets-track">
               <button 
                 v-for="preset in conditionPresets" 
@@ -116,7 +105,7 @@
           <!-- Step C: Medical Urgency & Distance -->
           <div class="form-row grid-2-col">
             <div class="filter-col">
-              <label class="row-label">3. Urgency Level</label>
+              <label class="row-label">Urgency</label>
               <div class="urgency-selector">
                 <button 
                   type="button" 
@@ -124,7 +113,7 @@
                   :class="{ active: !isEmergencyUrgent }"
                   @click="isEmergencyUrgent = false"
                 >
-                  🟢 Standard Care
+                  🟢 Standard
                 </button>
                 <button 
                   type="button" 
@@ -132,30 +121,30 @@
                   :class="{ active: isEmergencyUrgent }"
                   @click="isEmergencyUrgent = true"
                 >
-                  🚨 24/7 Emergency
+                  🚨 Emergency
                 </button>
               </div>
             </div>
 
             <div class="filter-col">
-              <label class="row-label">4. Max Distance Radius</label>
+              <label class="row-label">Max Distance</label>
               <select v-model="selectedMaxDistance" class="distance-dropdown">
-                <option :value="5">Within 5 Miles</option>
-                <option :value="10">Within 10 Miles</option>
-                <option :value="25">Within 25 Miles</option>
-                <option :value="999">Any Distance</option>
+                <option :value="5">Within 5 miles</option>
+                <option :value="10">Within 10 miles</option>
+                <option :value="25">Within 25 miles</option>
+                <option :value="999">Any distance</option>
               </select>
             </div>
           </div>
 
-          <!-- Step D: Big Analyze Action CTA -->
+          <!-- Step D: Analyze Action CTA -->
           <button 
             class="btn-solid run-ai-analysis-btn"
             :disabled="isAnalyzingCondition"
             @click="runClinicalAnalysis"
           >
-            <Sparkles :size="16" />
-            <span>{{ isAnalyzingCondition ? 'AI Analyzing Clinical Criteria...' : '🔍 Analyze Condition & Match Best-Fit Vets' }}</span>
+            <Sparkles :size="15" />
+            <span>{{ isAnalyzingCondition ? 'Matching Clinics...' : 'Match Best-Fit Vets' }}</span>
           </button>
         </div>
 
@@ -193,79 +182,74 @@
           <!-- Summary Header -->
           <div class="results-summary-card">
             <div class="sum-badge-row">
-              <span class="sum-status-badge">✅ Clinical Verification Complete</span>
-              <span class="sum-count-pill">{{ totalStrictMatchesCount }} Clinics Qualified</span>
+              <div class="sum-status-lead">
+                <span class="status-dot-emerald"></span>
+                <span class="sum-status-title">Clinical Verification Complete</span>
+              </div>
+              <span class="sum-count-pill">{{ totalStrictMatchesCount }} {{ totalStrictMatchesCount === 1 ? 'Clinic' : 'Clinics' }} Qualified</span>
             </div>
             <p class="sum-condition-text">
-              Target Pet: <strong>{{ activeTargetPet.name }} ({{ activeTargetPet.species }})</strong> • Condition: <em>"{{ activeConditionDisplayName }}"</em>
+              For <strong>{{ activeTargetPet.name }}</strong> ({{ activeTargetPet.species }}) · <em>{{ activeConditionDisplayName }}</em>
             </p>
-            <div class="sum-priority-banner">
-              ⭐ <strong>Pro Partner Ranking:</strong> Vets with Nuzzle Pro Partner Subscriptions are ranked at the top of your results.
-            </div>
           </div>
 
-          <!-- GROUP 1: Verified Pro Partner Clinics (TOP PRIORITY #1) -->
+          <!-- GROUP 1: Verified Best-Fit Clinics -->
           <div v-if="proMatchedVets.length > 0" class="vets-group pro-group">
             <div class="group-header">
-              <div class="group-title-row">
-                <span class="group-crown">👑</span>
-                <h4 class="group-title">Nuzzle Pro Partner Best-Fit Clinics (Priority #1)</h4>
-              </div>
-              <span class="group-tag gold">Top Match ({{ proMatchedVets.length }})</span>
+              <h4 class="group-title">Recommended Clinics</h4>
+              <span class="group-tag gold">Verified Fit</span>
             </div>
 
             <div class="vets-cards-list">
               <div 
-                v-for="(vet, idx) in proMatchedVets" 
+                v-for="vet in proMatchedVets" 
                 :key="vet.id"
                 class="suggested-vet-card pro-card-highlight"
               >
-                <!-- Top Ribbon -->
-                <div class="pro-partner-ribbon">
-                  <span class="ribbon-star">🌟</span>
-                  <span class="ribbon-text">NUZZLE PRO PRIORITY PARTNER • TOP MATCH #{{ idx + 1 }}</span>
-                </div>
-
                 <div class="vet-card-body">
                   <div class="vet-top-info-row">
-                    <img :src="vet.avatarUrl" :alt="vet.name" class="vet-avatar-img gold-ring" />
+                    <img :src="vet.avatarUrl" :alt="vet.name" class="vet-avatar-img" />
 
                     <div class="vet-text-col">
                       <div class="vet-name-row">
                         <h4 class="vet-doctor-name">{{ vet.name }}</h4>
-                        <span class="pro-shield-badge">✓ PRO PARTNER</span>
+                        <span class="pro-shield-badge">Pro Partner</span>
                       </div>
 
                       <span class="vet-clinic-name">{{ vet.clinicName }}</span>
 
                       <div class="vet-meta-chips">
                         <span class="meta-chip rating">★ {{ vet.rating }} ({{ vet.reviewsCount }})</span>
-                        <span class="meta-chip distance">📍 {{ vet.distanceMiles || 1.2 }} mi away</span>
-                        <span v-if="vet.emergencyCare" class="meta-chip emergency">🚨 24/7 ICU</span>
+                        <span class="meta-chip distance">📍 {{ vet.distanceMiles || 1.2 }} mi</span>
+                        <span v-if="vet.emergencyCare" class="meta-chip emergency">24/7 ICU</span>
                       </div>
                     </div>
                   </div>
 
                   <!-- AI Diagnostic Match Rationale -->
                   <div class="ai-match-rationale pro-rationale">
-                    <span class="ai-brain-icon">🧠</span>
                     <div class="ai-rationale-col">
-                      <span class="ai-match-score">99% Clinical Criteria Match</span>
+                      <div class="ai-rationale-header">
+                        <span class="ai-match-score">99% Criteria Match</span>
+                      </div>
                       <p class="ai-rationale-text">
                         {{ getDetailedMatchRationale(vet, true) }}
                       </p>
                     </div>
                   </div>
 
-                  <!-- Specialties Chips -->
+                  <!-- Specialties Chips (clean 3 max) -->
                   <div class="vet-specialties-track">
                     <span 
-                      v-for="spec in vet.specialties" 
+                      v-for="spec in vet.specialties.slice(0, 3)" 
                       :key="spec"
                       class="spec-chip"
                       :class="{ highlighted: isSpecialtyRelevant(spec) }"
                     >
                       {{ spec }}
+                    </span>
+                    <span v-if="vet.specialties.length > 3" class="spec-chip-more">
+                      +{{ vet.specialties.length - 3 }} more
                     </span>
                   </div>
 
@@ -273,7 +257,7 @@
                   <div class="vet-card-footer">
                     <div class="next-slot-pill">
                       <span class="slot-dot"></span>
-                      <span>Next Available: <strong>Tomorrow at 11:00 AM</strong></span>
+                      <span>Tomorrow · <strong>11:00 AM</strong></span>
                     </div>
 
                     <div class="vet-actions-btns">
@@ -283,7 +267,7 @@
                       </button>
                       <button class="btn-outline clinic-chat-btn" @click="contactClinic(vet)">
                         <Send :size="13" />
-                        <span>Chat Clinic</span>
+                        <span>Chat</span>
                       </button>
                     </div>
                   </div>
@@ -295,11 +279,8 @@
           <!-- GROUP 2: Other Clinically Qualified Clinics (Standard Placement) -->
           <div v-if="standardMatchedVets.length > 0" class="vets-group standard-group">
             <div class="group-header">
-              <div class="group-title-row">
-                <span class="group-icon">🏥</span>
-                <h4 class="group-title">Other Clinically Qualified Vets</h4>
-              </div>
-              <span class="group-tag">Standard Placement ({{ standardMatchedVets.length }})</span>
+              <h4 class="group-title">Other Qualified Clinics</h4>
+              <span class="group-tag">Standard Match ({{ standardMatchedVets.length }})</span>
             </div>
 
             <div class="vets-cards-list">
@@ -329,7 +310,6 @@
 
                   <!-- AI Rationale -->
                   <div class="ai-match-rationale standard-rationale">
-                    <span class="ai-brain-icon">🩺</span>
                     <div class="ai-rationale-col">
                       <span class="ai-match-score">92% Clinical Fit</span>
                       <p class="ai-rationale-text">
@@ -340,19 +320,22 @@
 
                   <div class="vet-specialties-track">
                     <span 
-                      v-for="spec in vet.specialties" 
+                      v-for="spec in vet.specialties.slice(0, 3)" 
                       :key="spec"
                       class="spec-chip"
                       :class="{ highlighted: isSpecialtyRelevant(spec) }"
                     >
                       {{ spec }}
                     </span>
+                    <span v-if="vet.specialties.length > 3" class="spec-chip-more">
+                      +{{ vet.specialties.length - 3 }} more
+                    </span>
                   </div>
 
                   <div class="vet-card-footer">
                     <div class="next-slot-pill">
                       <span class="slot-dot"></span>
-                      <span>Next Open: <strong>Tomorrow at 02:30 PM</strong></span>
+                      <span>Tomorrow · <strong>02:30 PM</strong></span>
                     </div>
 
                     <div class="vet-actions-btns">
@@ -362,7 +345,7 @@
                       </button>
                       <button class="btn-outline clinic-chat-btn" @click="contactClinic(vet)">
                         <Send :size="13" />
-                        <span>Chat Clinic</span>
+                        <span>Chat</span>
                       </button>
                     </div>
                   </div>
@@ -386,19 +369,16 @@
             <div class="ex-header" @click="isExcludedOpen = !isExcludedOpen">
               <div class="ex-title-left">
                 <span class="shield-ex-icon">🛡️</span>
-                <span class="ex-title">Strict Medical Safety Filter ({{ excludedVetsList.length }} Excluded)</span>
+                <span class="ex-title">Safety Filter · {{ excludedVetsList.length }} Excluded</span>
               </div>
-              <span class="ex-toggle-indicator">{{ isExcludedOpen ? '▲ Hide' : '▼ View Safety Exclusions' }}</span>
+              <span class="ex-toggle-indicator">{{ isExcludedOpen ? 'Hide ▲' : 'View ▼' }}</span>
             </div>
 
             <div v-if="isExcludedOpen" class="ex-body">
-              <p class="ex-desc">
-                PawAI strictly verified clinical criteria before ranking. The following clinics were safely filtered out:
-              </p>
               <div class="ex-items-list">
                 <div v-for="ex in excludedVetsList" :key="ex.vet.id" class="ex-item">
                   <span class="ex-name">🏥 {{ ex.vet.clinicName }}</span>
-                  <span class="ex-reason">❌ {{ ex.reason }}</span>
+                  <span class="ex-reason">Filtered: {{ ex.reason }}</span>
                 </div>
               </div>
             </div>
@@ -1147,15 +1127,14 @@ const excludedVetsList = computed(() => {
 
 function getDetailedMatchRationale(vet: Vet, isPro: boolean): string {
   const pet = activeTargetPet.value;
-  const cond = activeConditionDisplayName.value;
 
   if (isPro && isEmergencyUrgent.value) {
-    return `Strict Match: Board-certified trauma team with 24/7 ICU & surgical triage for ${pet.name}. Priority #1 Pro Partner.`;
+    return `24/7 ICU & emergency trauma surgical team for ${pet.name}.`;
   }
   if (isPro) {
-    return `Strict Match for "${cond}": Top-rated expertise in ${vet.specialties[0]} for ${pet.species}s. Verified Nuzzle Pro Priority Partner.`;
+    return `Top-rated expertise in ${vet.specialties[0]} for ${pet.species}s.`;
   }
-  return `Clinical Match for "${cond}": Qualified ${pet.species} diagnostics and medical care. Standard placement.`;
+  return `Certified ${pet.species} care & clinical diagnostics.`;
 }
 
 function isSpecialtyRelevant(spec: string): boolean {
@@ -1542,47 +1521,28 @@ function generateMagicArt() {
 .ai-hero-card {
   position: relative;
   background: linear-gradient(135deg, #1E1B4B, #312E81 50%, #4C1D95);
-  border-radius: var(--radius-xl);
-  padding: 14px 16px;
+  border-radius: 14px;
+  padding: 9px 12px;
   color: #fff;
   overflow: hidden;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 8px 22px rgba(49, 46, 129, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.ai-glow-bg {
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.45), transparent 70%);
-  filter: blur(20px);
+  box-shadow: 0 4px 14px rgba(49, 46, 129, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .hero-left {
   position: relative;
   z-index: 2;
-  max-width: 80%;
+  max-width: 85%;
 }
 
-.ai-chip {
-  display: inline-flex;
+.ai-hero-title-row {
+  display: flex;
   align-items: center;
-  gap: 5px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  font-size: 10px;
-  font-weight: 700;
-  color: #E9D5FF;
-  margin-bottom: 4px;
+  gap: 6px;
 }
 
 .sparkle-icon {
@@ -1591,20 +1551,20 @@ function generateMagicArt() {
 
 .ai-hero-title {
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 13.5px;
   font-weight: 800;
   letter-spacing: -0.01em;
 }
 
 .ai-hero-sub {
-  font-size: 11px;
+  font-size: 10px;
   color: #DDD6FE;
-  line-height: 1.3;
+  line-height: 1.25;
   margin-top: 1px;
 }
 
 .hero-robot-badge {
-  font-size: 28px;
+  font-size: 20px;
 }
 
 /* Tabs */
@@ -1613,7 +1573,7 @@ function generateMagicArt() {
   gap: 6px;
   overflow-x: auto;
   scrollbar-width: none;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .ai-tabs-row::-webkit-scrollbar {
@@ -1624,12 +1584,12 @@ function generateMagicArt() {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 6px 12px;
+  padding: 5px 10px;
   border-radius: var(--radius-full);
   background: var(--bg-card);
   border: 1px solid var(--border-light);
   color: var(--ink-secondary);
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
@@ -1651,83 +1611,80 @@ function generateMagicArt() {
 .condition-intake-card {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
-  border-radius: 18px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 }
 
 .intake-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .ai-pulse-pill {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-weight: 800;
   color: #7C3AED;
   background: #F3EEFF;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-}
-
-.pro-ranking-indicator {
-  font-size: 9.5px;
-  font-weight: 800;
-  color: #92400E;
-  background: #FEF3C7;
-  border: 1px solid #FCD34D;
   padding: 2px 7px;
   border-radius: var(--radius-full);
 }
 
-.intake-title {
-  font-size: 15px;
-  font-weight: 900;
-  color: var(--ink-primary);
+:global([data-theme='dark']) .ai-pulse-pill {
+  background: rgba(124, 58, 237, 0.2);
+  color: #C4B5FD;
 }
 
-.intake-sub {
-  font-size: 11.5px;
-  color: var(--ink-secondary);
-  line-height: 1.35;
-  margin: 3px 0 12px;
+.intake-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--ink-primary);
+  margin-bottom: 6px;
 }
 
 .form-row {
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .row-label {
   display: block;
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--ink-primary);
-  margin-bottom: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink-muted);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 /* Pets Strip */
 .pets-picker-strip {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pets-picker-strip::-webkit-scrollbar {
+  display: none;
 }
 
 .pet-chip-option {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 10px 5px 6px;
+  gap: 5px;
+  padding: 3px 8px 3px 4px;
   border-radius: var(--radius-full);
   background: var(--bg-card-subtle);
-  border: 1.5px solid var(--border-light);
+  border: 1px solid var(--border-light);
   cursor: pointer;
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .pet-chip-option.active {
@@ -1735,27 +1692,26 @@ function generateMagicArt() {
   border-color: #7C3AED;
 }
 
+:global([data-theme='dark']) .pet-chip-option.active {
+  background: rgba(124, 58, 237, 0.25);
+  border-color: #A78BFA;
+}
+
 .p-chip-avatar {
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.p-chip-info {
-  display: flex;
-  flex-direction: column;
-}
-
 .p-chip-name {
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 10.5px;
+  font-weight: 700;
   color: var(--ink-primary);
-  line-height: 1.1;
 }
 
 .p-chip-species {
-  font-size: 8.5px;
+  font-size: 9px;
   color: var(--ink-muted);
 }
 
@@ -1769,10 +1725,10 @@ function generateMagicArt() {
 .condition-text-field {
   width: 100%;
   background: var(--bg-card-subtle);
-  border: 1.5px solid var(--border-light);
-  border-radius: 10px;
-  padding: 8px 30px 8px 10px;
-  font-size: 12px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 6px 26px 6px 9px;
+  font-size: 11px;
   color: var(--ink-primary);
   outline: none;
   transition: border-color 0.15s ease;
@@ -1785,27 +1741,18 @@ function generateMagicArt() {
 
 .clear-cond-btn {
   position: absolute;
-  right: 8px;
-  font-size: 12px;
+  right: 7px;
+  font-size: 10.5px;
   color: var(--ink-muted);
   cursor: pointer;
 }
 
-.presets-label-row {
-  margin: 6px 0 3px;
-}
-
-.presets-hint {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--ink-muted);
-}
-
 .condition-presets-track {
   display: flex;
-  gap: 5px;
+  gap: 4px;
   overflow-x: auto;
   scrollbar-width: none;
+  margin-top: 4px;
 }
 
 .condition-presets-track::-webkit-scrollbar {
@@ -1815,13 +1762,13 @@ function generateMagicArt() {
 .preset-chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
+  gap: 3px;
+  padding: 2px 6px;
   border-radius: var(--radius-full);
   background: var(--bg-card-subtle);
   border: 1px solid var(--border-light);
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 9.5px;
+  font-weight: 600;
   color: var(--ink-secondary);
   white-space: nowrap;
   cursor: pointer;
@@ -1838,10 +1785,16 @@ function generateMagicArt() {
   color: #6D28D9;
 }
 
+:global([data-theme='dark']) .preset-chip.active {
+  background: rgba(124, 58, 237, 0.25);
+  border-color: #A78BFA;
+  color: #DDD6FE;
+}
+
 .grid-2-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 6px;
 }
 
 .filter-col {
@@ -1851,19 +1804,21 @@ function generateMagicArt() {
 
 .urgency-selector {
   display: flex;
-  gap: 4px;
+  gap: 3px;
 }
 
 .urg-btn {
   flex: 1;
-  padding: 6px 4px;
-  border-radius: 8px;
+  padding: 4px 3px;
+  border-radius: 6px;
   border: 1px solid var(--border-light);
   background: var(--bg-card-subtle);
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 700;
   color: var(--ink-secondary);
   cursor: pointer;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .urg-btn.active {
@@ -1872,20 +1827,31 @@ function generateMagicArt() {
   color: #065F46;
 }
 
+:global([data-theme='dark']) .urg-btn.active {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6EE7B7;
+}
+
 .urg-btn.emergency.active {
   background: #FFF1F2;
   border-color: #F43F5E;
   color: #9F1239;
 }
 
+:global([data-theme='dark']) .urg-btn.emergency.active {
+  background: rgba(244, 63, 94, 0.2);
+  color: #FDA4AF;
+}
+
 .distance-dropdown {
   background: var(--bg-card-subtle);
   border: 1px solid var(--border-light);
-  border-radius: 8px;
-  padding: 6px 8px;
-  font-size: 11px;
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 10px;
   color: var(--ink-primary);
   outline: none;
+  height: 25px;
 }
 
 .run-ai-analysis-btn {
@@ -1894,13 +1860,13 @@ function generateMagicArt() {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 10px;
+  padding: 7px 12px;
   border-radius: var(--radius-full);
-  font-size: 12.5px;
+  font-size: 11.5px;
   font-weight: 800;
-  margin-top: 4px;
+  margin-top: 2px;
   background: linear-gradient(135deg, #7C3AED 0%, #947DEE 100%);
-  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 3px 10px rgba(124, 58, 237, 0.25);
 }
 
 /* 2. LIVE ANALYSIS VISUALIZER */
@@ -2001,49 +1967,51 @@ function generateMagicArt() {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
   border-radius: 14px;
-  padding: 10px 12px;
+  padding: 10px 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .sum-badge-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
-.sum-status-badge {
-  font-size: 11px;
-  font-weight: 800;
-  color: #059669;
+.sum-status-lead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-dot-emerald {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+}
+
+.sum-status-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-primary);
 }
 
 .sum-count-pill {
-  font-size: 9.5px;
-  font-weight: 800;
+  font-size: 10px;
+  font-weight: 600;
   background: var(--bg-card-subtle);
-  padding: 2px 6px;
+  padding: 2px 7px;
   border-radius: var(--radius-full);
   color: var(--ink-secondary);
+  border: 1px solid var(--border-light);
 }
 
 .sum-condition-text {
-  font-size: 11px;
+  font-size: 11.5px;
   color: var(--ink-secondary);
-  line-height: 1.3;
-}
-
-.sum-priority-banner {
-  font-size: 10px;
-  color: #92400E;
-  background: #FEF3C7;
-  padding: 4px 8px;
-  border-radius: 6px;
-  margin-top: 6px;
-}
-
-:global([data-theme='dark']) .sum-priority-banner {
-  background: rgba(45, 30, 10, 0.6);
-  color: #FCD34D;
+  line-height: 1.35;
 }
 
 /* GROUPS */
@@ -2051,143 +2019,130 @@ function generateMagicArt() {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-top: 4px;
 }
 
 .group-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.group-title-row {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.group-crown {
-  font-size: 14px;
-}
-
-.group-icon {
-  font-size: 14px;
+  padding: 0 2px;
 }
 
 .group-title {
-  font-size: 12.5px;
-  font-weight: 800;
+  font-size: 12px;
+  font-weight: 700;
   color: var(--ink-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .group-tag {
   font-size: 9.5px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--ink-muted);
   background: var(--bg-card-subtle);
-  padding: 2px 6px;
+  padding: 2px 7px;
   border-radius: var(--radius-full);
+  border: 1px solid var(--border-light);
 }
 
 .group-tag.gold {
-  background: #FEF3C7;
-  color: #92400E;
-  border: 1px solid #FCD34D;
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fde68a;
 }
 
 /* CARDS */
 .suggested-vet-card {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
-  border-radius: 16px;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
   margin-bottom: 8px;
+  transition: all 0.2s ease;
 }
 
 .suggested-vet-card.pro-card-highlight {
-  border: 1.5px solid #FCD34D;
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.18);
-}
-
-.pro-partner-ribbon {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);
-  color: #fff;
-  padding: 4px 10px;
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.02em;
+  border: 1px solid #fde68a;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.08);
 }
 
 .vet-card-body {
-  padding: 10px 12px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .vet-top-info-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
 }
 
 .vet-avatar-img {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: 10px;
   object-fit: cover;
   flex-shrink: 0;
-  border: 1.5px solid var(--border-subtle);
-}
-
-.vet-avatar-img.gold-ring {
-  border-color: #F59E0B;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+  border: 1px solid var(--border-subtle);
 }
 
 .vet-text-col {
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
 }
 
 .vet-name-row {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .vet-doctor-name {
   font-size: 13.5px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--ink-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .pro-shield-badge {
-  font-size: 8.5px;
-  font-weight: 900;
-  color: #fff;
-  background: #D97706;
-  padding: 1px 5px;
-  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #b45309;
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
 }
 
 .standard-verified-badge {
-  font-size: 8.5px;
-  font-weight: 800;
+  font-size: 9px;
+  font-weight: 700;
   color: #059669;
-  background: #ECFDF5;
-  padding: 1px 5px;
-  border-radius: 4px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
 }
 
 .vet-clinic-name {
   font-size: 11px;
   color: var(--ink-secondary);
-  font-weight: 600;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
 }
 
 .vet-meta-chips {
@@ -2198,15 +2153,15 @@ function generateMagicArt() {
 }
 
 .meta-chip {
-  font-size: 9px;
-  font-weight: 700;
-  padding: 1px 5px;
+  font-size: 9.5px;
+  font-weight: 600;
+  padding: 1px 6px;
   border-radius: var(--radius-full);
 }
 
 .meta-chip.rating {
-  background: #FEF3C7;
-  color: #92400E;
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .meta-chip.distance {
@@ -2215,27 +2170,20 @@ function generateMagicArt() {
 }
 
 .meta-chip.emergency {
-  background: #FFE4E6;
-  color: #E11D48;
+  background: #fee2e2;
+  color: #dc2626;
+  font-weight: 700;
 }
 
 /* AI Match Rationale */
 .ai-match-rationale {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
   border-radius: 8px;
-  padding: 6px 8px;
+  padding: 7px 9px;
 }
 
 .ai-match-rationale.pro-rationale {
-  background: linear-gradient(135deg, #FAF5FF 0%, #F3EEFF 100%);
-  border: 1px dashed #DDD6FE;
-}
-
-:global([data-theme='dark']) .ai-match-rationale.pro-rationale {
-  background: rgba(88, 28, 135, 0.25);
-  border-color: rgba(147, 51, 234, 0.4);
+  background: rgba(99, 102, 241, 0.05);
+  border: 1px solid rgba(99, 102, 241, 0.12);
 }
 
 .ai-match-rationale.standard-rationale {
@@ -2243,28 +2191,22 @@ function generateMagicArt() {
   border: 1px solid var(--border-light);
 }
 
-.ai-brain-icon {
-  font-size: 13px;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
 .ai-rationale-col {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
 }
 
 .ai-match-score {
-  font-size: 10px;
-  font-weight: 800;
-  color: #7C3AED;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #6366f1;
 }
 
 .ai-rationale-text {
-  font-size: 10.5px;
+  font-size: 11px;
   color: var(--ink-secondary);
-  line-height: 1.3;
+  line-height: 1.35;
 }
 
 .vet-specialties-track {
@@ -2279,44 +2221,51 @@ function generateMagicArt() {
   color: var(--ink-secondary);
   background: var(--bg-card-subtle);
   border: 1px solid var(--border-light);
-  padding: 2px 6px;
-  border-radius: var(--radius-full);
+  padding: 2px 7px;
+  border-radius: 6px;
 }
 
 .spec-chip.highlighted {
-  background: #F3EEFF;
-  border-color: #C084FC;
-  color: #7C3AED;
-  font-weight: 800;
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.2);
+  color: #4f46e5;
+  font-weight: 700;
+}
+
+.spec-chip-more {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  padding: 2px 4px;
 }
 
 .vet-card-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 4px;
-  padding-top: 6px;
+  margin-top: 2px;
+  padding-top: 8px;
   border-top: 1px solid var(--border-light);
 }
 
 .next-slot-pill {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 10px;
+  gap: 5px;
+  font-size: 10.5px;
   color: var(--ink-secondary);
 }
 
 .slot-dot {
   width: 6px;
   height: 6px;
-  background: #059669;
+  background: #10b981;
   border-radius: 50%;
 }
 
 .vet-actions-btns {
   display: flex;
-  gap: 5px;
+  gap: 6px;
 }
 
 .instant-book-btn {
@@ -2324,39 +2273,61 @@ function generateMagicArt() {
   align-items: center;
   gap: 4px;
   font-size: 11px;
-  font-weight: 800;
-  padding: 5px 9px;
-  border-radius: var(--radius-full);
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .instant-book-btn.pro-book {
-  background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);
+  background: #d97706;
+}
+
+.instant-book-btn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
 }
 
 .clinic-chat-btn {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 10.5px;
-  padding: 5px 8px;
-  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 9px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  color: var(--ink-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.clinic-chat-btn:hover {
+  background: var(--bg-card-subtle);
+  color: var(--ink-primary);
 }
 
 /* 4. SAFETY EXCLUSIONS ACCORDION */
 .excluded-clinics-card {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
+  margin-top: 4px;
 }
 
 .ex-header {
-  padding: 8px 12px;
+  padding: 7px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  background: var(--bg-card-subtle);
+  font-size: 11px;
 }
 
 .ex-title-left {
@@ -2370,26 +2341,20 @@ function generateMagicArt() {
 }
 
 .ex-title {
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--ink-secondary);
+  font-weight: 600;
+  color: var(--ink-muted);
 }
 
 .ex-toggle-indicator {
   font-size: 10px;
-  font-weight: 700;
-  color: var(--brand-primary);
+  color: var(--ink-muted);
+  font-weight: 600;
 }
 
 .ex-body {
-  padding: 10px 12px;
+  padding: 8px 10px;
   border-top: 1px solid var(--border-light);
-}
-
-.ex-desc {
-  font-size: 10.5px;
-  color: var(--ink-muted);
-  margin-bottom: 6px;
+  background: var(--bg-card-subtle);
 }
 
 .ex-items-list {
@@ -2403,41 +2368,28 @@ function generateMagicArt() {
   align-items: center;
   justify-content: space-between;
   font-size: 10.5px;
-  padding: 3px 0;
-  border-bottom: 1px dashed var(--border-light);
-}
-
-.ex-item:last-child {
-  border-bottom: none;
 }
 
 .ex-name {
-  font-weight: 700;
-  color: var(--ink-secondary);
+  font-weight: 600;
+  color: var(--ink-primary);
 }
 
 .ex-reason {
-  color: #DC2626;
-  font-size: 10px;
-  font-weight: 600;
+  color: var(--ink-muted);
 }
 
 /* PRO CLINIC ENROLL */
 .pro-clinic-enroll-card {
   margin-top: 6px;
-  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
-  border: 1.5px solid #FCD34D;
-  border-radius: 14px;
-  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 9px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-}
-
-:global([data-theme='dark']) .pro-clinic-enroll-card {
-  background: rgba(45, 30, 10, 0.6);
-  border-color: rgba(245, 158, 11, 0.4);
 }
 
 .enroll-left {
@@ -2447,42 +2399,30 @@ function generateMagicArt() {
 }
 
 .enroll-icon {
-  font-size: 24px;
+  font-size: 18px;
 }
 
 .enroll-title {
-  font-size: 12px;
-  font-weight: 800;
-  color: #92400E;
-}
-
-:global([data-theme='dark']) .enroll-title {
-  color: #FCD34D;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-primary);
 }
 
 .enroll-sub {
   font-size: 10px;
-  color: #B45309;
+  color: var(--ink-muted);
   line-height: 1.25;
-}
-
-:global([data-theme='dark']) .enroll-sub {
-  color: #FDE68A;
 }
 
 .enroll-btn {
   font-size: 10.5px;
-  font-weight: 800;
-  color: #92400E;
-  background: #fff;
-  padding: 5px 9px;
-  border-radius: var(--radius-full);
+  font-weight: 600;
+  color: var(--ink-secondary);
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-light);
+  padding: 4px 8px;
+  border-radius: 6px;
   white-space: nowrap;
-}
-
-:global([data-theme='dark']) .enroll-btn {
-  background: #78350F;
-  color: #FDE68A;
 }
 
 /* Empty Vet State */

@@ -21,10 +21,10 @@
       </div>
 
       <!-- Emergency Alert Banner if any active lost pet -->
-      <div v-if="activeLostPet" class="emergency-banner" @click="setTab('lostfound')">
+      <div v-if="activeLostPet" class="emergency-banner" @click="goToRadarLostPet(activeLostPet)">
         <div class="alert-pulse-circle">🚨</div>
         <div class="alert-banner-text">
-          <span class="alert-title">Emergency Radar: Lost {{ activeLostPet.species }} ({{ activeLostPet.petName }})</span>
+          <span class="alert-title">Emergency 5-Mile Radar: Lost {{ activeLostPet.species }} ({{ activeLostPet.petName }})</span>
           <span class="alert-subtitle">{{ activeLostPet.location }} • Tap to dispatch help</span>
         </div>
       </div>
@@ -46,10 +46,18 @@ import { ref, computed } from 'vue';
 import TopBar from '../components/layout/TopBar.vue';
 import StoryTray from '../components/feed/StoryTray.vue';
 import PostCard from '../components/feed/PostCard.vue';
-import { activePosts, lostFoundList, setTab } from '../stores/appStore';
+import { activePosts, lostFoundList, setTab, radarMapCenter, selectedRadarPet } from '../stores/appStore';
 import { postService } from '../services';
 
 const activeSpeciesFilter = ref('all');
+
+function goToRadarLostPet(pet: any) {
+  if (pet && pet.lat && pet.lng) {
+    radarMapCenter.value = [pet.lat, pet.lng];
+  }
+  selectedRadarPet.value = pet;
+  setTab('lostfound');
+}
 
 function selectSpeciesFilter(id: string) {
   activeSpeciesFilter.value = id;

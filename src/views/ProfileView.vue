@@ -348,7 +348,7 @@
                 <span v-if="activePet" class="species-chip">{{ activePet.breed || activePet.species }}</span>
               </div>
               <span class="sub-location-line">
-                {{ activePet ? `Age: ${activePet.age || '2 yrs'} • Portland, OR` : 'Certified Pet Guardian • 2 Pets' }}
+                {{ activePet ? `Age: ${activePet.age || '2 yrs'} • Dhaka, BD` : 'Certified Pet Guardian • 2 Pets' }}
               </span>
               <p class="hero-bio-paragraph">
                 {{ currentBio }}
@@ -416,6 +416,35 @@
               <span class="m-icon">🌟</span>
               <span class="m-text">Park Legend</span>
             </div>
+          </div>
+
+          <!-- 4B. SMART QR COLLAR REALTIME LOCATION & LAST SCANNED GPS PIN -->
+          <div v-if="activePet && activePet.lastScannedGps" class="pet-gps-collar-card" id="profile-pet-gps-collar">
+            <div class="gps-collar-content">
+              <div class="gps-collar-icon-box">
+                <span class="gps-collar-ring"></span>
+                <MapPin :size="18" class="gps-collar-pin" />
+              </div>
+              <div class="gps-collar-details">
+                <div class="gps-title-row">
+                  <span class="gps-heading">Smart QR Collar • Live Location</span>
+                  <span class="gps-live-badge">GPS SYNCED</span>
+                </div>
+                <p class="gps-address-text">{{ activePet.lastScannedGps.address }}</p>
+                <div class="gps-meta-row">
+                  <span class="gps-time-text">Scanned {{ activePet.lastScannedGps.scannedAt }}</span>
+                  <span class="gps-cluster-tag">Gulshan-Banani Cluster</span>
+                </div>
+              </div>
+            </div>
+            <button 
+              id="profile-view-radar-btn"
+              type="button" 
+              class="btn-solid view-on-radar-btn"
+              @click="openPetOnRadarMap(activePet)"
+            >
+              <span>View On Radar Map 🧭</span>
+            </button>
           </div>
 
           <!-- 5. Profile Action Buttons: Digital Pet Passport -->
@@ -524,7 +553,8 @@ import {
   Plus, 
   Phone, 
   Calendar, 
-  MessageCircle 
+  MessageCircle,
+  MapPin
 } from 'lucide-vue-next';
 import PetPassportModal from '../components/profile/PetPassportModal.vue';
 import AddPetModal from '../components/profile/AddPetModal.vue';
@@ -539,8 +569,10 @@ import {
   isAddPetModalOpen,
   marketplace,
   appointments,
-  isCreateSheetOpen
+  isCreateSheetOpen,
+  radarMapCenter
 } from '../stores/appStore';
+import type { Pet } from '../types';
 
 const isPassportModalOpen = ref(false);
 const profileToast = ref<string | null>(null);
@@ -583,8 +615,15 @@ const currentBio = computed(() => {
     return 'Identity shielded with Nuzzle Ghost Mode. Exploring pet life incognito.';
   }
   if (activePet.value) return activePet.value.bio || `${activePet.value.name} is a friendly ${activePet.value.species}.`;
-  return owner.bio || 'Certified Pet Guardian • Portland, OR';
+  return owner.bio || 'Certified Pet Guardian • Dhaka, Bangladesh';
 });
+
+function openPetOnRadarMap(p: Pet) {
+  if (p.lastScannedGps) {
+    radarMapCenter.value = [p.lastScannedGps.lat, p.lastScannedGps.lng];
+  }
+  setTab('lostfound');
+}
 
 const userGridImages = computed(() => {
   const myPosts = posts.filter(p => p.ownerId === owner.id || p.ownerName === owner.displayName || pets.some(pet => pet.name === p.petName));
@@ -1923,5 +1962,140 @@ function callEmergencyHotline() {
 .register-pet-cta:hover {
   transform: translateY(-1px);
   box-shadow: 0 5px 14px rgba(148, 125, 238, 0.4);
+}
+
+/* Smart QR Collar GPS Location Card */
+.pet-gps-collar-card {
+  margin-top: 14px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(6, 78, 59, 0.12));
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gps-collar-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gps-collar-icon-box {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.gps-collar-pin {
+  color: #10b981;
+  z-index: 2;
+}
+
+.gps-collar-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 16px;
+  border: 1.5px solid #10b981;
+  animation: gps-ring 2s infinite;
+  opacity: 0.7;
+}
+
+@keyframes gps-ring {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 0.3; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
+
+.gps-collar-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.gps-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.gps-heading {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #10b981;
+}
+
+.gps-live-badge {
+  background: #10b981;
+  color: #064e3b;
+  font-size: 0.5625rem;
+  font-weight: 900;
+  padding: 1px 5px;
+  border-radius: 9999px;
+  letter-spacing: 0.04em;
+}
+
+.gps-address-text {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:root[class~="dark"] .gps-address-text {
+  color: #f3f4f6;
+}
+
+.gps-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gps-time-text {
+  font-size: 0.6875rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.gps-cluster-tag {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #059669;
+  background: rgba(16, 185, 129, 0.15);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.view-on-radar-btn {
+  width: 100%;
+  padding: 9px 14px;
+  background: #10b981;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.775rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.view-on-radar-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
 }
 </style>

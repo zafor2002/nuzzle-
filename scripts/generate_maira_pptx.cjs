@@ -528,11 +528,11 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, subtitleText, spea
 }
 
 // ==============================================================================
-// SLIDE 6: ENTERPRISE AI INTEGRATION ARCHITECTURE DIAGRAM (NEW!)
+// SLIDE 5: ENTERPRISE AI INTEGRATION ARCHITECTURE DIAGRAM (NEW!)
 // ==============================================================================
 {
   const slide = createBaseSlide(
-    6,
+    5,
     'Enterprise AI Architecture',
     'Multi-Model Intelligence Pipeline & Managed RAG Flow',
     'Pre-Inference Guardrails (<2ms) ➔ Hugging Face Vision Biometrics (~800ms) ➔ Gigalogy MAIRA Managed RAG (~450ms).',
@@ -1215,7 +1215,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, subtitleText, spea
   });
 
   slide.addText('SRC/LIB/MAIRA/MAIRA-CLIENT.TS (PRODUCTION INGRESS)', {
-    x: 1.05, y: 2.15, w: 5.15, h: 0.25,
+    x: 1.05, y: 2.15, w: 5.15, h: 0.20,
     fontSize: 9.5, fontFace: 'Courier New', bold: true, color: '#38BDF8'
   });
 
@@ -1250,7 +1250,7 @@ function createBaseSlide(slideNumber, eyebrowText, titleText, subtitleText, spea
 }`;
 
   slide.addText(codeSnippet, {
-    x: 1.05, y: 2.45, w: 5.15, h: 4.1,
+    x: 1.05, y: 2.48, w: 5.15, h: 4.05,
     fontSize: 8.5, fontFace: 'Courier New', color: COLORS.codeText, lineSpacing: 12
   });
 

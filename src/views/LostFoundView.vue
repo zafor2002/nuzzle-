@@ -2,7 +2,39 @@
   <div class="lostfound-view">
     <TopBar title="🚨 Lost & Found Emergency Center" />
 
-    <div class="lf-scroll-body">
+    <!-- Mode Toggle: Live Radar Map vs AI Bulletins -->
+    <div class="lf-mode-tabs-bar">
+      <div class="lf-mode-segmented">
+        <button 
+          id="lf-tab-radar-map"
+          class="mode-btn" 
+          :class="{ active: activeViewMode === 'map' }"
+          @click="activeViewMode = 'map'"
+        >
+          <Radio :size="14" class="mode-icon-pulse" />
+          <span>Live Radar Map</span>
+          <span class="live-indicator-pill">LIVE</span>
+        </button>
+        <button 
+          id="lf-tab-ai-bulletins"
+          class="mode-btn" 
+          :class="{ active: activeViewMode === 'bulletins' }"
+          @click="activeViewMode = 'bulletins'"
+        >
+          <Camera :size="14" />
+          <span>AI Bulletins</span>
+          <span class="bulletins-count-badge">{{ lostFoundList.length }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 1. Realtime 5-Mile Interactive Radar Map -->
+    <div v-show="activeViewMode === 'map'" class="radar-map-container-pane">
+      <PetRadarMap />
+    </div>
+
+    <!-- 2. AI Biometric Sighting Bulletins List -->
+    <div v-show="activeViewMode === 'bulletins'" class="lf-scroll-body">
       <!-- Top Alert Notice -->
       <div class="lf-header-card">
         <div class="lf-shield-icon">🚨</div>
@@ -303,6 +335,14 @@
                 <span v-if="item.isClaimed" class="claimed-chip-badge">Locked 🔒</span>
               </div>
               <span class="pet-species-breed">{{ item.species }} • {{ item.breed || 'Unknown breed' }}</span>
+
+              <!-- 5-Mile Geo-Blast Broadcast Active Beacon Badge -->
+              <div v-if="item.geoBlastActive" class="geo-blast-active-badge">
+                <span class="blast-beacon-dot"></span>
+                <span class="blast-badge-text">
+                  ⚡ 5-Mile Geo-Blast Active • {{ item.geoBlastRespondersCount || 86 }} Responders
+                </span>
+              </div>
               
               <div class="location-row">
                 <MapPin :size="14" class="loc-icon" />
@@ -316,39 +356,65 @@
           <!-- Contact & Action Footer -->
           <div class="alert-actions-footer">
             <div class="contact-name-info">
-              <span class="c-label">Reported by:</span>
+              <span class="c-label">Reported by</span>
               <span class="c-val">{{ item.contactName }}</span>
             </div>
 
             <div class="action-buttons-group">
+              <!-- Locate On Radar Map -->
+              <button 
+                v-if="item.lat && item.lng"
+                type="button"
+                class="btn-icon-subtle locate-btn"
+                @click="locateOnMap(item)"
+                title="View on Radar Map"
+              >
+                <MapPin :size="13" />
+                <span class="btn-subtle-text">Map</span>
+              </button>
+
               <!-- Call button -->
-              <button class="btn-outline contact-call-btn" @click="callOwner(item.contactPhone)">
-                <Phone :size="14" />
-                <span>Call</span>
+              <button class="btn-icon-subtle contact-call-btn" @click="callOwner(item.contactPhone)" title="Call">
+                <Phone :size="13" />
+                <span class="btn-subtle-text">Call</span>
               </button>
 
               <!-- Message button -->
-              <button class="btn-outline contact-chat-btn" @click="chatOwner(item)">
-                <MessageCircle :size="14" />
-                <span>Message</span>
+              <button class="btn-icon-subtle contact-chat-btn" @click="chatOwner(item)" title="Chat">
+                <MessageCircle :size="13" />
+                <span class="btn-subtle-text">Chat</span>
+              </button>
+
+              <!-- Geo-Blast Broadcast Action Button (For Lost Pets) -->
+              <button 
+                v-if="item.status === 'lost' && !item.isClaimed"
+                type="button"
+                class="geo-blast-mini-btn"
+                :class="{ 'blast-active': item.geoBlastActive }"
+                @click="openGeoBlast(item)"
+                title="Dispatch ৳499 WhatsApp & Push broadcast"
+              >
+                <Radio :size="12" />
+                <span>{{ item.geoBlastActive ? 'Boost' : 'Blast' }}</span>
               </button>
 
               <!-- CLAIM / LOCK BUTTON -->
               <button 
                 v-if="!item.isClaimed"
-                class="btn-solid claim-btn"
+                class="claim-btn"
                 @click="openClaimModal(item)"
               >
-                <ShieldCheck :size="15" />
-                <span>Claim / Book Help</span>
+                <ShieldCheck :size="13" />
+                <span>Claim / Help</span>
               </button>
               
               <button 
                 v-else
-                class="btn-solid claimed-active-btn"
+                class="claimed-active-btn"
                 @click="chatOwner(item)"
               >
-                <span>Coordinate Care 💬</span>
+                <MessageCircle :size="13" />
+                <span>Coordinate</span>
               </button>
             </div>
           </div>
@@ -443,24 +509,33 @@
         {{ lfToast }}
       </div>
     </transition>
+
+    <!-- 5-Mile Emergency Geo-Blast Modal -->
+    <GeoBlastModal />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { MapPin, Phone, MessageCircle, ShieldCheck, X, Camera, Sparkles } from 'lucide-vue-next';
+import { MapPin, Phone, MessageCircle, ShieldCheck, X, Camera, Sparkles, Radio } from 'lucide-vue-next';
 import TopBar from '../components/layout/TopBar.vue';
+import PetRadarMap from '../components/map/PetRadarMap.vue';
+import GeoBlastModal from '../components/lostfound/GeoBlastModal.vue';
 import { 
   lostFoundList, 
   openChatWith, 
   isCreateSheetOpen, 
   claimLostFoundPet, 
-  releaseLostFoundClaim 
+  releaseLostFoundClaim,
+  openGeoBlastModal,
+  radarMapCenter,
+  selectedRadarPet
 } from '../stores/appStore';
 import type { LostFoundPost } from '../types';
 
 import { lostFoundService } from '../services';
 
+const activeViewMode = ref<'map' | 'bulletins'>('map');
 const filterStatus = ref<'all' | 'lost' | 'found'>('all');
 const claimModalItem = ref<LostFoundPost | null>(null);
 const selectedClaimType = ref<'owner_reunited' | 'volunteer_rescue' | 'foster_care'>('volunteer_rescue');
@@ -593,6 +668,18 @@ function showToast(msg: string) {
     lfToast.value = null;
   }, 2400);
 }
+
+function locateOnMap(item: LostFoundPost) {
+  if (item.lat && item.lng) {
+    radarMapCenter.value = [item.lat, item.lng];
+  }
+  selectedRadarPet.value = item;
+  activeViewMode.value = 'map';
+}
+
+function openGeoBlast(item: LostFoundPost) {
+  openGeoBlastModal(item);
+}
 </script>
 
 <style scoped>
@@ -600,27 +687,212 @@ function showToast(msg: string) {
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Mode Switch Segmented Header */
+.lf-mode-tabs-bar {
+  padding: 6px 14px 6px;
+  background: var(--bg-surface, #fff);
+  border-bottom: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.06));
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.lf-mode-segmented {
+  display: flex;
+  background: rgba(0, 0, 0, 0.04);
+  padding: 3px;
+  border-radius: 10px;
+  gap: 4px;
+}
+
+:root[class~="dark"] .lf-mode-tabs-bar {
+  background: #111827;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+:root[class~="dark"] .lf-mode-segmented {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mode-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: var(--ink-muted, #64748b);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mode-btn:hover {
+  color: var(--ink-primary, #0f172a);
+}
+
+.mode-btn.active {
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+:root[class~="dark"] .mode-btn.active {
+  background: #1e293b;
+  color: #f8fafc;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.mode-icon-pulse {
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.9; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.9; }
+}
+
+.live-indicator-pill {
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.5625rem;
+  font-weight: 900;
+  padding: 1px 5px;
+  border-radius: 9999px;
+  letter-spacing: 0.04em;
+}
+
+.bulletins-count-badge {
+  background: rgba(0, 0, 0, 0.06);
+  color: #64748b;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 9999px;
+}
+
+.mode-btn.active .bulletins-count-badge {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+:root[class~="dark"] .bulletins-count-badge {
+  background: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+}
+
+:root[class~="dark"] .mode-btn.active .bulletins-count-badge {
+  background: rgba(255, 255, 255, 0.18);
+  color: #f8fafc;
+}
+
+/* Map Pane Container */
+.radar-map-container-pane {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Geo-Blast Badge on Cards */
+.geo-blast-active-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.725rem;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+.blast-beacon-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ef4444;
+  animation: pulse-beacon 1.2s infinite;
+}
+
+@keyframes pulse-beacon {
+  0% { transform: scale(0.8); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.4; }
+  100% { transform: scale(0.8); opacity: 1; }
+}
+
+.locate-btn {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  font-size: 0.775rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.locate-btn:hover {
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.geo-blast-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  font-size: 0.775rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+  transition: all 0.2s;
+}
+
+.geo-blast-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.geo-blast-btn.blast-active {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
 }
 
 .lf-scroll-body {
   flex: 1;
   overflow-y: auto;
-  padding: 12px 16px 28px;
+  padding: 12px 16px 84px;
 }
 
 .lf-header-card {
-  background: linear-gradient(135deg, #FFF1F2, #FFE4E6);
-  border: 1.5px solid #FDA4AF;
-  border-radius: var(--radius-lg);
-  padding: 14px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: 14px;
+  padding: 12px 14px;
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 }
 
 .lf-shield-icon {
-  font-size: 26px;
+  font-size: 22px;
 }
 
 .lf-header-text {
@@ -628,50 +900,63 @@ function showToast(msg: string) {
 }
 
 .lf-title {
-  font-size: 14px;
-  font-weight: 800;
-  color: #9F1239;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink-primary, #0f172a);
 }
 
 .lf-desc {
-  font-size: 11.5px;
-  color: #BE123C;
+  font-size: 11px;
+  color: var(--ink-muted, #64748b);
   line-height: 1.35;
 }
 
 .report-fast-btn {
-  background: #E11D48;
-  font-size: 12.5px;
-  padding: 8px 14px;
-  border-radius: var(--radius-full);
+  background: #e11d48;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.report-fast-btn:hover {
+  background: #be123c;
 }
 
 .alerts-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   margin-top: 8px;
 }
 
 .alert-card {
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: 14px;
   overflow: hidden;
   position: relative;
   transition: all 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 }
 
 .alert-card.claimed-card {
-  border-color: #34D399;
-  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.15);
+  border-color: #a7f3d0;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.08);
 }
 
 .alert-status-header {
-  padding: 8px 14px;
+  padding: 7px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 11.5px;
-  font-weight: 800;
-  letter-spacing: 0.03em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .status-left-label {
@@ -681,27 +966,27 @@ function showToast(msg: string) {
 }
 
 .alert-status-header.lost {
-  background: #FFE4E6;
-  color: #BE123C;
-  border-bottom: 1px solid #FECDD3;
+  background: rgba(244, 63, 94, 0.08);
+  color: #e11d48;
+  border-bottom: 1px solid rgba(244, 63, 94, 0.12);
 }
 
 .alert-status-header.found {
-  background: #D1FAE5;
-  color: #047857;
-  border-bottom: 1px solid #A7F3D0;
+  background: rgba(16, 185, 129, 0.08);
+  color: #059669;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.12);
 }
 
 .alert-status-header.claimed {
-  background: #ECFDF5;
-  color: #065F46;
-  border-bottom: 1.5px solid #6EE7B7;
+  background: rgba(99, 102, 241, 0.08);
+  color: #4f46e5;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.12);
 }
 
 .alert-status-header.reunited {
-  background: linear-gradient(135deg, #FEF3C7, #EDE9FE);
-  color: #7C3AED;
-  border-bottom: 1.5px solid #C4B5FD;
+  background: rgba(245, 158, 11, 0.08);
+  color: #d97706;
+  border-bottom: 1px solid rgba(245, 158, 11, 0.12);
 }
 
 /* Claimed Banner Strip */
@@ -853,59 +1138,155 @@ function showToast(msg: string) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
-  background: var(--bg-card-subtle);
-  border-top: 1px solid var(--border-light);
-  gap: 6px;
+  padding: 8px 12px;
+  background: var(--bg-card-subtle, #f8fafc);
+  border-top: 1px solid var(--border-light, #e2e8f0);
+  gap: 8px;
 }
 
 .contact-name-info {
   display: flex;
   flex-direction: column;
-  min-width: 75px;
+  min-width: 0;
+  flex: 1;
 }
 
 .c-label {
-  font-size: 10px;
-  color: var(--ink-muted);
+  font-size: 9.5px;
+  color: var(--ink-muted, #94a3b8);
+  font-weight: 500;
+  line-height: 1.2;
 }
 
 .c-val {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
-  color: var(--ink-primary);
+  color: var(--ink-primary, #1e293b);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 85px;
 }
 
 .action-buttons-group {
   display: flex;
-  gap: 6px;
+  gap: 5px;
   align-items: center;
+  flex-shrink: 0;
 }
 
-.contact-call-btn, .contact-chat-btn {
-  padding: 6px 10px;
-  font-size: 12px;
-  border-radius: var(--radius-full);
+.btn-icon-subtle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 5px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap !important;
+}
+
+.btn-icon-subtle:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.btn-subtle-text {
+  font-size: 11px;
+}
+
+.geo-blast-mini-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap !important;
+  transition: all 0.15s ease;
+}
+
+.geo-blast-mini-btn:hover {
+  background: #fee2e2;
+}
+
+.geo-blast-mini-btn.blast-active {
+  background: #fffbeb;
+  color: #d97706;
+  border-color: #fde68a;
 }
 
 .claim-btn {
-  padding: 6px 12px;
-  font-size: 12px;
-  border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #10B981, #059669);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 11px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ffffff;
+  background: #059669;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap !important;
+  box-shadow: 0 1px 3px rgba(5, 150, 105, 0.2);
+  transition: all 0.15s ease;
+}
+
+.claim-btn:hover {
+  background: #047857;
+  transform: translateY(-1px);
 }
 
 .claimed-active-btn {
-  padding: 6px 12px;
-  font-size: 12px;
-  border-radius: var(--radius-full);
-  background: var(--brand-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 11px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ffffff;
+  background: #6366f1;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap !important;
+  box-shadow: 0 1px 3px rgba(99, 102, 241, 0.2);
+  transition: all 0.15s ease;
+}
+
+.claimed-active-btn:hover {
+  background: #4f46e5;
+  transform: translateY(-1px);
+}
+
+:root[class~="dark"] .alert-actions-footer {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+:root[class~="dark"] .btn-icon-subtle {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+}
+
+:root[class~="dark"] .btn-icon-subtle:hover {
+  background: #334155;
+  color: #ffffff;
 }
 
 /* CLAIM MODAL */

@@ -215,6 +215,91 @@
             List in Pet Marketplace 🛍️
           </button>
         </div>
+
+        <!-- 5. PET REEL / VIDEO FORM -->
+        <div v-else-if="selectedType === 'reel'" class="form-section">
+          <div class="field-group">
+            <label class="field-label">Reel Title</label>
+            <input v-model="reelTitle" placeholder="e.g. Midnight Zoomies Champion 🐾" class="form-input" />
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Caption & Tags</label>
+            <textarea v-model="reelCaption" placeholder="Tell the story behind this moment... #zoomies #dhakapets" rows="2" class="form-textarea"></textarea>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Audio Track</label>
+            <select v-model="reelAudioTrack" class="form-select">
+              <option value="Original Pet Audio • Nuzzle Dhaka">🎵 Original Pet Audio • Nuzzle Dhaka</option>
+              <option value="Upbeat Whistle & Paws 🎶">🎶 Upbeat Whistle & Paws</option>
+              <option value="Lo-Fi Park Stroll Beats 🐾">🐾 Lo-Fi Park Stroll Beats</option>
+              <option value="Cat Meow Symphony Remixed 🐱">🐱 Cat Meow Symphony Remixed</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Video Gradient Theme</label>
+            <div class="preset-images-row">
+              <button 
+                type="button"
+                v-for="g in reelGradients" 
+                :key="g.name"
+                class="preset-thumb-btn gradient-thumb"
+                :style="{ background: g.style }"
+                @click="selectedReelGradient = g.style"
+              >
+                <span>{{ g.name }}</span>
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-solid submit-btn" @click="handleCreateReel">
+            Publish Pet Reel 🎬
+          </button>
+        </div>
+
+        <!-- 6. ADOPTION LISTING FORM -->
+        <div v-else-if="selectedType === 'adoption'" class="form-section">
+          <div class="field-row">
+            <div class="field-half">
+              <label class="field-label">Pet Name</label>
+              <input v-model="adoptPetName" placeholder="e.g. Bella" class="form-input" />
+            </div>
+            <div class="field-half">
+              <label class="field-label">Species & Breed</label>
+              <input v-model="adoptBreed" placeholder="e.g. Deshi Cat" class="form-input" />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-half">
+              <label class="field-label">Age</label>
+              <input v-model="adoptAge" placeholder="e.g. 5 months" class="form-input" />
+            </div>
+            <div class="field-half">
+              <label class="field-label">Gender</label>
+              <select v-model="adoptGender" class="form-select">
+                <option value="Boy">Boy ♂</option>
+                <option value="Girl">Girl ♀</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Dhaka Shelter / Location</label>
+            <input v-model="adoptLocation" placeholder="e.g. Banani Rd 11 / PAW Rescue Shelter" class="form-input" />
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Story & Temperament</label>
+            <textarea v-model="adoptDescription" placeholder="Friendly, vaccinated, loves cuddling..." rows="2" class="form-textarea"></textarea>
+          </div>
+
+          <button class="btn-solid submit-btn" @click="handleCreateAdoption">
+            List Rescue For Adoption 🏡
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -232,14 +317,18 @@ import {
   addHealthRecord, 
   marketplace, 
   generateAiCaption,
-  setTab 
+  setTab,
+  createNewReel,
+  createNewAdoptionListing
 } from '../../stores/appStore';
 
-const selectedType = ref<'post' | 'lostfound' | 'health' | 'market'>('post');
+const selectedType = ref<'post' | 'lostfound' | 'health' | 'market' | 'reel' | 'adoption'>('post');
 
 const createTypes = [
   { id: 'post', label: 'Post', emoji: '📸' },
+  { id: 'reel', label: 'Reel', emoji: '🎬' },
   { id: 'lostfound', label: 'Lost & Found', emoji: '🚨' },
+  { id: 'adoption', label: 'Adoption', emoji: '🏡' },
   { id: 'health', label: 'Health Log', emoji: '🩺' },
   { id: 'market', label: 'Sell Gear', emoji: '🛍️' }
 ];
@@ -341,13 +430,70 @@ function handleCreateMarket() {
     sellerType: 'individual',
     isVerifiedShop: false,
     shopBadge: '👤 Pet Parent',
-    location: 'Portland, OR',
+    location: 'Dhaka, Bangladesh',
     status: 'available',
     stock: 1
   });
   marketTitle.value = '';
   isCreateSheetOpen.value = false;
   setTab('market');
+}
+
+// Reel form
+const reelTitle = ref('');
+const reelCaption = ref('');
+const reelAudioTrack = ref('Original Pet Audio • Nuzzle Dhaka');
+const selectedReelGradient = ref('linear-gradient(180deg, #180b2a 0%, #31104a 50%, #0d0617 100%)');
+const reelGradients = [
+  { name: 'Cosmic', style: 'linear-gradient(180deg, #180b2a 0%, #31104a 50%, #0d0617 100%)' },
+  { name: 'Emerald', style: 'linear-gradient(180deg, #022c22 0%, #064e3b 50%, #022c22 100%)' },
+  { name: 'Sunset', style: 'linear-gradient(180deg, #431407 0%, #7c2d12 50%, #1c1917 100%)' }
+];
+
+function handleCreateReel() {
+  if (!reelTitle.value.trim() && !reelCaption.value.trim()) return;
+  createNewReel({
+    videoTitle: reelTitle.value.trim() || 'Dhaka Pet Joy',
+    caption: reelCaption.value.trim() || 'Daily moments on Nuzzle!',
+    audioTrack: reelAudioTrack.value,
+    videoGradient: selectedReelGradient.value
+  });
+  reelTitle.value = '';
+  reelCaption.value = '';
+  isCreateSheetOpen.value = false;
+  setTab('reels');
+}
+
+// Adoption form
+const adoptPetName = ref('');
+const adoptBreed = ref('');
+const adoptAge = ref('6 Months');
+const adoptGender = ref<'Boy' | 'Girl'>('Boy');
+const adoptLocation = ref('Dhaka, Bangladesh');
+const adoptDescription = ref('');
+
+function handleCreateAdoption() {
+  if (!adoptPetName.value.trim()) return;
+  createNewAdoptionListing({
+    name: adoptPetName.value.trim(),
+    species: adoptBreed.value.toLowerCase().includes('cat') ? 'Cat' : 'Dog',
+    breed: adoptBreed.value.trim() || 'Indie Companion',
+    age: adoptAge.value,
+    gender: adoptGender.value,
+    description: adoptDescription.value.trim() || 'Healthy, loving rescue ready for adoption.',
+    imageUrl: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=800&auto=format&fit=crop&q=80',
+    location: adoptLocation.value.trim() || 'Dhaka, Bangladesh',
+    shelterName: 'Nuzzle Verified Rescue Hub',
+    fee: 'Free Adoption',
+    temperament: ['Playful', 'Gentle', 'Vaccinated'],
+    isVaccinated: true,
+    isNeutered: true
+  });
+  adoptPetName.value = '';
+  adoptBreed.value = '';
+  adoptDescription.value = '';
+  isCreateSheetOpen.value = false;
+  setTab('adoption');
 }
 </script>
 

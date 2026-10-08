@@ -498,7 +498,7 @@ function handlePublishListing() {
 .market-scroll-body {
   flex: 1;
   overflow-y: auto;
-  padding: 10px 12px 30px;
+  padding: 10px 12px 84px;
 }
 
 /* 1. Search & Action Row */

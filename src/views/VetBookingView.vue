@@ -172,7 +172,7 @@ function confirmBooking(vetId: string) {
 .vet-scroll-body {
   flex: 1;
   overflow-y: auto;
-  padding: 12px 16px 28px;
+  padding: 12px 16px 84px;
 }
 
 .clinic-portal-banner {

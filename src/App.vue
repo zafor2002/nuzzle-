@@ -32,7 +32,7 @@
       </div>
 
       <!-- Bottom Navigation -->
-      <BottomNav v-if="currentTab !== 'reels' && currentTab !== 'auth' && currentTab !== 'clinic-rx'" />
+      <BottomNav v-if="currentTab !== 'auth' && currentTab !== 'clinic-rx'" />
 
       <!-- Overlays & Modals -->
       <StoryViewerModal />
@@ -75,6 +75,9 @@ import { currentTab, initSupabaseAuthListener, syncLiveBackendData } from './sto
 onMounted(() => {
   initSupabaseAuthListener();
   syncLiveBackendData();
+  if (typeof window !== 'undefined') {
+    (window as any).setAppTab = (t: any) => { currentTab.value = t; };
+  }
 });
 </script>
 

@@ -79,7 +79,81 @@ export const owner = reactive<Owner>({
   followingCount: 0
 });
 
-export const pets = reactive<Pet[]>([]);
+export const pets = reactive<Pet[]>([
+  {
+    id: 'pet_1',
+    ownerId: 'owner_me',
+    name: 'Waffles',
+    species: 'Dog',
+    breed: 'Golden Retriever',
+    bio: 'Champion stick retriever & professional treat connoisseur 🐾',
+    age: '2.5 Years',
+    avatarUrl: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&auto=format&fit=crop&q=80',
+    isAnonymous: false,
+    weight: '28 kg',
+    microchipId: 'NZ-BD-9041-8842',
+    postsCount: 14,
+    followersCount: 382,
+    aiPersonality: 'Gentle, friendly, high food motivation',
+    energyLevel: 'High Zoomies',
+    isProMember: true,
+    lastScannedGps: {
+      lat: 23.7937,
+      lng: 90.4043,
+      address: 'Road 11, Banani, Dhaka (Near Coffee Glory)',
+      scannedAt: 'Today, 11:42 AM'
+    }
+  },
+  {
+    id: 'pet_2',
+    ownerId: 'owner_me',
+    name: 'Mochi',
+    species: 'Cat',
+    breed: 'Persian Blue',
+    bio: 'Queen of the sunbeam & biscuit maker supreme 👑',
+    age: '1.5 Years',
+    avatarUrl: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200&auto=format&fit=crop&q=80',
+    isAnonymous: false,
+    weight: '4.2 kg',
+    microchipId: 'NZ-BD-9041-2199',
+    postsCount: 8,
+    followersCount: 215,
+    aiPersonality: 'Regal, calm, lap cat',
+    energyLevel: 'Low & Chill',
+    isProMember: false,
+    lastScannedGps: {
+      lat: 23.7925,
+      lng: 90.4167,
+      address: 'Gulshan-2 Lake Park, Dhaka',
+      scannedAt: 'Yesterday, 04:15 PM'
+    }
+  }
+]);
+
+// 🚨 Emergency 5-Mile Geo-Blast & Radar Map State
+export const isGeoBlastModalOpen = ref(false);
+export const activeLostPetForBlast = ref<LostFoundPost | null>(null);
+export const radarMapCenter = ref<[number, number]>([23.7937, 90.4066]); // Dhaka Banani
+export const selectedRadarPet = ref<LostFoundPost | null>(null);
+
+export function openGeoBlastModal(pet: LostFoundPost) {
+  activeLostPetForBlast.value = pet;
+  isGeoBlastModalOpen.value = true;
+}
+
+export function closeGeoBlastModal() {
+  isGeoBlastModalOpen.value = false;
+  activeLostPetForBlast.value = null;
+}
+
+export function broadcastGeoBlast(petId: string, radiusKm: number = 5) {
+  const item = lostFoundList.find(p => p.id === petId);
+  if (item) {
+    item.geoBlastActive = true;
+    item.geoBlastRadiusKm = radiusKm;
+    item.geoBlastRespondersCount = Math.floor(Math.random() * 40) + 75;
+  }
+}
 export const stories = reactive<Story[]>([...initialStories]);
 export const posts = reactive<Post[]>([...initialPosts]);
 export const reels = reactive<Reel[]>([...initialReels]);
@@ -1075,6 +1149,43 @@ export function cancelAdoptionClaim(petId: string) {
 
 export function markAllNotificationsAsRead() {
   notifications.forEach(n => n.isRead = true);
+}
+
+export function createNewReel(data: {
+  videoTitle: string;
+  caption: string;
+  audioTrack?: string;
+  videoGradient?: string;
+  videoUrl?: string;
+  petName?: string;
+}) {
+  const newReel: Reel = {
+    id: `reel_${Date.now()}`,
+    creatorId: owner.id,
+    creatorName: owner.displayName,
+    creatorAvatar: owner.avatarUrl,
+    petName: data.petName || pets[0]?.name || 'Pet',
+    videoUrl: data.videoUrl || 'https://assets.mixkit.co/videos/preview/mixkit-playful-cat-lying-on-its-back-42861-large.mp4',
+    caption: data.caption,
+    videoTitle: data.videoTitle || 'Pet Life Clip',
+    videoGradient: data.videoGradient || 'linear-gradient(180deg, #180b2a 0%, #31104a 50%, #0d0617 100%)',
+    audioTrack: data.audioTrack || 'Original Pet Audio • Nuzzle Tracks',
+    likesCount: 1,
+    commentsCount: 0,
+    sharesCount: 0,
+    isLiked: false,
+    isSaved: false,
+  };
+  reels.unshift(newReel);
+}
+
+export function createNewAdoptionListing(data: Omit<AdoptionListing, 'id' | 'status'>) {
+  const newListing: AdoptionListing = {
+    id: `adopt_${Date.now()}`,
+    status: 'available',
+    ...data
+  };
+  adoptions.unshift(newListing);
 }
 
 // Marketplace Store Actions
