@@ -32,10 +32,15 @@
     <div class="media-container" @dblclick="handleDoubleTap">
       <img :src="post.mediaUrls[0]" :alt="post.caption" class="media-img" @error="onMediaError" />
 
-      <!-- Minimal Location Stamp -->
+      <!-- Minimal Location Stamp (Top Left) -->
       <div v-if="post.location" class="location-pill">
         <MapPin :size="10" />
         <span>{{ post.location }}</span>
+      </div>
+
+      <!-- Minimal Badge Stamp (Top Right) -->
+      <div v-if="post.badgeText" class="badge-pill" :class="'pill-' + (post.badgeType || 'default')">
+        <span>{{ post.badgeText }}</span>
       </div>
 
       <!-- Minimal Reaction Pop -->
@@ -69,6 +74,18 @@
         >
           #{{ tag }}
         </span>
+      </div>
+
+      <!-- Minimal Action Chip -->
+      <div v-if="post.actionButton" class="minimal-action-wrap">
+        <button 
+          class="minimal-action-btn" 
+          :class="'btn-' + (post.badgeType || 'default')"
+          @click="handlePostCta(post.actionButton)"
+        >
+          <span>{{ post.actionButton.label }}</span>
+          <ChevronRight :size="12" class="action-chevron" />
+        </button>
       </div>
     </div>
 
@@ -168,7 +185,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { MoreHorizontal, MessageCircle, Send, Bookmark, MapPin } from 'lucide-vue-next';
+import { MoreHorizontal, MessageCircle, Send, Bookmark, MapPin, ChevronRight } from 'lucide-vue-next';
 import type { Post, PetReactionType } from '../../types';
 import { 
   reactToPost, 
@@ -176,7 +193,10 @@ import {
   openComments, 
   activeProfileId, 
   setTab,
-  owner
+  owner,
+  lostFoundList,
+  radarMapCenter,
+  selectedRadarPet
 } from '../../stores/appStore';
 
 const props = defineProps<{
@@ -283,6 +303,30 @@ function exploreTag(_tag: string) {
   setTab('explore');
 }
 
+function handlePostCta(action: { label: string; actionTab: any; subtext?: string }) {
+  if (action.actionTab === 'lostfound') {
+    const foundPet = lostFoundList.find(p => 
+      p.id === props.post.petId || 
+      p.id === 'lf_rusty' ||
+      (props.post.petName && p.petName.toLowerCase().includes('rusty')) ||
+      p.status === 'lost'
+    );
+    if (foundPet) {
+      if (foundPet.lat && foundPet.lng) {
+        radarMapCenter.value = [foundPet.lat, foundPet.lng];
+      }
+      selectedRadarPet.value = foundPet;
+    }
+    setTab('lostfound');
+  } else if (action.actionTab === 'vets') {
+    setTab('vets');
+  } else if (action.actionTab === 'ai') {
+    setTab('ai');
+  } else {
+    setTab(action.actionTab);
+  }
+}
+
 function sharePost(post: Post) {
   if (navigator.share) {
     navigator.share({
@@ -314,7 +358,7 @@ function getSpeciesEmoji(breed?: string): string {
   if (!breed) return '🐾';
   const b = breed.toLowerCase();
   if (b.includes('cat') || b.includes('kitten') || b.includes('persian') || b.includes('bengal')) return '🐱';
-  if (b.includes('bird') || b.includes('parrot') || b.includes('kiwi')) return '🦜';
+  if (b.includes('bird') || b.includes('parrot') || b.includes('kiwi') || b.includes('conure')) return '🦜';
   if (b.includes('rabbit') || b.includes('bunny') || b.includes('lop')) return '🐰';
   return '🐕';
 }
@@ -708,5 +752,111 @@ function getPetThought(post: Post): string {
   font-size: 13px;
   margin-left: 2px;
   filter: drop-shadow(0 1px 2px rgba(245, 158, 11, 0.4));
+}
+
+/* Minimal Badge Stamp on Photo */
+.badge-pill {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  letter-spacing: -0.01em;
+}
+
+.badge-pill.pill-emergency {
+  background: rgba(220, 38, 38, 0.85);
+}
+
+.badge-pill.pill-vet,
+.badge-pill.pill-reunion {
+  background: rgba(5, 150, 105, 0.85);
+}
+
+.badge-pill.pill-clinic {
+  background: rgba(109, 40, 217, 0.85);
+}
+
+.badge-pill.pill-default {
+  background: rgba(26, 18, 42, 0.7);
+}
+
+/* Minimal Action Chip */
+.minimal-action-wrap {
+  margin-top: 8px;
+  display: flex;
+}
+
+.minimal-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-light);
+  background: var(--bg-card-subtle);
+  color: var(--ink-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.minimal-action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.action-chevron {
+  transition: transform 0.15s ease;
+}
+
+.minimal-action-btn:hover .action-chevron {
+  transform: translateX(2px);
+}
+
+.minimal-action-btn.btn-emergency {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #DC2626;
+}
+
+:global([data-theme='dark']) .minimal-action-btn.btn-emergency {
+  background: rgba(239, 68, 68, 0.16);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #F87171;
+}
+
+.minimal-action-btn.btn-vet,
+.minimal-action-btn.btn-reunion {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.25);
+  color: #059669;
+}
+
+:global([data-theme='dark']) .minimal-action-btn.btn-vet,
+:global([data-theme='dark']) .minimal-action-btn.btn-reunion {
+  background: rgba(16, 185, 129, 0.16);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #34D399;
+}
+
+.minimal-action-btn.btn-clinic {
+  background: rgba(124, 58, 237, 0.08);
+  border-color: rgba(124, 58, 237, 0.25);
+  color: #7C3AED;
+}
+
+:global([data-theme='dark']) .minimal-action-btn.btn-clinic {
+  background: rgba(124, 58, 237, 0.16);
+  border-color: rgba(124, 58, 237, 0.35);
+  color: #A78BFA;
 }
 </style>

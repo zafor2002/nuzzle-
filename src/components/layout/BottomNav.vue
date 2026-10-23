@@ -83,6 +83,8 @@ import { currentTab, setTab, isCreateSheetOpen, owner } from '../../stores/appSt
 .floating-island-nav {
   pointer-events: auto;
   height: 62px;
+  max-width: 500px;
+  margin: 0 auto;
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(24px) saturate(200%);
   -webkit-backdrop-filter: blur(24px) saturate(200%);

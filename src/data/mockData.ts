@@ -93,13 +93,13 @@ export const initialStories: Story[] = [
     id: 'story_3',
     creatorId: 'user_kiwi',
     creatorName: 'Kiwi The Conure',
-    creatorAvatar: 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=200&auto=format&fit=crop&q=80',
+    creatorAvatar: '/pet_bird_avatar.jpg',
     petName: 'Kiwi (Green Cheek Conure)',
     hasUnseen: true,
     segments: [
       {
         id: 'seg_4',
-        mediaUrl: 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&auto=format&fit=crop&q=80',
+        mediaUrl: '/pet_bird_kiwi.jpg',
         caption: 'Vocal warmups before breakfast 🎶🦜',
         durationMs: 4500
       }
@@ -124,6 +124,250 @@ export const initialStories: Story[] = [
 ];
 
 export const initialPosts: Post[] = [
+  {
+    id: 'post_found_social_1',
+    ownerId: 'user_tariq',
+    ownerName: 'Tariq Rahman',
+    ownerAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    petId: 'pet_rusty',
+    petName: 'Rusty',
+    petBreed: 'Golden Retriever Mix',
+    petAvatar: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&auto=format&fit=crop&q=80',
+    isAnonymous: false,
+    caption: 'HE IS HOME! 😭❤️ At 7:30 AM Rusty slipped past the gate when our grocery delivery arrived and bolted towards Gulshan-2 Lake Park during the heavy thunderstorm. I was terrified and posted a Lost Alert on Nuzzle with his GPS pin. Exactly 42 minutes later, Sarah (@sarahmilo) who was walking her dog saw the post, spotted Rusty shivering under a tea stall shed on Road 55, and dropped a live sighting pin! Two other Nuzzle neighbors were already sitting with him, keeping him dry and feeding him boiled chicken until I ran over. Look at this sleepy boy resting safe at home now. Thank you to everyone who reshared—this community literally brought my boy back to me. 🙏🐾',
+    petDialogue: 'I got so scared in the thunder... but kind humans saw my photo on Nuzzle and brought dad to me! 🥺❤️🐾',
+    petMood: '💚 Reunited & Safe at Home',
+    petSoundBite: '🎵 Happy Content Sighs & Tail Thumps',
+    mediaUrls: [
+      'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=800&auto=format&fit=crop&q=80'
+    ],
+    likesCount: 642,
+    commentsCount: 53,
+    isLiked: true,
+    selectedReaction: 'nuzzle',
+    reactions: {
+      paw: 240,
+      nuzzle: 285,
+      treat: 80,
+      ball: 15,
+      purr: 22
+    },
+    isSaved: true,
+    createdAt: '35m ago',
+    location: 'Gulshan-2 Lake Park, Dhaka',
+    hashtags: ['reunited', 'nuzzlecommunity', 'lostfoundpets', 'dhakadogs', 'grateful'],
+    postType: 'reunion',
+    badgeType: 'reunion',
+    badgeText: '💚 Reunited via Nuzzle',
+    actionButton: {
+      label: '📍 View Nuzzle 5-Mile Radar',
+      actionTab: 'lostfound'
+    },
+    comments: [
+      {
+        id: 'c_reunion_1',
+        authorName: 'Sarah & Milo',
+        authorAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+        isPet: false,
+        body: 'His tail wag when he heard your footsteps running around the corner made me cry! So happy you are home Rusty! 🥹💛',
+        createdAt: '20m ago',
+        likesCount: 38,
+        isLiked: true
+      },
+      {
+        id: 'c_reunion_2',
+        authorName: 'Waffles (Golden)',
+        authorAvatar: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&auto=format&fit=crop&q=80',
+        isPet: true,
+        body: 'The Nuzzle radar alert ping woke up our whole house. Best news of the week! Extra ear scritches tonight! 🐾🐕',
+        createdAt: '15m ago',
+        likesCount: 29
+      }
+    ]
+  },
+  {
+    id: 'post_emergency_saved_1',
+    ownerId: 'user_tanvir',
+    ownerName: 'Tanvir Hossain',
+    ownerAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+    petId: 'pet_cooper',
+    petName: 'Cooper',
+    petBreed: 'Labrador Retriever',
+    petAvatar: 'https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?w=200&auto=format&fit=crop&q=80',
+    isAnonymous: false,
+    caption: 'Writing this with tears in my eyes while Cooper sleeps peacefully with his head on my lap. At 1:40 AM last night, he somehow pried open the pantry door and ate an entire 200g bar of 85% dark baking chocolate with cacao nibs. Within 20 minutes he was shaking with a heart rate over 190 bpm. In sheer panic, I opened Nuzzle and hit "24/7 Emergency Triage". Within 15 seconds, PawAI calculated the toxic theobromine threshold for his 28kg weight, generated a triage code, and auto-dispatched our arrival to Central 24/7 Animal Hospital in Mohakhali. When I sped into the clinic driveway at 2:05 AM, Dr. Farhana and the trauma ICU team were ALREADY standing at the door with apomorphine and an IV catheter primed. They pumped his stomach, administered activated charcoal, and monitored his cardiac rhythm till dawn. The vet told me 30 more minutes and his heart would have failed. Cooper is fully stable and eating boiled chicken today. Nuzzle\'s 24/7 emergency vet service literally saved my dog\'s life last night. Please save their hotline in your phone right now. 🏥⚡🙏',
+    petDialogue: 'I thought the dark brown block was a giant treat... the doctors were so gentle while making my tummy feel better. 🥺💖',
+    petMood: '⚡ Safe & Recovering',
+    petSoundBite: '🎵 Gentle Heartbeat & Peaceful Breathing',
+    mediaUrls: [
+      'https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?w=800&auto=format&fit=crop&q=80'
+    ],
+    likesCount: 819,
+    commentsCount: 94,
+    isLiked: true,
+    selectedReaction: 'paw',
+    reactions: {
+      paw: 390,
+      nuzzle: 310,
+      treat: 85,
+      ball: 10,
+      purr: 24
+    },
+    isSaved: true,
+    createdAt: '2h ago',
+    location: 'Central 24/7 Animal Hospital, Mohakhali',
+    hashtags: ['emergencysaved', '247petcare', 'pethealth', 'labrador', 'pawai'],
+    postType: 'emergency_saved',
+    badgeType: 'emergency',
+    badgeText: '⚡ Saved by Emergency Vet',
+    actionButton: {
+      label: '⚡ 24/7 Emergency Vet Triage',
+      actionTab: 'ai'
+    },
+    comments: [
+      {
+        id: 'c_saved_1',
+        authorName: 'Dr. Farhana Ahmed',
+        authorAvatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&auto=format&fit=crop&q=80',
+        isPet: false,
+        body: 'Cooper was so brave through the whole stomach wash! The quick response from your side using the triage telemetry made all the difference. Hug him tight from our ICU team! 🩺🐾',
+        createdAt: '1h ago',
+        likesCount: 65,
+        isLiked: true
+      },
+      {
+        id: 'c_saved_2',
+        authorName: 'Sophia Chen',
+        authorAvatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
+        isPet: false,
+        body: 'My heart stopped reading this! Dark chocolate toxicity is so rapid. Thank God for 24/7 triage! Rest well Cooper! 💖',
+        createdAt: '45m ago',
+        likesCount: 28
+      }
+    ]
+  },
+  {
+    id: 'post_bird_kiwi',
+    ownerId: 'user_nabila',
+    ownerName: 'Nabila Chowdhury',
+    ownerAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+    petId: 'pet_kiwi',
+    petName: 'Kiwi',
+    petBreed: 'Green Cheek Conure (Bird)',
+    petAvatar: '/pet_bird_avatar.jpg',
+    isAnonymous: false,
+    caption: 'Morning balcony concert from Dhanmondi! 🦜✨ Kiwi has officially learned how to mimic our electric kettle whistle AND the doorbell chime. Now whenever breakfast is 2 minutes late, he stages a full acoustic opera on the curtain rod until his diced organic papaya is served. Who said pet parenting is just puppies and kittens? Feathery children bring 100% of the sassy attitude and endless colorful joy into the home! 🍎🎶 #conure #birdlovers #featheredfriends #parrotsofinstagram #aviculture #dhakapets #diversity',
+    petDialogue: 'I am a majestic miniature dinosaur. Sing high C, receive sweet papaya. This is basic avian economics. 🦜🎶',
+    petMood: '🦜 Balcony Opera & Papaya Hunter',
+    petSoundBite: '🎵 Cheerful Conure Chirps & Whistles',
+    mediaUrls: [
+      '/pet_bird_kiwi.jpg'
+    ],
+    likesCount: 538,
+    commentsCount: 47,
+    isLiked: true,
+    selectedReaction: 'nuzzle',
+    reactions: {
+      paw: 182,
+      nuzzle: 215,
+      treat: 96,
+      ball: 18,
+      purr: 27
+    },
+    isSaved: true,
+    createdAt: '3h ago',
+    location: 'Dhanmondi Lake View, Dhaka',
+    hashtags: ['conure', 'birdlovers', 'featheredfriends', 'parrotsofinstagram', 'dhakapets', 'diversity'],
+    postType: 'standard',
+    badgeType: 'default',
+    comments: [
+      {
+        id: 'c_bird_1',
+        authorName: 'Alex Rivers',
+        authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+        isPet: false,
+        body: 'Waffles tilts his head at a 90-degree angle every single time Kiwi hits those high whistle notes! What a vibrant little star 🦜❤️',
+        createdAt: '2h ago',
+        likesCount: 28,
+        isLiked: true
+      },
+      {
+        id: 'c_bird_2',
+        authorName: 'Cleo (Bengal Cat)',
+        authorAvatar: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200&auto=format&fit=crop&q=80',
+        isPet: true,
+        body: 'I am watching this video on repeat through the screen with dilated pupils and extreme professional curiosity. 😼👀',
+        createdAt: '1h ago',
+        likesCount: 52,
+        isLiked: false
+      },
+      {
+        id: 'c_bird_3',
+        authorName: 'Tariq Rahman',
+        authorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+        isPet: false,
+        body: 'Love seeing avian companions on Nuzzle! Adds such wonderful diversity to the feed 🌈🦜',
+        createdAt: '45m ago',
+        likesCount: 19
+      }
+    ]
+  },
+  {
+    id: 'post_general_relatable_1',
+    ownerId: 'user_ayesha',
+    ownerName: 'Ayesha Siddiqua',
+    ownerAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    petId: 'pet_cleo_box',
+    petName: 'Cleo',
+    petBreed: 'Bengal / Tabby Mix',
+    petAvatar: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200&auto=format&fit=crop&q=80',
+    isAnonymous: false,
+    caption: 'I spent ৳4,800 on an orthopedic memory-foam cooling bed from the Nuzzle Market. It has dual-bolster neck support, hypoallergenic fleece lining, and 300+ five-star reviews. Cleo sniffed it once, looked at me with pure disdain, and immediately squished herself into the dented Amazon cardboard box that delivered the bed—which is 4 sizes too small for her and missing a flap. She has been making biscuits and snoring inside this brown cardboard box for 5 straight hours now. Please tell me your pets also treat expensive purchases like personal insults. 📦😼🤦‍♀️ #catlogic #bengalcat #boxlife #nuzzlepets',
+    petDialogue: 'The expensive memory foam lacked carton structural integrity. The cardboard box is architectural perfection. 📦✨',
+    petMood: '📦 Box Supremacy',
+    petSoundBite: '🎵 Loud Purring Inside Cardboard Box',
+    mediaUrls: [
+      'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&auto=format&fit=crop&q=80'
+    ],
+    likesCount: 472,
+    commentsCount: 68,
+    isLiked: false,
+    selectedReaction: null,
+    reactions: {
+      paw: 140,
+      nuzzle: 180,
+      treat: 45,
+      ball: 12,
+      purr: 95
+    },
+    isSaved: false,
+    createdAt: '4h ago',
+    location: 'Banani DOHS, Dhaka',
+    hashtags: ['catlogic', 'bengalcat', 'boxlife', 'catsinboxes', 'nuzzlepets'],
+    postType: 'standard',
+    badgeType: 'default',
+    comments: [
+      {
+        id: 'c_gen_1',
+        authorName: 'Alex Rivers',
+        authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+        isPet: false,
+        body: 'Every single cat owner in Dhaka is feeling this in their soul right now 😂📦',
+        createdAt: '3h ago',
+        likesCount: 34,
+        isLiked: true
+      },
+      {
+        id: 'c_gen_2',
+        authorName: 'Oliver (Corgi)',
+        authorAvatar: 'https://images.unsplash.com/photo-1612536057832-2ff7ead58194?w=200&auto=format&fit=crop&q=80',
+        isPet: true,
+        body: 'If she is done with the ৳4,800 orthopedic foam bed, I will gladly accept delivery! 🐾🐕',
+        createdAt: '2h ago',
+        likesCount: 41
+      }
+    ]
+  },
   {
     id: 'post_1',
     ownerId: 'owner_me',
@@ -368,6 +612,27 @@ export const initialHealthLogs: HealthLog[] = [
 
 export const initialLostFound: LostFoundPost[] = [
   {
+    id: 'lf_rusty',
+    petName: 'Rusty (Missing Dog)',
+    species: 'Dog',
+    breed: 'Golden Retriever Mix',
+    status: 'lost',
+    description: 'Golden honey coat with floppy ears. Blue collar with gold bell and microchip tag #NZ-9942. Last seen chasing a butterfly near Gulshan-2 Lake Park.',
+    imageUrl: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=800&auto=format&fit=crop&q=80',
+    location: 'Gulshan-2 Lake Park & Embassy Zone, Dhaka',
+    areaName: 'Gulshan-2, Dhaka',
+    lat: 23.7925,
+    lng: 90.4167,
+    reward: '৳10,000 Reward',
+    contactName: 'Tariq Rahman (Community Guardian)',
+    contactPhone: '+880 1711-889900',
+    reportedAt: '15m ago',
+    isResolved: false,
+    geoBlastActive: true,
+    geoBlastRadiusKm: 5,
+    geoBlastRespondersCount: 148
+  },
+  {
     id: 'lf_1',
     petName: 'Rocky',
     species: 'Dog',
@@ -522,6 +787,72 @@ export const initialAdoptions: AdoptionListing[] = [
 ];
 
 export const initialVets: Vet[] = [
+  {
+    id: 'vet_farhana',
+    name: 'Dr. Farhana Ahmed (BVSc, M.S. Surgery)',
+    clinicName: 'Gulshan Pet Care & Wellness Center',
+    location: 'Road 11, Banani / Gulshan, Dhaka',
+    bio: 'Specialist in canine immunization, soft-tissue surgeries, dental scaling, feline wellness checkups, and instant electronic Rx sync. Rated 4.9/5 ⭐ by 850+ Dhaka pet parents.',
+    avatarUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&auto=format&fit=crop&q=80',
+    rating: 4.9,
+    reviewsCount: 852,
+    isProSubscriber: true,
+    proBadgeLabel: '🩺 Verified Community Doctor',
+    distanceMiles: 1.2,
+    acceptedSpecies: ['Dog', 'Cat', 'Bird', 'Rabbit'],
+    emergencyCare: true,
+    isOpenNow: true,
+    hasIcu: true,
+    hasSurgery: true,
+    lat: 23.7937,
+    lng: 90.4066,
+    phone: '+880 1819-556677',
+    priceRange: '$$',
+    specialties: ['Canine Immunization', 'Soft-Tissue Surgery', 'Dental Scaling', 'Feline Wellness', 'Electronic Rx'],
+    slots: {
+      'Today': [
+        { time: '11:00 AM', isBooked: false },
+        { time: '02:30 PM', isBooked: false },
+        { time: '04:45 PM', isBooked: false }
+      ],
+      'Tomorrow': [
+        { time: '10:00 AM', isBooked: false },
+        { time: '01:30 PM', isBooked: false }
+      ]
+    }
+  },
+  {
+    id: 'clinic_central_icu',
+    name: 'Central 24/7 Animal Trauma & ICU Center',
+    clinicName: 'Central 24/7 Emergency Trauma & Oxygen Hospital',
+    location: 'Plot 42, Mohakhali C/A (Near Flyover), Dhaka',
+    bio: '24/7 Emergency ICU critical care center with 0-minute wait times, active oxygen therapy incubators, surgical suites, and round-the-clock emergency doctors on duty.',
+    avatarUrl: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=200&auto=format&fit=crop&q=80',
+    rating: 5.0,
+    reviewsCount: 689,
+    isProSubscriber: true,
+    proBadgeLabel: '⚡ 24/7 Trauma ICU Hospital',
+    distanceMiles: 2.1,
+    acceptedSpecies: ['Dog', 'Cat', 'Bird', 'Rabbit', 'Reptile'],
+    emergencyCare: true,
+    isOpenNow: true,
+    hasIcu: true,
+    hasSurgery: true,
+    lat: 23.7776,
+    lng: 90.4054,
+    phone: '+880 1911-247247',
+    priceRange: '$$$',
+    specialties: ['24/7 Emergency ICU', 'Oxygen Incubators', 'Toxic Ingestion Triage', 'Acute Trauma Surgery'],
+    slots: {
+      'Today': [
+        { time: 'Immediate 24/7 Emergency (Open Now)', isBooked: false },
+        { time: 'Next Available Trauma Doc (0 min)', isBooked: false }
+      ],
+      'Tomorrow': [
+        { time: '24/7 Open All Day', isBooked: false }
+      ]
+    }
+  },
   {
     id: 'vet_3',
     name: 'Dr. Sarah Al-Mansoor, DVM, DACVS',

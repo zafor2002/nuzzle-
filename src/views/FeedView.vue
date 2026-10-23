@@ -79,6 +79,9 @@ const activeLostPet = computed(() => {
 const filteredFeedPosts = computed(() => {
   if (activeSpeciesFilter.value === 'all') return activePosts.value;
   return activePosts.value.filter(post => {
+    if (post.postType === 'lost_found' || post.postType === 'vet_found' || post.postType === 'clinic_emergency' || post.postType === 'reunion' || post.postType === 'emergency_saved') {
+      return true;
+    }
     const breed = (post.petBreed || '').toLowerCase();
     const caption = (post.caption || '').toLowerCase();
     const text = breed + ' ' + caption;

@@ -1,17 +1,7 @@
 <template>
   <div class="mobile-app-root">
-    <!-- Main App Container (True Mobile Shell / Clinic Portal Expandable) -->
+    <!-- Main App Container (Clean Web Shell / Clinic Portal Expandable) -->
     <div class="mobile-container" :class="{ 'clinic-rx-expanded': currentTab === 'clinic-rx' }">
-      <!-- Status Bar for real mobile look -->
-      <div v-if="currentTab !== 'clinic-rx'" class="mobile-statusbar">
-        <span class="status-time">9:41</span>
-        <div class="notch-island"></div>
-        <div class="status-indicators">
-          <span>5G</span>
-          <span class="battery-icon">100% 🔋</span>
-        </div>
-      </div>
-
       <!-- Active Screen Viewport -->
       <div class="screen-viewport">
         <AuthView v-if="currentTab === 'auth'" />
@@ -87,76 +77,40 @@ onMounted(() => {
   height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   background-color: var(--bg-stage);
   background-image: 
-    radial-gradient(circle at 20% 20%, rgba(186, 167, 248, 0.35) 0%, transparent 40%),
-    radial-gradient(circle at 80% 80%, rgba(148, 125, 238, 0.25) 0%, transparent 45%),
+    radial-gradient(circle at 20% 20%, rgba(186, 167, 248, 0.22) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(148, 125, 238, 0.16) 0%, transparent 45%),
     radial-gradient(circle at 50% 50%, rgba(253, 251, 254, 0.6) 0%, transparent 60%);
   overflow: hidden;
 }
 
+:global([data-theme='dark']) .mobile-app-root {
+  background-color: #0c0816;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(85, 60, 145, 0.25) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(65, 45, 115, 0.2) 0%, transparent 45%);
+}
+
 .mobile-container {
   width: 100%;
-  max-width: 440px;
-  height: 100%;
-  max-height: 920px;
+  max-width: 425px; /* Strictly locked in phone mode */
+  height: 100vh;
   background: var(--bg-app-textured);
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  box-shadow: 
-    0 25px 60px -10px rgba(45, 25, 80, 0.25),
-    0 10px 30px rgba(148, 125, 238, 0.15);
+  border-left: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+  box-shadow: 0 0 45px rgba(45, 25, 80, 0.08);
+  margin: 0 auto;
 }
 
-@media (min-width: 441px) {
-  .mobile-container {
-    height: calc(100vh - 24px);
-    border-radius: 40px;
-    border: 8px solid #D8CDF2;
-    box-shadow: 
-      0 30px 70px rgba(45, 25, 80, 0.3),
-      0 0 0 2px #EDE4FA;
-  }
-
-  .mobile-container.clinic-rx-expanded {
-    max-width: 1240px;
-    border-radius: 24px;
-    border: 3px solid #C4B5FD;
-  }
-}
-
-.mobile-statusbar {
-  height: 40px;
-  padding: 8px 20px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink-primary);
-  z-index: 100;
-  flex-shrink: 0;
-  background: var(--bg-glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-}
-
-.notch-island {
-  width: 110px;
-  height: 24px;
-  background: #1C152B;
-  border-radius: 20px;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
-}
-
-.status-indicators {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
+:global([data-theme='dark']) .mobile-container {
+  border-color: rgba(169, 149, 246, 0.18);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.6);
 }
 
 .screen-viewport {
@@ -165,5 +119,6 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   position: relative;
+  height: 100%;
 }
 </style>

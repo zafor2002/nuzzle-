@@ -65,32 +65,27 @@
         <span v-if="unreadNotificationsCount > 0" class="unread-dot"></span>
       </button>
 
-      <!-- 🏛️ System Architecture Blueprint & Live API Console -->
+      <!-- 🔍 Search Option -->
       <button 
-        class="header-action-btn architecture-btn" 
-        @click="showArchitectureModal = true" 
-        title="Nuzzle Backend System Architecture & Live Console"
+        id="topbar-search-btn"
+        class="header-action-btn search-btn" 
+        :class="{ active: currentTab === 'explore' }"
+        @click="handleSearch" 
+        title="Search Nuzzle"
       >
-        <Layers :size="17" />
-        <span class="live-status-dot"></span>
+        <Search :size="18" />
       </button>
     </div>
-
-    <!-- System Architecture Console Modal -->
-    <ArchitectureModal 
-      :is-open="showArchitectureModal" 
-      @close="showArchitectureModal = false" 
-    />
   </header>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { MessageCircle, Bell, AlertTriangle, ArrowLeft, Layers } from 'lucide-vue-next';
+import { computed } from 'vue';
+import { MessageCircle, Bell, AlertTriangle, ArrowLeft, Search } from 'lucide-vue-next';
 import NuzzleLogo from '../common/NuzzleLogo.vue';
-import ArchitectureModal from '../common/ArchitectureModal.vue';
 import { 
   currentTab, 
+  previousTab,
   setTab, 
   owner, 
   pets, 
@@ -99,15 +94,17 @@ import {
   unreadNotificationsCount 
 } from '../../stores/appStore';
 
-const showArchitectureModal = ref(false);
-
 const props = defineProps<{
   title?: string;
   canGoBack?: boolean;
 }>();
 
 const showBackButton = computed(() => {
-  return props.canGoBack || !['feed', 'explore', 'ai', 'reels', 'profile'].includes(currentTab.value);
+  if (props.canGoBack !== undefined) return props.canGoBack;
+  if (currentTab.value === 'explore') {
+    return previousTab.value && previousTab.value !== 'explore';
+  }
+  return !['feed', 'ai', 'reels', 'profile'].includes(currentTab.value);
 });
 
 const currentBrowsingName = computed(() => {
@@ -133,7 +130,24 @@ function cyclePetPerspective() {
 }
 
 function goBack() {
-  setTab('feed');
+  if (previousTab.value && previousTab.value !== currentTab.value && previousTab.value !== 'auth') {
+    setTab(previousTab.value);
+  } else {
+    setTab('feed');
+  }
+}
+
+function handleSearch() {
+  if (currentTab.value !== 'explore') {
+    setTab('explore');
+  }
+  setTimeout(() => {
+    const input = document.querySelector('.search-input') as HTMLInputElement;
+    if (input) {
+      input.focus();
+      input.select();
+    }
+  }, 80);
 }
 </script>
 
@@ -334,24 +348,17 @@ function goBack() {
   border: 1px solid var(--bg-card);
 }
 
-.architecture-btn {
-  color: #7C3AED;
+.search-btn {
+  color: var(--ink-secondary);
 }
 
-.architecture-btn:hover {
-  background: #EDE7F6;
-  color: #6D28D9;
+.search-btn:hover {
+  background: var(--bg-card-subtle);
+  color: var(--brand-primary);
 }
 
-.live-status-dot {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 6.5px;
-  height: 6.5px;
-  background: #10B981;
-  border-radius: 50%;
-  border: 1.5px solid var(--bg-card);
-  box-shadow: 0 0 4px #10B981;
+.search-btn.active {
+  color: var(--brand-primary);
+  background: var(--brand-soft);
 }
 </style>

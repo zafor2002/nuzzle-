@@ -51,6 +51,7 @@ const savedToken = typeof window !== 'undefined' ? localStorage.getItem('nuzzle_
 // State
 export const isAuthenticated = ref<boolean>(!!savedToken);
 export const currentTab = ref<TabType>(savedToken ? 'feed' : 'auth');
+export const previousTab = ref<TabType>('feed');
 export const isDarkMode = ref(false);
 export const isCreateSheetOpen = ref(false);
 export const selectedStory = ref<Story | null>(null);
@@ -328,6 +329,9 @@ export function setTab(tab: TabType) {
   if (!isAuthenticated.value && tab !== 'auth') {
     currentTab.value = 'auth';
     return;
+  }
+  if (currentTab.value !== tab) {
+    previousTab.value = currentTab.value;
   }
   currentTab.value = tab;
 

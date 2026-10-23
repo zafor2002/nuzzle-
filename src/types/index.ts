@@ -116,6 +116,15 @@ export interface Post {
   petSoundBite?: string;
   petDialogue?: string;
   sharesCount?: number;
+  postType?: 'standard' | 'lost_found' | 'vet_found' | 'clinic_emergency' | 'reunion' | 'emergency_saved';
+  badgeText?: string;
+  badgeType?: 'emergency' | 'vet' | 'clinic' | 'reunion' | 'default';
+  actionButton?: {
+    label: string;
+    actionTab: TabType;
+    icon?: string;
+    subtext?: string;
+  };
 }
 
 export interface StorySegment {
