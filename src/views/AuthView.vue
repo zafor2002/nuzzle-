@@ -582,7 +582,7 @@ function handleForgotPassword() {
   flex-direction: column;
   position: relative;
   overflow-y: auto;
-  padding: 18px 16px 84px;
+  padding: 18px 16px calc(36px + env(safe-area-inset-bottom, 16px));
 }
 
 .auth-ambient-glow {

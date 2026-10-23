@@ -757,7 +757,7 @@ function callEmergencyHotline() {
 .profile-scroll-body {
   flex: 1;
   overflow-y: auto;
-  padding: 10px 12px 84px;
+  padding: 10px 12px calc(96px + env(safe-area-inset-bottom, 16px));
 }
 
 /* ========================================= */

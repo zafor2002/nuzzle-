@@ -100,14 +100,35 @@
   padding: 0;
 }
 
-html, body {
+html {
   height: 100%;
+  height: -webkit-fill-available;
+}
+
+body {
+  height: 100%;
+  height: -webkit-fill-available;
+  height: 100dvh;
+  min-height: 100%;
+  min-height: -webkit-fill-available;
+  min-height: 100dvh;
   font-family: var(--font-main);
   background-color: var(--bg-stage);
   color: var(--ink-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  height: 100%;
+  height: -webkit-fill-available;
+  height: 100dvh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 button {
@@ -480,6 +501,7 @@ input, textarea, select {
   border-top: 1px solid var(--border-light);
   animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 16px);
 }
 
 .sheet-handle {

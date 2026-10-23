@@ -112,7 +112,7 @@ const filteredFeedPosts = computed(() => {
 .feed-scroll-body {
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 84px;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 16px));
 }
 
 .pet-species-filter-bar {

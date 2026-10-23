@@ -131,7 +131,7 @@ const petLogs = computed(() => {
 .health-scroll-body {
   flex: 1;
   overflow-y: auto;
-  padding: 12px 16px 84px;
+  padding: 12px 16px calc(96px + env(safe-area-inset-bottom, 16px));
 }
 
 .pet-selector-tray {

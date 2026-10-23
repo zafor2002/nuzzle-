@@ -72,11 +72,11 @@ import { currentTab, setTab, isCreateSheetOpen, owner } from '../../stores/appSt
 <style scoped>
 .bottom-nav-outer-wrapper {
   position: absolute;
-  bottom: 10px;
+  bottom: calc(14px + env(safe-area-inset-bottom, 12px));
   left: 0;
   right: 0;
   padding: 0 14px;
-  z-index: 50;
+  z-index: 99;
   pointer-events: none;
 }
 

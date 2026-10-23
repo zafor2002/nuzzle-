@@ -202,7 +202,7 @@ const exploreImages = [
 .explore-scroll-body {
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 84px;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 16px));
 }
 
 /* Minimal Ecosystem Quick Hub */

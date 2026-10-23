@@ -75,6 +75,8 @@ onMounted(() => {
 .mobile-app-root {
   width: 100vw;
   height: 100vh;
+  height: -webkit-fill-available;
+  height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: stretch;
@@ -97,6 +99,8 @@ onMounted(() => {
   width: 100%;
   max-width: 425px; /* Strictly locked in phone mode */
   height: 100vh;
+  height: -webkit-fill-available;
+  height: 100dvh;
   background: var(--bg-app-textured);
   display: flex;
   flex-direction: column;

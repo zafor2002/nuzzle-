@@ -156,8 +156,8 @@ function handleSearch() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 52px;
-  padding: 0 10px 0 12px;
+  height: calc(52px + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) 10px 0 12px;
   background: var(--bg-card);
   border-bottom: 1px solid var(--border-light);
   position: sticky;

@@ -199,7 +199,7 @@ function shareReel(reel: Reel) {
 
 .reels-top-bar {
   position: absolute;
-  top: 10px;
+  top: calc(10px + env(safe-area-inset-top, 0px));
   left: 16px;
   right: 16px;
   display: flex;
@@ -264,7 +264,7 @@ function shareReel(reel: Reel) {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 56px 16px 104px;
+  padding: calc(56px + env(safe-area-inset-top, 0px)) 16px calc(115px + env(safe-area-inset-bottom, 16px));
   overflow: hidden;
 }
 
@@ -329,7 +329,7 @@ function shareReel(reel: Reel) {
 .reel-action-rail {
   position: absolute;
   right: 12px;
-  bottom: 100px;
+  bottom: calc(105px + env(safe-area-inset-bottom, 16px));
   display: flex;
   flex-direction: column;
   align-items: center;
